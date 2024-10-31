@@ -1,0 +1,48 @@
+body {
+    background-color: #f8f9fa; /* Cor de fundo para diferenciar o layout */
+}
+
+.sidebar {
+    height: 100vh;
+    position: fixed;
+    width: 250px;
+    background-color: #f8f9fa;
+    border-right: 1px solid #ddd;
+}
+
+.content {
+    margin-left: 250px;
+}
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.card, .alert {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.sidebar {
+    border-right: 1px solid #ddd; /* Adiciona uma borda para dividir a sidebar do conteúdo principal */
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    font-size: 1.1em;
+}
+
+.nav-link i {
+    margin-right: 10px; /* Espaçamento entre o ícone e o texto */
+}
+
+.nav-link:hover {
+    color: #0d6efd; /* Cor azul do Bootstrap ao passar o mouse */
+    text-decoration: none;
+}
+
+.nav-link.active {
+    color: #0d6efd; /* Cor azul para o item ativo */
+    font-weight: bold;
+}

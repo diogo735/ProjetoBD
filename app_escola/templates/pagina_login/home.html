@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login-Escola</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app_escola/styles.css' %}">
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>Escola_Projeto</h1>
+        </div>
+        <div class="login-form">
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <label for="email">Email or Username</label>
+                <input type="text" id="email" name="email" placeholder="Enter your email or username" required>
+
+                <label for="password">Pass</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+
+
+                <div class="remember-me">
+                    <input type="checkbox" id="keep-logged-in" name="keep-logged-in" checked>
+                    <label for="keep-logged-in">Manter login</label>
+                </div>
+
+                <button type="submit" class="login-button">Entrar</button>
+            </form>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+
+        </div>
+
+    </div>
+    <div class="status-container">
+        {% if db_status == "OK" %}
+        <div class="status-indicator green"></div>
+        {% else %}
+        <div class="status-indicator red"></div>
+        {% endif %}
+        <span>Status da conexão com o banco de dados: {{ db_status }}</span>
+    </div>
+
+
+</body>
+
+</html>
