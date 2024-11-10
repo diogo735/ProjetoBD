@@ -1,0 +1,83 @@
+
+.content {
+    background-image: url('/static/images/teste.png'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    min-height: calc(100vh - 56px); 
+    height: 100%;
+    box-sizing: border-box;
+    padding: 5px !important; /* Espaçamento ao redor da div interna */
+    
+}
+
+.inner-content {
+    background-color:transparent;
+ 
+    height: 100%;
+    padding: 1px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    min-height: calc(100vh - 66px);
+}
+
+
+
+
+.sidebar {
+    background-color: #f8f9fa; /* Mantém um tom claro */
+    height: 100vh; /* A altura será igual à da viewport */
+    position: fixed;
+    top: 0; /* Garante que fique alinhada ao topo */
+    padding-top: 0 !important; /* Remove o padding superior */
+    padding-left: 10px; /* Mantém um espaçamento lateral confortável */
+    width: 250px; /* Define a largura da sidebar */
+    z-index: 2; /* Para garantir que ela fique acima de outros elementos */
+}
+
+/* Links não ativos */
+.nav-link {
+    color: #6c757d; /* Cinza claro para links não ativos */
+    font-size: 1rem;
+    transition: color 0.3s ease-in-out !important; /* Efeito de transição suave */
+}
+
+/* Links ativos */
+.nav-link.active {
+    color: #0d6efd; /* Azul vibrante para o link ativo */
+    font-weight: bold;
+}
+
+/* Links ao passar o mouse */
+.nav-link:hover {
+    color: #0d6efd; /* Escurece um pouco a cor ao passar o mouse */
+}
+
+/* Ícones dentro da barra lateral */
+.nav-link i {
+    font-size: 2.0rem !important; /* Aumenta o tamanho do ícone */
+    margin-right: 100px; /* Espaçamento entre o ícone e o texto */
+}
+
+/* Ajusta o espaçamento entre os itens da sidebar */
+.nav-item {
+    margin-bottom: 20px;
+}
+
+/* Destaque no item ativo */
+.nav-link.active i {
+    color: #0d6efd; /* Azul para o ícone também, quando ativo */
+}
+
+/* Estilo da Navbar Superior */
+.navbar {
+    z-index: 1; /* Garante que a navbar esteja acima do conteúdo */
+    box-shadow: 0px 4px 2px -2px rgba(0,0,0,0.1) !important; /* Sombra para destaque */
+}
+
+/* Estilo da Foto de Perfil */
+.navbar .rounded-circle {
+    border: 2px solid #0d6efd; /* Borda ao redor da imagem de perfil */
+}
+

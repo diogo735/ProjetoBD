@@ -42,7 +42,8 @@ INSTALLED_APPS = [
 ]
 # settings.py
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'app_escola' / 'static']
+
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

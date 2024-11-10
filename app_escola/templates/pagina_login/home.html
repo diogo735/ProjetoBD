@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,25 +6,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login-Escola</title>
-    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'images/icon.png' %}">
     <link rel="stylesheet" href="{% static 'app_escola/styles.css' %}">
+    <style>
+        /* CSS para definir a imagem de fundo */
+        body {
+            background-image: url('/static/images/fundo.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.9); /* Fundo branco com transparência */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        .status-container {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(3, 159, 3, 0.8);
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .logo{
+            background-color: transparent;
+        }
+    </style>
 </head>
 
 <body>
     <div class="login-container">
         <div class="logo">
-            <h1>Escola_Projeto</h1>
+            <img src="{% static 'images/grande.png' %}" alt="Universidade Machado" style="width: 200px; height: 200px;">
+
         </div>
+        
         <div class="login-form">
 
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
-                <label for="email">Email or Username</label>
-                <input type="text" id="email" name="email" placeholder="Enter your email or username" required>
+                <label for="email">Email </label>
+                <input type="text" id="email" name="email" placeholder="Enter your email " required>
 
                 <label for="password">Pass</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
-
 
                 <div class="remember-me">
                     <input type="checkbox" id="keep-logged-in" name="keep-logged-in" checked>
@@ -32,6 +72,7 @@
 
                 <button type="submit" class="login-button">Entrar</button>
             </form>
+
             {% if messages %}
             {% for message in messages %}
             <div class="alert alert-danger" role="alert">
@@ -39,10 +80,9 @@
             </div>
             {% endfor %}
             {% endif %}
-
         </div>
-
     </div>
+
     <div class="status-container">
         {% if db_status == "OK" %}
         <div class="status-indicator green"></div>
@@ -51,7 +91,6 @@
         {% endif %}
         <span>Status da conexão com o banco de dados: {{ db_status }}</span>
     </div>
-
 
 </body>
 

@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib import messages
+from django.contrib.auth.views import LogoutView
+from django.contrib.auth.decorators import login_required
+
 
 def home(request):
     try:
@@ -35,13 +38,41 @@ def login_view(request):
 
         if user:
             # Se o usuário foi encontrado, redireciona para a página principal
-            return redirect('pagina_principal')
+            return redirect('loading_page')
+
         else:
             # Senão, exibe uma mensagem de erro
             messages.error(request, 'Credenciais inválidas, tente novamente.')
 
     return render(request, 'pagina_login/home.html', {'db_status': status})
 
+def loading_page(request):
+    return render(request, 'pagina_login/carregamento.html')
 
 def pagina_principal(request):
-    return render(request, 'pagina_principal/main.html')
+    # Renderiza o template base com o conteúdo do Dashboard como padrão
+    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard'})
+
+
+def dashboard(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard'})
+
+
+def calendario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'calendario'})
+
+def pessoas(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'pessoas'})
+
+def aulas(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'aulas'})
+
+def pagamentos(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos'})
+
+def relatorios(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'relatorios'})
+
+def gestao_escola(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola'})
+
