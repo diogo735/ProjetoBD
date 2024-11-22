@@ -19,7 +19,7 @@
         <div class="container-fluid">
             <div class="d-flex align-items-center ms-auto dropdown">
                 <span class="me-2">Nome pessoa</span>
-                <img src="{% static 'images/perfil.png' %}" alt="Foto de Perfil" class="rounded-circle dropdown-toggle"
+                <img src="{% static 'images/man.png' %}" alt="Foto de Perfil" class="rounded-circle dropdown-toggle"
                     style="width: 40px; height: 40px; cursor: pointer;" id="dropdownProfile" data-bs-toggle="dropdown"
                     aria-expanded="false">
 
@@ -49,42 +49,42 @@
             <li class="nav-item mb-3">
                 <a href="/dashboard/" id="dashboard-link" class="nav-link d-flex align-items-center"
                     onclick="setActive(this)">
-                    <i class="bi bi-house-fill me-2 fs-4"></i> <!-- Ícone aumentado -->
-                    <span>Painel de Controle</span>
+                    <i class="bi bi-boxes me-2 fs-4"></i> <!-- Ícone aumentado -->
+                    <span>Painel de Controlo</span>
                 </a>
             </li>
             <li class="nav-item mb-3">
-                <a href="/calendario/" id="calendario-link" class="nav-link d-flex align-items-center"
+                <a href="/horarios/" id="horarios-link" class="nav-link d-flex align-items-center"
                     onclick="setActive(this)">
-                    <i class="bi bi-calendar me-2 fs-4"></i>
-                    <span>Calendário</span>
+                    <i class="bi bi-calendar4-week me-2 fs-4"></i>
+                    <span>Horários</span>
                 </a>
             </li>
             <li class="nav-item mb-3">
-                <a href="/pessoas/" id="pessoas-link" class="nav-link d-flex align-items-center"
+                <a href="/professores/" id="professores-link" class="nav-link d-flex align-items-center"
                     onclick="setActive(this)">
                     <i class="bi bi-people-fill me-2 fs-4"></i>
-                    <span>Pessoas</span>
+                    <span>Professores</span>
                 </a>
             </li>
             <li class="nav-item mb-3">
-                <a href="/aulas/" id="aulas-link" class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                <a href="/avaliacoes/" id="avaliacoes-link" class="nav-link d-flex align-items-center" onclick="setActive(this)">
                     <i class="bi bi-journal-bookmark me-2 fs-4"></i>
-                    <span>Aulas e Eventos</span>
+                    <span>Avaliações</span>
                 </a>
             </li>
             <li class="nav-item mb-3">
                 <a href="/pagamentos/" id="pagamentos-link" class="nav-link d-flex align-items-center"
                     onclick="setActive(this)">
                     <i class="bi bi-credit-card me-2 fs-4"></i>
-                    <span>Pagamentos</span>
+                    <span>Propinas e Pagamentos</span>
                 </a>
             </li>
             <li class="nav-item mb-3">
-                <a href="/relatorios/" id="relatorios-link" class="nav-link d-flex align-items-center"
+                <a href="/matricula/" id="matricula-link" class="nav-link d-flex align-items-center"
                     onclick="setActive(this)">
-                    <i class="bi bi-bar-chart me-2 fs-4"></i>
-                    <span>Relatórios</span>
+                    <i class="bi bi-mortarboard me-2 fs-4"></i>
+                    <span>Matrícula</span>
                 </a>
             </li>
             <li class="nav-item mb-3">
@@ -127,11 +127,11 @@
             const path = window.location.pathname;
             const linkMap = {
                 '/dashboard/': 'dashboard-link',
-                '/calendario/': 'calendario-link',
-                '/pessoas/': 'pessoas-link',
-                '/aulas/': 'aulas-link',
+                '/horarios/': 'horarios-link',
+                '/professores/': 'professores-link',
+                '/avaliacoes/': 'avaliacoes-link',
                 '/pagamentos/': 'pagamentos-link',
-                '/relatorios/': 'relatorios-link',
+                '/matricula/': 'matricula-link',
                 '/gestao_escola/': 'gestao-escola-link'
             };
 

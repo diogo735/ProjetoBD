@@ -58,20 +58,20 @@ def dashboard(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard'})
 
 
-def calendario(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'calendario'})
+def horarios(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'horarios'})
 
-def pessoas(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'pessoas'})
+def professores(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'professores'})
 
-def aulas(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'aulas'})
+def avaliacoes(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes'})
 
 def pagamentos(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos'})
 
-def relatorios(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'relatorios'})
+def matricula(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'matricula'})
 
 def gestao_escola(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola'})

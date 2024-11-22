@@ -4,16 +4,16 @@
 <div id="dynamic-content" class="container">
     {% if default_content == 'dashboard' %}
         {% include "pagina_principal/dashboard.html" %}
-    {% elif default_content == 'calendario' %}
-        {% include "pagina_principal/calendario.html" %}
-    {% elif default_content == 'pessoas' %}
-        {% include "pagina_principal/pessoas.html" %}
-    {% elif default_content == 'aulas' %}
-        {% include "pagina_principal/aulas.html" %}
+    {% elif default_content == 'horarios' %}
+        {% include "pagina_principal/horarios.html" %}
+    {% elif default_content == 'professores' %}
+        {% include "pagina_principal/professores.html" %}
+    {% elif default_content == 'avaliacoes' %}
+        {% include "pagina_principal/avaliacoes.html" %}
     {% elif default_content == 'pagamentos' %}
         {% include "pagina_principal/pagamentos.html" %}
-    {% elif default_content == 'relatorios' %}
-        {% include "pagina_principal/relatorios.html" %}
+    {% elif default_content == 'matricula' %}
+        {% include "pagina_principal/matricula.html" %}
     {% elif default_content == 'gestao_escola' %}
         {% include "pagina_principal/gestao_escola.html" %}
     {% else %}

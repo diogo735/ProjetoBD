@@ -13,11 +13,11 @@ urlpatterns = [
     #opções da nav bar
     
     path('dashboard/', views.dashboard, name='dashboard'),
-    path('calendario/', views.calendario, name='calendario'),
-    path('pessoas/', views.pessoas, name='pessoas'),
-    path('aulas/', views.aulas, name='aulas'),
+    path('horarios/', views.horarios, name='horarios'),
+    path('professores/', views.professores, name='professores'),
+    path('avaliacoes/', views.avaliacoes, name='avaliacoes'),
     path('pagamentos/', views.pagamentos, name='pagamentos'),
-    path('relatorios/', views.relatorios, name='relatorios'),
+    path('matricula/', views.matricula, name='matricula'),
     path('gestao_escola/', views.gestao_escola, name='gestao_escola'),
     
 ]
