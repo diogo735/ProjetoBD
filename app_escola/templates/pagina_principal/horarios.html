@@ -1,4 +1,153 @@
-<div>
-    <h1>Horários</h1>
-    <p>Esta é a página de horários, onde pode visualizar e gerir eventos e compromissos escolares.</p>
+<div class="container py-4">
+
+    <!-- Tabs para Detalhes e Turno -->
+    <ul class="nav nav-tabs" id="horariosTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="detalhes-tab" data-bs-toggle="tab" data-bs-target="#detalhes" type="button" role="tab" aria-controls="detalhes" aria-selected="true">
+                Detalhes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="turno-tab" data-bs-toggle="tab" data-bs-target="#turno" type="button" role="tab" aria-controls="turno" aria-selected="false">
+                Turno
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="horariosTabContent">
+        <!-- Tab Detalhes -->
+        <div class="tab-pane fade show active" id="detalhes" role="tabpanel" aria-labelledby="detalhes-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Horários do Ano Letivo Atual</h2>
+                </div>
+                <div class="card-body">
+                    <p>Consulte os horários por ano e semestre para o ano letivo atual.</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Ano</th>
+                                    <th>Semestre</th>
+                                    <th>Horário</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1º Ano</td>
+                                    <td>1º Semestre</td>
+                                    <td>
+                                        <a href="#" class="btn btn-link">Ver Detalhes</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>1º Ano</td>
+                                    <td>2º Semestre</td>
+                                    <td>
+                                        <a href="#" class="btn btn-link">Ver Detalhes</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2º Ano</td>
+                                    <td>1º Semestre</td>
+                                    <td>
+                                        <a href="#" class="btn btn-link">Ver Detalhes</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2º Ano</td>
+                                    <td>2º Semestre</td>
+                                    <td>
+                                        <a href="#" class="btn btn-link">Ver Detalhes</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3º Ano</td>
+                                    <td>1º Semestre</td>
+                                    <td>
+                                        <a href="#" class="btn btn-link">Ver Detalhes</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>3º Ano</td>
+                                    <td>2º Semestre</td>
+                                    <td>
+                                        <a href="#" class="btn btn-link">Ver Detalhes</a>
+                                    </td>
+                                </tr>
+                                <!-- Adicione mais linhas conforme necessário -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Turno -->
+        <div class="tab-pane fade" id="turno" role="tabpanel" aria-labelledby="turno-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Turnos</h2>
+                </div>
+                <div class="card-body">
+                    <p>Pesquise por ano e semestre para realizar ou alterar inscrições em turnos livres.</p>
+                    <form class="row g-3">
+                        <div class="col-md-6">
+                            <label for="ano" class="form-label">Ano</label>
+                            <select id="ano" class="form-select">
+                                <option selected>Escolha o ano...</option>
+                                <option value="1">1º Ano</option>
+                                <option value="2">2º Ano</option>
+                                <option value="3">3º Ano</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="semestre" class="form-label">Semestre</label>
+                            <select id="semestre" class="form-select">
+                                <option selected>Escolha o semestre...</option>
+                                <option value="1">1º Semestre</option>
+                                <option value="2">2º Semestre</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mt-3">
+                            <button type="button" class="btn btn-outline-primary">Pesquisar Turnos</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4">
+                        <h3 class="h6">Resultados Disponíveis:</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Turno</th>
+                                        <th>Vagas</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Turno A</td>
+                                        <td>5 Vagas</td>
+                                        <td>
+                                            <button class="btn btn-success btn-sm">Inscrever</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Turno B</td>
+                                        <td>0 Vagas</td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm" disabled>Indisponível</button>
+                                        </td>
+                                    </tr>
+                                    <!-- Adicione mais linhas conforme necessário -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <small class="text-muted">* Apenas turnos livres aparecem como disponíveis para inscrição ou alteração.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
