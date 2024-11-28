@@ -82,13 +82,15 @@ WSGI_APPLICATION = 'escola_bd.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'BD_Trabalho',  # Nome do banco de dados
-        'USER': 'postgres',  # Usuário do PostgreSQL (ex: 'funcionario', 'postgres', ou outro que criou)
-        'PASSWORD': 'diario13',  # A senha associada ao usuário
-        'HOST': 'localhost',  # Geralmente 'localhost' se o banco estiver na mesma máquina
-        'PORT': '5432',  # Porta padrão do PostgreSQL
+        'NAME': 'bd_escola_0cld',  # Nome do banco de dados
+        'USER': 'administrador',    # Usuário do banco
+        'PASSWORD': '60PseDBXw9Ba1LsPOYDbmwNcPS3JvbTv',    # Senha do banco
+        'HOST': 'dpg-ct462otds78s73bge960-a.frankfurt-postgres.render.com',  # Host do banco
+        'PORT': '5432',             # Porta do banco
     }
 }
+
+
 
 
 
