@@ -78,6 +78,16 @@
                     <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
                 </div>
 
+                <div class="mb-3">
+                    <label for="user_type" class="form-label">Tipo de Usuário</label>
+                    <select id="user_type" name="user_type" class="form-select" required>
+                        <option value="" disabled selected>Escolha uma opção</option>
+                        <option value="Aluno">Aluno</option>
+                        <option value="Professor">Professor</option>
+                        <option value="Funcionario">Funcionário</option>
+                    </select>
+                </div>
+                
                 <div class="form-check mb-3">
                     <input type="checkbox" id="keep-logged-in" name="keep-logged-in" class="form-check-input" checked>
                     <label for="keep-logged-in" class="form-check-label">Manter login</label>
