@@ -1,0 +1,182 @@
+<div class="container py-4">
+    <!-- Tabs para Detalhes e Inscrição -->
+    <ul class="nav nav-tabs" id="matriculaTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="detalhes-tab" data-bs-toggle="tab" data-bs-target="#detalhes" type="button" role="tab" aria-controls="detalhes" aria-selected="true">
+                Detalhes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="inscricao-tab" data-bs-toggle="tab" data-bs-target="#inscricao" type="button" role="tab" aria-controls="inscricao" aria-selected="false">
+                Inscrição
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="matriculaTabContent">
+        <!-- Tab Detalhes -->
+        <div class="tab-pane fade show active" id="detalhes" role="tabpanel" aria-labelledby="detalhes-tab">
+            <div class="card mb-4 shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Detalhes da Matrícula Atual</h2>
+                </div>
+                <div class="card-body">
+                    <p>Confira os detalhes da sua matrícula para o ano letivo atual.</p>
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <strong>Curso:</strong> Engenharia Informática
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Ano Letivo:</strong> 2024/2025
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Status:</strong> Ativo
+                        </li>
+                        <li class="list-group-item">
+                            <strong>Data de Matrícula:</strong> 01/09/2024
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Cancelar Matrícula</h2>
+                </div>
+                    <div class="card-body">
+                        <p>Cancelar Matrícula</p>
+                        <p>Se desejar cancelar a sua matrícula, clique no botão abaixo:</p>
+                        <button class="btn btn-danger" onclick="confirmarCancelamento()">Cancelar Matrícula</button>
+                    </div>
+            </div>
+
+        </div>
+        <!-- Tab Inscrição -->
+        <div class="tab-pane fade" id="inscricao" role="tabpanel" aria-labelledby="inscricao-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Inscrição</h2>
+                </div>
+                <div class="card-body">
+                    <p>Realize a sua matrícula para o ano letivo atual.</p>
+                    
+                    <!-- Formulário de Matrícula -->
+                    <div class="mb-4">
+                        <h3 class="h6">Realizar Matrícula</h3>
+                        <form>
+                            <div class="mb-3">
+                                <label for="ano-letivo" class="form-label">Ano Letivo</label>
+                                <select id="ano-letivo" class="form-select">
+                                    <option selected>Escolha o ano letivo...</option>
+                                    <option value="2023/2024">2024/2025</option>
+                                    <option value="2022/2023">2025/2026</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="curso" class="form-label">Selecione o Curso</label>
+                                <select id="curso" class="form-select">
+                                    <option selected>Escolha o curso...</option>
+                                    <option value="engenharia-informatica">Engenharia Informática</option>
+                                    <option value="gestao-empresarial">Gestão Empresarial</option>
+                                    <!-- Adicione mais cursos conforme necessário -->
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ano-inscricao" class="form-label">Ano de Inscrição</label>
+                                <select id="ano-inscricao" class="form-select" required>
+                                    <option selected>Escolha o ano...</option>
+                                    <option value="1">1º Ano</option>
+                                    <option value="2">2º Ano</option>
+                                    <option value="3">3º Ano</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Nome Completo</label>
+                                <input type="text" class="form-control" id="nome" placeholder="Insira o seu nome completo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Email</label>
+                                <input type="text" class="form-control" id="nome" placeholder="Insira o seu email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Data de nascimento</label>
+                                <input type="date" class="form-control" id="date" placeholder="Insira a sua data de nascimento" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Telemóvel/Telefone</label>
+                                <input type="text" class="form-control" id="nome" placeholder="Insira o seu telemóvel ou telefone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Morada</label>
+                                <input type="text" class="form-control" id="nome" placeholder="Insira a sua morada" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nome" class="form-label">Localidade</label>
+                                <input type="text" class="form-control" id="nome" placeholder="Insira a sua localidade" required>
+                            </div>
+                            <div class="mb-4">
+                                <label for="nome" class="form-label">Unidades Curriculares</label>
+                                <h4 class="h6">1º Semestre</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <input class="form-check-input me-1" type="checkbox" value="programacao" id="programacao">
+                                        Programação (6 ECTS)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <input class="form-check-input me-1" type="checkbox" value="matematica" id="matematica">
+                                        Matemática Discreta (5 ECTS)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <input class="form-check-input me-1" type="checkbox" value="redes" id="redes">
+                                        Redes de Computadores (4 ECTS)
+                                    </li>
+                                    <!-- Outras UCs do 1º Semestre -->
+                                </ul>
+                            </div>
+                
+                            <!-- Segundo Semestre -->
+                            <div class="mb-4">
+                                <h4 class="h6">2º Semestre</h4>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <input class="form-check-input me-1" type="checkbox" value="sistemas-operativos" id="sistemas-operativos">
+                                        Sistemas Operativos (6 ECTS)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <input class="form-check-input me-1" type="checkbox" value="bases-dados" id="bases-dados">
+                                        Bases de Dados (5 ECTS)
+                                    </li>
+                                    <li class="list-group-item">
+                                        <input class="form-check-input me-1" type="checkbox" value="algoritmos" id="algoritmos">
+                                        Algoritmos Avançados (4 ECTS)
+                                    </li>
+                                    <!-- Outras UCs do 2º Semestre -->
+                                </ul>
+                            </div>
+                            <button type="submit" class="btn btn-success">Realizar Matrícula</button>
+                            <button class="btn btn-danger" onclick="apagarDados()">Apagar Dados</button>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmarCancelamento() {
+        if (confirm("Tem certeza de que deseja cancelar sua matrícula? Esta ação não pode ser desfeita.")) {
+            // Lógica para cancelar a matrícula
+            alert("Matrícula cancelada com sucesso.");
+        }
+    }
+
+    function apagarDados() {
+        if (confirm("Tem certeza de que deseja apagar os dados da matrícula? Esta ação não pode ser desfeita.")) {
+            // Lógica para cancelar a matrícula
+            alert("Matrícula apagada com sucesso.");
+        }
+    }
+    
+</script>
