@@ -3,20 +3,53 @@
 {% block content %}
 
 <div id="dynamic-content" class="container">
-    {% if default_content == 'dashboard' %}
-        {% include "pagina_principal/dashboard.html" %}
-    {% elif default_content == 'horarios' %}
-        {% include "pagina_principal/horarios.html" %}
-    {% elif default_content == 'professores' %}
-        {% include "pagina_principal/professores.html" %}
-    {% elif default_content == 'avaliacoes' %}
-        {% include "pagina_principal/avaliacoes.html" %}
-    {% elif default_content == 'pagamentos' %}
-        {% include "pagina_principal/pagamentos.html" %}
-    {% elif default_content == 'matricula' %}
-        {% include "pagina_principal/matricula.html" %}
-    {% elif default_content == 'gestao_escola' %}
-        {% include "pagina_principal/gestao_escola.html" %}
+    {% if default_content == 'dashboard_aluno' %}
+        {% include "pagina_principal/aluno/dashboard_aluno.html" %}
+    {% elif default_content == 'dashboard_professor' %}
+        {% include "pagina_principal/professor/dashboard_professor.html" %}
+    {% elif default_content == 'dashboard_funcionario' %}
+        {% include "pagina_principal/funcionario/dashboard_funcionario.html" %} 
+
+    {% elif default_content == 'horarios_aluno' %}
+        {% include "pagina_principal/aluno/horarios_aluno.html" %}
+    {% elif default_content == 'horarios_professor' %}
+        {% include "pagina_principal/professor/horarios_professor.html" %}
+
+    {% elif default_content == 'professores_aluno' %}
+        {% include "pagina_principal/aluno/professores_aluno.html" %}
+    {% elif default_content == 'professores_funcionario' %}
+        {% include "pagina_principal/funcionario/professores_funcionario.html" %}
+
+    {% elif default_content == 'avaliacoes_aluno' %}
+        {% include "pagina_principal/aluno/avaliacoes_aluno.html" %}
+    {% elif default_content == 'avaliacoes_professor' %}
+        {% include "pagina_principal/professor/avaliacoes_professor.html" %}
+    {% elif default_content == 'avaliacoes_funcionario' %}
+        {% include "pagina_principal/funcionario/avaliacoes_funcionario.html" %}
+
+    {% elif default_content == 'pagamentos_aluno' %}
+        {% include "pagina_principal/aluno/pagamentos_aluno.html" %}
+    {% elif default_content == 'pagamentos_funcionario' %}
+        {% include "pagina_principal/funcionario/pagamentos_funcionario.html" %}
+
+    {% elif default_content == 'matricula_aluno' %}
+        {% include "pagina_principal/aluno/matricula_aluno.html" %}
+    {% elif default_content == 'matricula_funcionario' %}
+        {% include "pagina_principal/funcionario/matricula_funcionario.html" %}
+
+
+    {% elif default_content == 'unidades_curriculares_professor' %}
+        {% include "pagina_principal/professor/unidades_curriculares_professor.html" %}
+    {% elif default_content == 'unidades_curriculares_funcionario' %}
+        {% include "pagina_principal/funcionario/unidades_curriculares_funcionario.html" %}
+
+
+    {% elif default_content == 'gestao_escola_aluno' %}
+        {% include "pagina_principal/aluno/gestao_escola_aluno.html" %}
+    {% elif default_content == 'gestao_escola_professor' %}
+        {% include "pagina_principal/professor/gestao_escola_professor.html" %}
+    {% elif default_content == 'gestao_escola_funcionario' %}
+        {% include "pagina_principal/funcionario/gestao_escola_funcionario.html" %}
     {% else %}
         <h1>Bem-vindo ao Teach 'n Go</h1>
         <p>Use este espaço para continuar criando conteúdo...</p>

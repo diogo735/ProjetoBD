@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
 import psycopg2
+from .utils import aluno_required, professor_required, funcionario_required
 
 def home(request):
     try:
@@ -17,6 +18,7 @@ def home(request):
 
     # Renderiza o template home.html com o status da conexão
     return render(request, 'pagina_login/home.html', {'db_status': status})
+
 
 def login_view(request):
     try:
@@ -55,34 +57,98 @@ def login_view(request):
 
 
 def loading_page(request):
-    return render(request, 'pagina_login/carregamento.html')
+    # return render(request, 'pagina_login/carregamento.html')
 
-def pagina_principal(request):
-    
-    
-    # Renderiza o template base com o conteúdo do Dashboard como padrão
-    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard'})
+    user_type = request.session.get('user_type', None)
 
+    # Redireciona para o dashboard correto com base no tipo de utilizador
+    if user_type == 'Aluno':
+        return redirect('dashboard_aluno')  # URL para o dashboard do aluno
+    elif user_type == 'Professor':
+        return redirect('dashboard_professor')  # URL para o dashboard do professor
+    elif user_type == 'Funcionario':
+        return redirect('dashboard_funcionario')  # URL para o dashboard do administrador
+    else:
+        # Caso não exista um tipo de utilizador válido, redireciona para a página de login
+        messages.error(request, 'Sessão inválida. Por favor, faça login novamente.')
+        return redirect('login')
 
-def dashboard(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard'})
+# def pagina_principal(request):
+#     user_type = request.session.get('user_type', None)
+#     return render(request, 'pagina_principal/base_main.html', {'user_type': user_type})
 
+@aluno_required
+def dashboard_aluno(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_aluno'})
 
-def horarios(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'horarios'})
+@professor_required
+def dashboard_professor(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_professor'})
 
-def professores(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'professores'})
+@funcionario_required
+def dashboard_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_funcionario'})
 
-def avaliacoes(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes'})
+@aluno_required
+def horarios_aluno(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'horarios_aluno'})
 
-def pagamentos(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos'})
+@professor_required
+def horarios_professor(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'horarios_professor'})
 
-def matricula(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'matricula'})
+@aluno_required
+def professores_aluno(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
 
-def gestao_escola(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola'})
+@funcionario_required
+def professores_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'professores_funcionario'})
 
+@aluno_required
+def avaliacoes_aluno(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes_aluno'})
+
+@professor_required
+def avaliacoes_professor(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes_professor'})
+
+@funcionario_required
+def avaliacoes_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes_funcionario'})
+
+@aluno_required
+def pagamentos_aluno(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos_aluno'})
+
+@funcionario_required
+def pagamentos_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos_funcionario'})
+
+@aluno_required
+def matricula_aluno(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'matricula_aluno'})
+
+@funcionario_required
+def matricula_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'matricula_funcionario'})
+
+@aluno_required
+def gestao_escola_aluno(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_aluno'})
+
+@professor_required
+def unidades_curriculares_professor(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_professor'})
+
+@funcionario_required
+def unidades_curriculares_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
+
+@professor_required
+def gestao_escola_professor(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_professor'})
+
+@funcionario_required
+def gestao_escola_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_funcionario'})

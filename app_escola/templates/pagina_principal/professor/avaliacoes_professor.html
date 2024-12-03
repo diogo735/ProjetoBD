@@ -1,0 +1,112 @@
+<div class="container py-4">
+    <!-- Tabs para Gerir Avaliações e Histórico Avaliações -->
+    <ul class="nav nav-tabs" id="avaliacoesTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="gerir-avaliacoes-tab" data-bs-toggle="tab" data-bs-target="#gerir-avaliacoes" type="button" role="tab" aria-controls="gerir-avaliacoes" aria-selected="true">
+                Gerir Avaliações
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="historico-avaliacoes-tab" data-bs-toggle="tab" data-bs-target="#historico-avaliacoes" type="button" role="tab" aria-controls="historico-avaliacoes" aria-selected="false">
+                Histórico Avaliações
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="avaliacoesTabContent">
+        <!-- Tab Gerir Avaliações -->
+        <div class="tab-pane fade show active" id="gerir-avaliacoes" role="tabpanel" aria-labelledby="gerir-avaliacoes-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Atribuir ou Editar Avaliações</h2>
+                </div>
+                <div class="card-body">
+                    <p>Todos os alunos da turma aparecem automaticamente. Salve todas as notas com um único botão, mas continue podendo editá-las posteriormente.</p>
+
+                    <!-- Tabela de Gerenciamento de Avaliações -->
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nº Mecanográfico</th>
+                                    <th>Nome do Aluno</th>
+                                    <th>Nota</th>
+                                    <th>Data de Lançamento</th>
+                                </tr>
+                            </thead>
+                            <tbody id="alunos-tbody">
+                                <tr>
+                                    <td>12345</td>
+                                    <td>João Silva</td>
+                                    <td>
+                                        <input type="number" class="form-control nota-aluno" value="16" min="0" max="20" data-id="12345">
+                                    </td>
+                                    <td>
+                                        <input type="date" class="form-control data-aluno" value="2024-01-15" data-id="12345">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>67890</td>
+                                    <td>Maria Santos</td>
+                                    <td>
+                                        <input type="number" class="form-control nota-aluno" value="14" min="0" max="20" data-id="67890">
+                                    </td>
+                                    <td>
+                                        <input type="date" class="form-control data-aluno" value="2024-01-18" data-id="67890">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>54321</td>
+                                    <td>Pedro Oliveira</td>
+                                    <td>
+                                        <input type="number" class="form-control nota-aluno" value="15" min="0" max="20" data-id="54321">
+                                    </td>
+                                    <td>
+                                        <input type="date" class="form-control data-aluno" value="2024-01-20" data-id="54321">
+                                    </td>
+                                </tr>
+                                <!-- Adicione mais alunos conforme necessário -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Botão para Salvar Todas as Notas -->
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="button" class="btn btn-success" id="salvar-todas">Salvar Todas as Notas</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Histórico Avaliações -->
+        <div class="tab-pane fade" id="historico-avaliacoes" role="tabpanel" aria-labelledby="historico-avaliacoes-tab">
+            <!-- O conteúdo da aba Histórico Avaliações permanece inalterado -->
+            <!-- Adicione o código da aba Histórico Avaliações aqui -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Função para salvar todas as notas
+    document.getElementById("salvar-todas").addEventListener("click", function () {
+        const notas = [];
+        const datas = [];
+
+        // Coleta todas as notas e datas dos alunos
+        document.querySelectorAll(".nota-aluno").forEach(input => {
+            const alunoId = input.dataset.id;
+            const nota = input.value;
+            const data = document.querySelector(`.data-aluno[data-id='${alunoId}']`).value;
+
+            notas.push({ alunoId, nota, data });
+        });
+
+        // Simula o salvamento no backend (substitua isso por um AJAX para realmente salvar)
+        console.log("Salvando as seguintes notas:", notas);
+
+        // Exibe uma mensagem de sucesso
+        alert("Notas salvas com sucesso!");
+
+        // As notas permanecem editáveis após o salvamento
+    });
+</script>
