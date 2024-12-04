@@ -20,6 +20,22 @@ def home(request):
     return render(request, 'pagina_login/home.html', {'db_status': status})
 
 
+
+def obter_nome_id_user(email, user_type):
+    with connection.cursor() as cursor:
+        # Chamar a função SQL do banco de dados que você criou
+        cursor.execute("SELECT * FROM get_user_info(%s, %s)", [email, user_type])
+        result = cursor.fetchone()
+
+        if result:
+            user_id, first_name, last_name = result
+            return {
+                'user_id': user_id,
+                'first_name': first_name,
+                'last_name': last_name,
+            }
+        return None
+
 def login_view(request):
     try:
         with connection.cursor() as cursor:
@@ -35,7 +51,7 @@ def login_view(request):
 
         with connection.cursor() as cursor:
             # Executa a consulta para verificar se o email existe no banco de dados
-            cursor.execute(f'SELECT * FROM public.{user_type.lower()} WHERE email = %s', [email])
+            cursor.execute(f"SELECT * FROM public.{user_type.lower()} WHERE email = %s", [email])
             user = cursor.fetchone()
 
             if user:
@@ -46,7 +62,20 @@ def login_view(request):
 
                 # Verifica se a senha está correta
                 if user_dict['password'] == password:
-                    request.session['user_type'] = user_type
+                    # Chamar a função para obter nome e ID do usuário diretamente do banco de dados
+                    user_info = obter_nome_id_user(email, user_type)
+                    if user_info:
+                        # Armazenar informações na sessão
+                        request.session['user_id'] = user_info['user_id']
+                        request.session['user_name'] = f"{user_info['first_name']} {user_info['last_name']}"
+                        request.session['user_type'] = user_type
+ # Determinar qual avatar usar
+                        if user_type.lower() == 'aluno':
+                            request.session['user_avatar'] = 'images/aluno.png' if user_info['first_name'][-1].lower() != 'a' else 'images/aluna.png'
+                        elif user_type.lower() == 'professor':
+                            request.session['user_avatar'] = 'images/professor.png' if user_info['first_name'][-1].lower() != 'a' else 'images/professora.png'
+                        elif user_type.lower() == 'funcionario':
+                            request.session['user_avatar'] = 'images/funcionario.png' if user_info['first_name'][-1].lower() != 'a' else 'images/funcionaria.png'
                     return redirect('loading_page')
                 else:
                     messages.error(request, 'Senha incorreta, tente novamente.')
@@ -54,6 +83,7 @@ def login_view(request):
                 messages.error(request, 'Email não encontrado, tente novamente.')
 
     return render(request, 'pagina_login/home.html', {'db_status': status})
+
 
 
 def loading_page(request):

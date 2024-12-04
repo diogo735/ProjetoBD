@@ -11,18 +11,45 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'CSS/pagina_principal.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
 </head>
 
 <body class="body">
+
     <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin-left: 250px;">
         <div class="container-fluid">
+           
+             <!-- Novo bloco de informações do tipo de usuário -->
+        <div class="user-info-box me-auto" style="background-color: #0d6efd; border-radius: 8px; padding: 5px 10px; margin-right: 20px; display: inline-block;">
+            <span class="user-type-name" style="font-weight: bold; font-size: 14px; color: white; display: flex; align-items: center;">
+                {% if request.session.user_type == 'Aluno' %}
+                    <i class="bi bi-mortarboard-fill me-2"></i>
+                {% elif request.session.user_type == 'Professor' %}
+                    <i class="bi bi-briefcase-fill me-2"></i>
+                {% elif request.session.user_type == 'Funcionario' %}
+                    <i class="bi bi-tools me-2"></i>
+                {% endif %}
+                {% if request.session.user_type %}
+                    {{ request.session.user_type }}
+                {% else %}
+                    Tipo de Usuário
+                {% endif %}
+            </span>
+        </div>
+    
+            <!-- Bloco existente de informações do usuário e dropdown -->
             <div class="d-flex align-items-center ms-auto dropdown">
-                <span class="me-2">Nome pessoa</span>
-                <img src="{% static 'images/man.png' %}" alt="Foto de Perfil" class="rounded-circle dropdown-toggle"
-                    style="width: 40px; height: 40px; cursor: pointer;" id="dropdownProfile" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-
+                <span class="me-2">
+                    {% if request.session.user_name %}
+                        {{ request.session.user_name }}
+                    {% else %}
+                        Visitante
+                    {% endif %}
+                </span>                
+                <img src="{% static request.session.user_avatar %}" alt="Foto de Perfil" class="rounded-circle dropdown-toggle"
+                     style="width: 40px; height: 40px; cursor: pointer;" id="dropdownProfile" data-bs-toggle="dropdown"
+                     aria-expanded="false">
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownProfile">
                     <li>
                         <a class="dropdown-item d-flex align-items-center" href="/perfil/">
@@ -41,6 +68,9 @@
             </div>
         </div>
     </nav>
+    
+    
+
 
 
     <div class="sidebar bg-light p-3" style="width: 250px; height: 100vh; position: fixed;">
@@ -48,161 +78,161 @@
         <ul class="nav flex-column">
 
             {% if request.session.user_type == "Aluno" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'dashboard_aluno' %}" id="dashboard-a-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-boxes me-2 fs-4"></i> <!-- Ícone aumentado -->
-                        <span>Painel de Controlo</span>
-                    </a>
+            <li class="nav-item mb-3">
+                <a href="{% url 'dashboard_aluno' %}" id="dashboard-a-link" class="nav-link d-flex align-items-center"
+                    onclick="setActive(this)">
+                    <i class="bi bi-boxes me-2 fs-4"></i> <!-- Ícone aumentado -->
+                    <span>Painel de Controlo</span>
+                </a>
                 {% elif request.session.user_type == "Professor" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'dashboard_professor' %}" id="dashboard-p-link" class="nav-link d-flex align-items-center" 
-                        onclick="setActive(this)">
-                        <i class="bi bi-boxes me-2 fs-4"></i>
-                        <span>Painel de Controlo</span>
-                    </a>
+            <li class="nav-item mb-3">
+                <a href="{% url 'dashboard_professor' %}" id="dashboard-p-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-boxes me-2 fs-4"></i>
+                    <span>Painel de Controlo</span>
+                </a>
                 {% elif request.session.user_type == "Funcionario" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'dashboard_funcionario' %}" id="dashboard-f-link" class="nav-link d-flex align-items-center" 
-                        onclick="setActive(this)">
-                        <i class="bi bi-boxes me-2 fs-4"></i>
-                        <span>Painel de Controlo</span>
-                    </a>
-                </li>
-            {% endif %} 
-
-            {% if request.session.user_type == "Aluno" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'horarios_aluno' %}" id="horarios-a-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-calendar4-week me-2 fs-4"></i>
-                        <span>Horários</span>
-                    </a>
-                {% elif request.session.user_type == "Professor" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'horarios_professor' %}" id="horarios-p-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-calendar4-week me-2 fs-4"></i>
-                        <span>Horários</span>
-                    </a>
-                </li>
-            {% endif %} 
-
-            {% if request.session.user_type == "Aluno" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'professores_aluno' %}" id="professores-a-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-people-fill me-2 fs-4"></i>
-                        <span>Professores</span>
-                    </a>
-                {% elif request.session.user_type == "Funcionario" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'professores_funcionario' %}" id="professores-f-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-people-fill me-2 fs-4"></i>
-                        <span>Professores</span>
-                    </a> 
-                </li>
-            {% endif %} 
-
-            {% if request.session.user_type == "Aluno" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'avaliacoes_aluno' %}" id="avaliacoes-a-link" class="nav-link d-flex align-items-center" 
-                        onclick="setActive(this)">
-                        <i class="bi bi-journal-bookmark me-2 fs-4"></i>
-                        <span>Avaliações</span>
-                    </a>
-                {% elif request.session.user_type == "Professor" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'avaliacoes_professor' %}" id="avaliacoes-p-link" class="nav-link d-flex align-items-center" 
-                        onclick="setActive(this)">
-                        <i class="bi bi-journal-bookmark me-2 fs-4"></i>
-                        <span>Avaliações</span>
-                    </a>
-                {% elif request.session.user_type == "Funcionario" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'avaliacoes_funcionario' %}" id="avaliacoes-f-link" class="nav-link d-flex align-items-center" 
-                        onclick="setActive(this)">
-                        <i class="bi bi-journal-bookmark me-2 fs-4"></i>
-                        <span>Avaliações</span>
-                    </a>
-                </li>
-            {% endif %} 
-
-            {% if request.session.user_type == "Aluno" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'pagamentos_aluno' %}" id="pagamentos-a-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-credit-card me-2 fs-4"></i>
-                        <span>Propinas e Pagamentos</span>
-                    </a>
-                {% elif request.session.user_type == "Funcionario" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'pagamentos_funcionario' %}" id="pagamentos-f-link" class="nav-link d-flex align-items-center" 
-                        onclick="setActive(this)">
-                        <i class="bi bi-credit-card me-2 fs-4"></i>
-                        <span>Propinas e Pagamentos</span>
-                    </a>
-                </li>
+            <li class="nav-item mb-3">
+                <a href="{% url 'dashboard_funcionario' %}" id="dashboard-f-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-boxes me-2 fs-4"></i>
+                    <span>Painel de Controlo</span>
+                </a>
+            </li>
             {% endif %}
 
             {% if request.session.user_type == "Aluno" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'matricula_aluno' %}" id="matricula-a-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-mortarboard me-2 fs-4"></i>
-                        <span>Matrícula</span>
-                    </a>
+            <li class="nav-item mb-3">
+                <a href="{% url 'horarios_aluno' %}" id="horarios-a-link" class="nav-link d-flex align-items-center"
+                    onclick="setActive(this)">
+                    <i class="bi bi-calendar4-week me-2 fs-4"></i>
+                    <span>Horários</span>
+                </a>
+                {% elif request.session.user_type == "Professor" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'horarios_professor' %}" id="horarios-p-link" class="nav-link d-flex align-items-center"
+                    onclick="setActive(this)">
+                    <i class="bi bi-calendar4-week me-2 fs-4"></i>
+                    <span>Horários</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if request.session.user_type == "Aluno" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'professores_aluno' %}" id="professores-a-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-people-fill me-2 fs-4"></i>
+                    <span>Professores</span>
+                </a>
                 {% elif request.session.user_type == "Funcionario" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'matricula_funcionario' %}" id="matricula-f-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-mortarboard me-2 fs-4"></i>
-                        <span>Matrícula</span>
-                    </a>
-                </li>
-            {% endif %} 
-            
+            <li class="nav-item mb-3">
+                <a href="{% url 'professores_funcionario' %}" id="professores-f-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-people-fill me-2 fs-4"></i>
+                    <span>Professores</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if request.session.user_type == "Aluno" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'avaliacoes_aluno' %}" id="avaliacoes-a-link" class="nav-link d-flex align-items-center"
+                    onclick="setActive(this)">
+                    <i class="bi bi-journal-bookmark me-2 fs-4"></i>
+                    <span>Avaliações</span>
+                </a>
+                {% elif request.session.user_type == "Professor" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'avaliacoes_professor' %}" id="avaliacoes-p-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-journal-bookmark me-2 fs-4"></i>
+                    <span>Avaliações</span>
+                </a>
+                {% elif request.session.user_type == "Funcionario" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'avaliacoes_funcionario' %}" id="avaliacoes-f-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-journal-bookmark me-2 fs-4"></i>
+                    <span>Avaliações</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if request.session.user_type == "Aluno" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'pagamentos_aluno' %}" id="pagamentos-a-link" class="nav-link d-flex align-items-center"
+                    onclick="setActive(this)">
+                    <i class="bi bi-credit-card me-2 fs-4"></i>
+                    <span>Propinas e Pagamentos</span>
+                </a>
+                {% elif request.session.user_type == "Funcionario" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'pagamentos_funcionario' %}" id="pagamentos-f-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-credit-card me-2 fs-4"></i>
+                    <span>Propinas e Pagamentos</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% if request.session.user_type == "Aluno" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'matricula_aluno' %}" id="matricula-a-link" class="nav-link d-flex align-items-center"
+                    onclick="setActive(this)">
+                    <i class="bi bi-mortarboard me-2 fs-4"></i>
+                    <span>Matrícula</span>
+                </a>
+                {% elif request.session.user_type == "Funcionario" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'matricula_funcionario' %}" id="matricula-f-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-mortarboard me-2 fs-4"></i>
+                    <span>Matrícula</span>
+                </a>
+            </li>
+            {% endif %}
+
             {% if request.session.user_type == "Professor" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'unidades_curriculares_professor' %}" id="unidades-curriculares-p-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-briefcase me-2 fs-4"></i>
-                        <span>Unidades Curriculares</span>
-                    </a>
+            <li class="nav-item mb-3">
+                <a href="{% url 'unidades_curriculares_professor' %}" id="unidades-curriculares-p-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-briefcase me-2 fs-4"></i>
+                    <span>Unidades Curriculares</span>
+                </a>
                 {% elif request.session.user_type == "Funcionario" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'unidades_curriculares_funcionario' %}" id="unidades-curriculares-f-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-briefcase me-2 fs-4"></i>
-                        <span>Unidades Curriculares</span>
-                    </a>
-                </li>
+            <li class="nav-item mb-3">
+                <a href="{% url 'unidades_curriculares_funcionario' %}" id="unidades-curriculares-f-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-briefcase me-2 fs-4"></i>
+                    <span>Unidades Curriculares</span>
+                </a>
+            </li>
             {% endif %}
 
             {% if request.session.user_type == "Aluno" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'gestao_escola_aluno' %}" id="gestao-escola-a-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-gear-fill me-2 fs-4"></i>
-                        <span>Gestão Escolar</span>
-                    </a>
+            <li class="nav-item mb-3">
+                <a href="{% url 'gestao_escola_aluno' %}" id="gestao-escola-a-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-gear-fill me-2 fs-4"></i>
+                    <span>Gestão Escolar</span>
+                </a>
                 {% elif request.session.user_type == "Professor" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'gestao_escola_professor' %}" id="gestao-escola-p-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-gear-fill me-2 fs-4"></i>
-                        <span>Gestão Escolar</span> 
-                    </a>
+            <li class="nav-item mb-3">
+                <a href="{% url 'gestao_escola_professor' %}" id="gestao-escola-p-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-gear-fill me-2 fs-4"></i>
+                    <span>Gestão Escolar</span>
+                </a>
                 {% elif request.session.user_type == "Funcionario" %}
-                <li class="nav-item mb-3">
-                    <a href="{% url 'gestao_escola_funcionario' %}" id="gestao-escola-f-link" class="nav-link d-flex align-items-center"
-                        onclick="setActive(this)">
-                        <i class="bi bi-gear-fill me-2 fs-4"></i>
-                        <span>Gestão Escolar</span>
-                    </a>
-                </li>
-            {% endif %} 
+            <li class="nav-item mb-3">
+                <a href="{% url 'gestao_escola_funcionario' %}" id="gestao-escola-f-link"
+                    class="nav-link d-flex align-items-center" onclick="setActive(this)">
+                    <i class="bi bi-gear-fill me-2 fs-4"></i>
+                    <span>Gestão Escolar</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
     </div>
 
@@ -239,24 +269,24 @@
                 '/professor/dashboard/': 'dashboard-p-link',
                 '/funcionario/dashboard/': 'dashboard-f-link',
 
-                '/aluno/horarios/': 'horarios-a-link',               
+                '/aluno/horarios/': 'horarios-a-link',
                 '/professor/horarios/': 'horarios-p-link',
 
                 '/aluno/professores/': 'professores-a-link',
                 '/funcionario/professores/': 'professores-f-link',
 
                 '/aluno/avaliacoes/': 'avaliacoes-a-link',
-                '/professor/avaliacoes/': 'avaliacoes-p-link',                
+                '/professor/avaliacoes/': 'avaliacoes-p-link',
                 '/funcionario/avaliacoes/': 'avaliacoes-f-link',
 
-                '/aluno/pagamentos/': 'pagamentos-a-link',                
+                '/aluno/pagamentos/': 'pagamentos-a-link',
                 '/funcionario/pagamentos/': 'pagamentos-f-link',
 
                 '/aluno/matricula/': 'matricula-a-link',
                 '/funcionario/matricula/': 'matricula-f-link',
 
-                '/professor/unidades_curriculares/':'unidades-curriculares-p-link',
-                '/funcionario/unidades_curriculares/':'unidades-curriculares-f-link', 
+                '/professor/unidades_curriculares/': 'unidades-curriculares-p-link',
+                '/funcionario/unidades_curriculares/': 'unidades-curriculares-f-link',
 
                 '/aluno/gestao_escola/': 'gestao-escola-a-link',
                 '/professor/gestao_escola/': 'gestao-escola-p-link',
