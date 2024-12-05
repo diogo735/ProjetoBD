@@ -105,6 +105,16 @@
                 </li>
             {% endif %} 
 
+
+            {% if request.session.user_type == "Funcionario" %}
+            <li class="nav-item mb-3">
+                <a href="{% url 'alunos_funcionario' %}" id="alunos-f-link" class="nav-link d-flex align-items-center"
+                        onclick="setActive(this)">
+                        <i class="bi bi-backpack4 me-2 fs-4"></i>
+                        <span>Alunos</span>
+                </a>
+            {% endif %}
+
             {% if request.session.user_type == "Aluno" %}
                 <li class="nav-item mb-3">
                     <a href="{% url 'avaliacoes_aluno' %}" id="avaliacoes-a-link" class="nav-link d-flex align-items-center" 
@@ -179,6 +189,7 @@
                     </a>
                 </li>
             {% endif %}
+
 
             {% if request.session.user_type == "Aluno" %}
                 <li class="nav-item mb-3">
@@ -257,6 +268,8 @@
 
                 '/professor/unidades_curriculares/':'unidades-curriculares-p-link',
                 '/funcionario/unidades_curriculares/':'unidades-curriculares-f-link', 
+
+                '/funcionarios/alunos/':'alunos-f-link', 
 
                 '/aluno/gestao_escola/': 'gestao-escola-a-link',
                 '/professor/gestao_escola/': 'gestao-escola-p-link',
