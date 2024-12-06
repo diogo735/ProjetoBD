@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render, redirect
 from django.db import connection
 from django.contrib import messages
@@ -5,6 +6,9 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
 import psycopg2
 from .utils import aluno_required, professor_required, funcionario_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 def home(request):
     try:
@@ -107,6 +111,138 @@ def loading_page(request):
 #     user_type = request.session.get('user_type', None)
 #     return render(request, 'pagina_principal/base_main.html', {'user_type': user_type})
 
+#@funcionario_required
+#def unidades_curriculares_funcionario(request):
+ #   return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
+@funcionario_required
+def unidades_curriculares_funcionario(request):
+    turnos = []
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM listar_turnos_ativos()")
+        columns = [col[0] for col in cursor.description]
+        turnos = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'unidades_curriculares_funcionario',
+        'turnos': turnos,
+    })
+
+
+@funcionario_required
+def obter_horarios_turno(request, id_turno):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM listar_horarios_por_turno(%s)", [id_turno])
+        columns = [col[0] for col in cursor.description]
+        horarios = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    return JsonResponse(horarios, safe=False)
+
+@funcionario_required
+def obter_cursos(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM listar_cursos()")  # Supondo que `listar_cursos` é a função do banco
+        cursos = cursor.fetchall()
+        colunas = [desc[0] for desc in cursor.description]  # Pega os nomes das colunas
+    cursos_formatados = [dict(zip(colunas, curso)) for curso in cursos]  # Formata os dados
+    return JsonResponse(cursos_formatados, safe=False)  # Retorna como JSON
+
+@csrf_exempt
+def criar_turno(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+    """
+    CALL p_turno_insert(
+        %s::INTEGER,
+        %s::VARCHAR,
+        %s::SMALLINT,
+        %s::VARCHAR,
+        %s::VARCHAR,
+        %s::INTEGER,
+        %s::INTEGER
+    )
+    """,
+    [
+        data['id_curso'],
+        data['nome_turno'],
+        0,  # Estado (fixo por padrão)
+        data['ano_turno'],
+        data['semestre_turno'],
+        data['vagas_turno'],
+        data['vagas_turno']
+    ]
+)
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            print('Erro ao criar turno:', e)  # Mostra o erro no terminal do servidor
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Método inválido'})
+
+
+
+def buscar_turnos(request):
+    # Obtém os parâmetros da requisição
+    curso_id = request.GET.get('curso')
+    ano = request.GET.get('ano')
+    semestre = request.GET.get('semestre')
+
+    # Log dos parâmetros recebidos
+    print(f"Parâmetros recebidos: curso_id={curso_id}, ano={ano}, semestre={semestre}")
+
+    # Verifica se todos os parâmetros foram fornecidos
+    if not (curso_id and ano and semestre):
+        print("Parâmetros incompletos")
+        return JsonResponse({"error": "Parâmetros incompletos"}, status=400)
+
+    # Consulta SQL usando a função do banco de dados
+    query = """
+        SELECT * FROM obter_turnos_filtrados(%s, %s, %s)
+    """
+    
+    try:
+        with connection.cursor() as cursor:
+            # Executa a consulta com os parâmetros fornecidos
+            print("Executando a consulta SQL...")
+            cursor.execute(query, [curso_id.strip(), ano.strip(), semestre.strip()])
+            rows = cursor.fetchall()
+
+            # Log dos resultados da consulta
+            print(f"Resultados da consulta: {rows}")
+
+        # Formata os resultados para enviar como JSON
+        dados = []
+        for row in rows:
+             dados.append({
+                "id_turno": row[0],
+                "turno_nome": row[1],
+                "vagas_disponiveis": row[2],
+                "vagas_totais": row[3],  # Inclua a coluna vagas_totais aqui
+                "ano": row[4],
+                "semestre": row[5],
+                 "id_curso": row[6],
+                 "curso_nome": row[7],
+                 "estado": row[8]
+           })
+
+
+        # Retorna os dados como JSON
+        print(f"Dados enviados: {dados}")
+        return JsonResponse(dados, safe=False)
+
+    except Exception as e:
+        print(f"Erro ao executar a consulta: {str(e)}")
+        return JsonResponse({"error": str(e)}, status=500)
+
+
+
+
+
+
+
+
+
 @aluno_required
 def dashboard_aluno(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_aluno'})
@@ -171,9 +307,7 @@ def gestao_escola_aluno(request):
 def unidades_curriculares_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_professor'})
 
-@funcionario_required
-def unidades_curriculares_funcionario(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
+
 
 @professor_required
 def gestao_escola_professor(request):

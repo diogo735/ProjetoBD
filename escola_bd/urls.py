@@ -11,10 +11,15 @@ urlpatterns = [
     path('loading/', views.loading_page, name='loading_page'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
     #opções da nav bar
-    
+ 
     path('aluno/dashboard/', views.dashboard_aluno, name='dashboard_aluno'),
     path('professor/dashboard/', views.dashboard_professor, name='dashboard_professor'),
     path('funcionario/dashboard/', views.dashboard_funcionario, name='dashboard_funcionario'),
+    path('obter_cursos/', views.obter_cursos, name='obter_cursos'),
+    path('criar_turno/', views.criar_turno, name='criar_turno'),
+    path('buscar_dados/', views.buscar_turnos, name='buscar_turnos'),
+
+
 
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
@@ -34,6 +39,7 @@ urlpatterns = [
 
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
+    path('funcionario/obter_horarios/<int:id_turno>/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
     path('aluno/gestao_escola/', views.gestao_escola_aluno, name='gestao_escola_aluno'),
     path('professor/gestao_escola/', views.gestao_escola_professor, name='gestao_escola_professor'),
