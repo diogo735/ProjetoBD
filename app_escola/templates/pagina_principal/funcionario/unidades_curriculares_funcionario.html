@@ -55,10 +55,11 @@
                                     <td>{{ turno.vagas_disponiveis }}</td>
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm"
-                                            onclick="carregarHorarios({{ turno.id_turno }})" data-bs-toggle="modal"
-                                            data-bs-target="#horarioModal">
+                                            data-id-turno="{{ turno.id_turno }}" data-bs-toggle="modal"
+                                            data-bs-target="#horarioModal" onclick="carregarHorariosComData(this)">
                                             Ver Horário
                                         </button>
+
                                     </td>
                                 </tr>
                                 {% empty %}
@@ -110,7 +111,8 @@
                             </select>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="button" class="btn btn-outline-primary" onclick="pesquisarDados()"> <i class="bi bi-search"></i> Pesquisar Turno</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="pesquisarDados()"> <i
+                                    class="bi bi-search"></i> Pesquisar Turno</button>
                         </div>
                     </form>
 
@@ -129,7 +131,7 @@
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
-                                <tbody id="resultadosDisponiveis" >
+                                <tbody id="resultadosDisponiveis">
                                     <!-- Resultados dos turnos irão aparecer aqui -->
                                 </tbody>
                             </table>
@@ -182,11 +184,13 @@
                 <form id="formCriarTurno" onsubmit="event.preventDefault(); enviarFormularioCriarTurno();">
                     <div class="mb-3">
                         <label for="nomeTurno" class="form-label">Nome do Turno</label>
-                        <input type="text" class="form-control" id="nomeTurno" placeholder="Digite o nome do turno" required>
+                        <input type="text" class="form-control" id="nomeTurno" placeholder="Digite o nome do turno"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="vagasTurno" class="form-label">Número de Vagas</label>
-                        <input type="number" class="form-control" id="vagasTurno" placeholder="Digite o número de vagas" required>
+                        <input type="number" class="form-control" id="vagasTurno" placeholder="Digite o número de vagas"
+                            required>
                     </div>
                     <div class="mb-3">
                         <label for="cursoTurno" class="form-label">Curso</label>
@@ -221,41 +225,41 @@
 </div>
 
 <script>
-   // Função para carregar os cursos no seletor de pesquisa de turnos
-function carregarCursosPesquisa() {
-    fetch('/obter_cursos/')
-        .then(response => response.json())
-        .then(data => {
-            const selectCursoPesquisa = document.getElementById('cursoPesquisa');
-            selectCursoPesquisa.innerHTML = '<option selected disabled>Escolha o curso...</option>'; // Limpa opções antigas
-            data.forEach(curso => {
-                const option = document.createElement('option');
-                option.value = curso.id_curso;
-                option.textContent = curso.nome_curso;
-                selectCursoPesquisa.appendChild(option);
-            });
+    // Função para carregar os cursos no seletor de pesquisa de turnos
+    function carregarCursosPesquisa() {
+        fetch('/obter_cursos/')
+            .then(response => response.json())
+            .then(data => {
+                const selectCursoPesquisa = document.getElementById('cursoPesquisa');
+                selectCursoPesquisa.innerHTML = '<option selected disabled>Escolha o curso...</option>'; // Limpa opções antigas
+                data.forEach(curso => {
+                    const option = document.createElement('option');
+                    option.value = curso.id_curso;
+                    option.textContent = curso.nome_curso;
+                    selectCursoPesquisa.appendChild(option);
+                });
 
-            // Também carrega os cursos no modal de criar turno
-            carregarCursosNoModal(data);
-        })
-        .catch(error => console.error('Erro ao carregar cursos para pesquisa:', error));
-}
+                // Também carrega os cursos no modal de criar turno
+                carregarCursosNoModal(data);
+            })
+            .catch(error => console.error('Erro ao carregar cursos para pesquisa:', error));
+    }
 
-function carregarCursosNoModal(data) {
-    const selectCursoTurno = document.getElementById('cursoTurno');
-    selectCursoTurno.innerHTML = '<option selected disabled>Escolha o curso...</option>'; // Limpa opções antigas
-    data.forEach(curso => {
-        const option = document.createElement('option');
-        option.value = curso.id_curso;
-        option.textContent = curso.nome_curso;
-        selectCursoTurno.appendChild(option);
+    function carregarCursosNoModal(data) {
+        const selectCursoTurno = document.getElementById('cursoTurno');
+        selectCursoTurno.innerHTML = '<option selected disabled>Escolha o curso...</option>'; // Limpa opções antigas
+        data.forEach(curso => {
+            const option = document.createElement('option');
+            option.value = curso.id_curso;
+            option.textContent = curso.nome_curso;
+            selectCursoTurno.appendChild(option);
+        });
+    }
+
+    // Chama a função ao carregar a página
+    document.addEventListener('DOMContentLoaded', function () {
+        carregarCursosPesquisa(); // Carrega cursos para pesquisa ao carregar a página
     });
-}
-
-// Chama a função ao carregar a página
-document.addEventListener('DOMContentLoaded', function () {
-    carregarCursosPesquisa(); // Carrega cursos para pesquisa ao carregar a página
-});
 
     function pesquisarDados() {
         console.log('Pesquisando turnos...');
@@ -320,6 +324,10 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => console.error('Erro ao buscar dados:', error));
     }
+    function carregarHorariosComData(button) {
+    const idTurno = button.getAttribute('data-id-turno');
+    carregarHorarios(idTurno);
+}
 
     // Função para carregar horários ao clicar em "Ver Horário"
     function carregarHorarios(idTurno) {
@@ -394,73 +402,73 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function enviarFormularioCriarTurno() {
-    const selectCurso = document.getElementById('cursoTurno');
-    const cursoSelecionado = selectCurso.options[selectCurso.selectedIndex].text;
+        const selectCurso = document.getElementById('cursoTurno');
+        const cursoSelecionado = selectCurso.options[selectCurso.selectedIndex].text;
 
-    const selectAno = document.getElementById('anoTurno');
-    const anoSelecionado = selectAno.options[selectAno.selectedIndex].text;
+        const selectAno = document.getElementById('anoTurno');
+        const anoSelecionado = selectAno.options[selectAno.selectedIndex].text;
 
-    const selectSemestre = document.getElementById('semestreTurno');
-    const semestreSelecionado = selectSemestre.options[selectSemestre.selectedIndex].text;
+        const selectSemestre = document.getElementById('semestreTurno');
+        const semestreSelecionado = selectSemestre.options[selectSemestre.selectedIndex].text;
 
-    // Criação do objeto com dados para enviar
-    const formData = {
-        nome_turno: document.getElementById('nomeTurno').value,
-        vagas_turno: document.getElementById('vagasTurno').value,
-        id_curso: selectCurso.value,
-        ano_turno: anoSelecionado,
-        semestre_turno: semestreSelecionado
-    };
+        // Criação do objeto com dados para enviar
+        const formData = {
+            nome_turno: document.getElementById('nomeTurno').value,
+            vagas_turno: document.getElementById('vagasTurno').value,
+            id_curso: selectCurso.value,
+            ano_turno: anoSelecionado,
+            semestre_turno: semestreSelecionado
+        };
 
-    console.log('Dados enviados:', formData);
+        console.log('Dados enviados:', formData);
 
-    fetch('/criar_turno/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
-        },
-        body: JSON.stringify(formData)
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Substituindo o conteúdo do modal com uma mensagem de sucesso
-                const modalBody = document.querySelector('#criarTurnoModal .modal-body');
-                modalBody.innerHTML = `
+        fetch('/criar_turno/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Substituindo o conteúdo do modal com uma mensagem de sucesso
+                    const modalBody = document.querySelector('#criarTurnoModal .modal-body');
+                    modalBody.innerHTML = `
                     <div class="text-center">
                         <h4 class="text-success">Turno criado com sucesso!</h4>
                         <img src="{% static 'images/certo.png' %}" alt="Sucesso" style="width: 100px; margin-top: 20px;">
                     </div>
                 `;
-                // Mudar a cor do fundo do modal para verde para indicar sucesso
-                document.querySelector('#criarTurnoModal .modal-content').style.backgroundColor = '#d4edda';
-                // Remover o botão "Guardar"
-                const btnSalvar = document.querySelector('#criarTurnoModal .modal-footer .btn-primary');
-                if (btnSalvar) {
-                    btnSalvar.style.display = 'none'; // Esconde o botão "Guardar" da visualização
+                    // Mudar a cor do fundo do modal para verde para indicar sucesso
+                    document.querySelector('#criarTurnoModal .modal-content').style.backgroundColor = '#d4edda';
+                    // Remover o botão "Guardar"
+                    const btnSalvar = document.querySelector('#criarTurnoModal .modal-footer .btn-primary');
+                    if (btnSalvar) {
+                        btnSalvar.style.display = 'none'; // Esconde o botão "Guardar" da visualização
+                    }
+                } else {
+                    alert('Erro ao criar turno: ' + data.error);
                 }
-            } else {
-                alert('Erro ao criar turno: ' + data.error);
-            }
-        })
-        .catch(error => console.error('Erro ao criar turno:', error));
-}
+            })
+            .catch(error => console.error('Erro ao criar turno:', error));
+    }
 
-// Carregar cursos toda vez que o modal de criar turno for aberto
-document.getElementById('criarTurnoModal').addEventListener('show.bs.modal', function () {
-    fetch('/obter_cursos/')
-        .then(response => response.json())
-        .then(data => {
-            carregarCursosNoModal(data); // Recarrega os cursos no modal
-        })
-        .catch(error => console.error('Erro ao carregar cursos para o modal:', error));
-});
+    // Carregar cursos toda vez que o modal de criar turno for aberto
+    document.getElementById('criarTurnoModal').addEventListener('show.bs.modal', function () {
+        fetch('/obter_cursos/')
+            .then(response => response.json())
+            .then(data => {
+                carregarCursosNoModal(data); // Recarrega os cursos no modal
+            })
+            .catch(error => console.error('Erro ao carregar cursos para o modal:', error));
+    });
 
-// Resetar o modal quando ele for fechado
-document.getElementById('criarTurnoModal').addEventListener('hidden.bs.modal', function () {
-    const modalBody = document.querySelector('#criarTurnoModal .modal-body');
-    modalBody.innerHTML = `
+    // Resetar o modal quando ele for fechado
+    document.getElementById('criarTurnoModal').addEventListener('hidden.bs.modal', function () {
+        const modalBody = document.querySelector('#criarTurnoModal .modal-body');
+        modalBody.innerHTML = `
         <form id="formCriarTurno" onsubmit="event.preventDefault(); enviarFormularioCriarTurno();">
             <div class="mb-3">
                 <label for="nomeTurno" class="form-label">Nome do Turno</label>
@@ -498,23 +506,23 @@ document.getElementById('criarTurnoModal').addEventListener('hidden.bs.modal', f
             </div>
         </form>
     `;
-    document.querySelector('#criarTurnoModal .modal-content').style.backgroundColor = '';
-});
+        document.querySelector('#criarTurnoModal .modal-content').style.backgroundColor = '';
+    });
 
 
-// Função para obter o CSRF token
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    // Função para obter o CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 </script>
