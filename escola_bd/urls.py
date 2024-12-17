@@ -11,11 +11,26 @@ urlpatterns = [
     path('loading/', views.loading_page, name='loading_page'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
     #opções da nav bar
-    
+ 
     path('aluno/dashboard/', views.dashboard_aluno, name='dashboard_aluno'),
     path('professor/dashboard/', views.dashboard_professor, name='dashboard_professor'),
     path('funcionario/dashboard/', views.dashboard_funcionario, name='dashboard_funcionario'),
+    path('obter_cursos/', views.obter_cursos, name='obter_cursos'),
+    path('criar_turno/', views.criar_turno, name='criar_turno'),
+    path('buscar_dados/', views.buscar_turnos, name='buscar_turnos'),
+    path('atualizar_turno/', views.atualizar_turno_view, name='atualizar_turno'),
+    path('obter_detalhes_turno/<int:turno_id>/', views.obter_detalhes_turno, name='obter_detalhes_turno'),
+    path('verificar_eliminar_turno/', views.verificar_eliminar_turno, name='verificar_eliminar_turno'),
+    path('eliminar_turno/', views.eliminar_turno, name='eliminar_turno'),
+    path('pesquisar_horarios/', views.pesquisar_horarios, name='pesquisar_horarios'),
+    path('obter_horarios_e_ucs/<int:turno_id>/<int:curso_id>/<str:ano>/<str:semestre>/', views.obter_horarios_e_ucs,name='obter_horarios_e_ucs'),
+     path('obter_id_curso/<str:nome_curso>/', views.obter_id_curso, name='obter_id_curso'),
 
+
+
+
+
+     
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
 
@@ -34,6 +49,7 @@ urlpatterns = [
 
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
+    path('funcionario/obter_horarios/<int:id_turno>/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
     path('funcionarios/alunos/', views.alunos_funcionario, name='alunos_funcionario'),
     
