@@ -1,52 +1,37 @@
 <div class="container py-4">
-    <!-- Resumo Académico -->
+    <!-- Resumo Administrativo -->
     <div class="card mb-4 shadow">
         <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Resumo Académico - Funcionario</h2>
+            <h2 class="h5 mb-0">Resumo Administrativo</h2>
         </div>
         <div class="card-body">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                    <strong>Curso Inscrito:</strong> Engenharia Informática
+                    <strong>Cursos abertos:</strong> 10
                 </li>
                 <li class="list-group-item">
-                    <strong>Unidades Curriculares Inscritas:</strong> 
-                    Programação, Redes de Computadores, Sistemas Operativos
+                    <strong>Turnos ativos:</strong> 25
                 </li>
                 <li class="list-group-item">
-                    <strong>Propinas Pendentes:</strong> Nenhuma
+                    <strong>Alunos matriculados:</strong> 230
                 </li>
             </ul>
         </div>
     </div>
 
-    <!-- Avaliações Recentes -->
+    <!-- Tarefas Recentes -->
     <div class="card mb-4 shadow">
         <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Avaliações Lançadas Recentemente</h2>
+            <h2 class="h5 mb-0">Tarefas Recentes</h2>
         </div>
         <div class="card-body">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Análise Matemática - <strong>Nota:</strong> 18</li>
-                <li class="list-group-item">Programação - <strong>Nota:</strong> 16</li>
+                <li class="list-group-item">Aluno <strong>João Silva</strong> matriculado no curso de Engenharia Informática</li>
+                <li class="list-group-item">Propina de <strong>50€</strong> paga por Pedro Santos</li>
             </ul>
             <small class="text-muted d-block mt-2">
-                (Apenas as avaliações lançadas nos últimos 7 dias aparecem aqui.)
+                (As informações mais recentes estão listadas acima.)
             </small>
-        </div>
-    </div>
-
-    <!-- Ajuda e Suporte -->
-    <div class="card mb-4 shadow">
-        <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Ajuda e Suporte</h2>
-        </div>
-        <div class="card-body">
-            <p>
-                Caso tenha alguma dúvida, pode contactar a secretaria através do seguinte e-mail:
-                <a href="mailto:suporte@universidademachado.com" class="text-decoration-none">suporte@universidademachado.com</a>
-                ou visitar o serviço de apoio ao aluno no prédio principal.
-            </p>
         </div>
     </div>
 
@@ -57,17 +42,17 @@
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap gap-3">
-                <a href="/avaliacoes/" class="btn btn-outline-primary flex-fill text-start">
-                    <i class="bi bi-journal-text me-2"></i> Consultar Avaliações
+                <a href="/funcionarios/alunos/" class="btn btn-outline-primary flex-fill text-start">
+                    <i class="bi bi-people-fill me-2"></i> Gerir Alunos
                 </a>
-                <a href="/horarios/" class="btn btn-outline-secondary flex-fill text-start">
-                    <i class="bi bi-calendar-event me-2"></i> Ver Horários
+                <a href="/funcionario/pagamentos/" class="btn btn-outline-secondary flex-fill text-start">
+                    <i class="bi bi-credit-card me-2"></i> Consultar Propinas e Pagamentos
                 </a>
-                <a href="/pagamentos/" class="btn btn-outline-success flex-fill text-start">
-                    <i class="bi bi-credit-card me-2"></i> Pagamentos
+                <a href="/funcionario/unidades_curriculares/" class="btn btn-outline-success flex-fill text-start">
+                    <i class="bi bi-calendar-event me-2"></i> Gerir Unidades Curriculares
                 </a>
-                <a href="/professores/" class="btn btn-outline-info flex-fill text-start">
-                    <i class="bi bi-people-fill me-2"></i> Contacto Professores
+                <a href="/funcionario/matricula/" class="btn btn-outline-info flex-fill text-start">
+                    <i class="bi bi-mortarboard me-2"></i> Gerir Matrículas
                 </a>
             </div>
         </div>

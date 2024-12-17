@@ -51,6 +51,8 @@ urlpatterns = [
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
     path('funcionario/obter_horarios/<int:id_turno>/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
+    path('funcionarios/alunos/', views.alunos_funcionario, name='alunos_funcionario'),
+    
     path('aluno/gestao_escola/', views.gestao_escola_aluno, name='gestao_escola_aluno'),
     path('professor/gestao_escola/', views.gestao_escola_professor, name='gestao_escola_professor'),
     path('funcionario/gestao_escola/', views.gestao_escola_funcionario, name='gestao_escola_funcionario'),

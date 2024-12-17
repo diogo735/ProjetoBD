@@ -472,6 +472,10 @@ def professores_aluno(request):
 def professores_funcionario(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'professores_funcionario'})
 
+@funcionario_required
+def alunos_funcionario(request):
+    return render(request, 'pagina_principal/main.html', {'default_content': 'alunos_funcionario'})
+
 @aluno_required
 def avaliacoes_aluno(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes_aluno'})

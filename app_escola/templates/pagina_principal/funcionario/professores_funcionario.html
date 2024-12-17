@@ -1,44 +1,239 @@
 <div class="container py-4">
-    <!-- Lista de Professores -->
-    <div class="card shadow">
-        <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Lista de Professores</h2>
+    <!-- Tabs para Detalhes e Criar Novos -->
+    <ul class="nav nav-tabs" id="professoresTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="detalhes-tab" data-bs-toggle="tab" data-bs-target="#detalhes" type="button" role="tab" aria-controls="detalhes" aria-selected="true">
+                Detalhes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="criar-novos-tab" data-bs-toggle="tab" data-bs-target="#criar-novos" type="button" role="tab" aria-controls="criar-novos" aria-selected="false">
+                Criar novos
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cursos-tab" data-bs-toggle="tab" data-bs-target="#cursos" type="button" role="tab" aria-controls="cursos" aria-selected="false">
+                Cursos
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content mt-4" id="professoresTabContent">
+        <!-- Tab Detalhes -->
+        <div class="tab-pane fade show active" id="detalhes" role="tabpanel" aria-labelledby="detalhes-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Lista dos Professores</h2>
+                </div>
+                <div class="card-body">
+                    <p>Consulte abaixo a lista de professores por curso, edite ou remova informações, e realize a pesquisa.</p>
+
+                     <!-- Nome do Professor -->
+                    <div class="mb-3">
+                        <label for="nome-professor" class="form-label">Nome</label>
+                        <input type="text" id="nome-professor" class="form-control" placeholder="Digite o nome do professor">
+                    </div>
+
+                                            
+                    <!-- Filtros de Pesquisa -->
+
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label for="pesquisa-curso" class="form-label">Pesquisar por Curso</label>
+                            <select id="pesquisa-curso" class="form-select">
+                                <option value="" selected>Todos os Cursos</option>
+                                <option value="Engenharia Informática">Engenharia Informática</option>
+                                <option value="Gestão">Gestão</option>
+                                <option value="Economia">Economia</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="pesquisa-status" class="form-label">Pesquisar por Status</label>
+                            <select id="pesquisa-status" class="form-select">
+                                <option value="" selected>Todos os Status</option>
+                                <option value="Ativo">Ativo</option>
+                                <option value="Inativo">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Professores por Curso -->
+                    <div id="professores-por-curso">
+                        <!-- Curso: Engenharia Informática -->
+                        <h3 class="h6 mb-3">Curso: Engenharia Informática</h3>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Unidade Curricular</th>
+                                        <th>Email</th>
+                                        <th>Telefone</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>João Silva</td>
+                                        <td>Programação</td>
+                                        <td><a href="mailto:joao.silva@universidade.com">joao.silva@universidade.com</a></td>
+                                        <td>(+351) 912 345 678</td>
+                                        <td><span class="badge bg-success">Ativo</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary">Editar</button>
+                                            <button class="btn btn-sm btn-danger">Remover</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Maria Cardoso</td>
+                                        <td>Matemátiva Discreta</td>
+                                        <td><a href="mailto:joao.silva@universidade.com">matematica.discreta@universidade.com</a></td>
+                                        <td>(+351) 912 345 678</td>
+                                        <td><span class="badge bg-success">Ativo</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary">Editar</button>
+                                            <button class="btn btn-sm btn-danger">Remover</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <p>Consulte abaixo a lista de professores responsáveis pelas Unidades Curriculares e suas informações de contacto.</p>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Unidade Curricular</th>
-                            <th>Email</th>
-                            <th>Telefone</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>João Silva</td>
-                            <td>Programação</td>
-                            <td><a href="mailto:joao.silva@universidade.com">joao.silva@universidade.com</a></td>
-                            <td>(+351) 912 345 678</td>
-                        </tr>
-                        <tr>
-                            <td>Ana Pereira</td>
-                            <td>Redes de Computadores</td>
-                            <td><a href="mailto:ana.pereira@universidade.com">ana.pereira@universidade.com</a></td>
-                            <td>(+351) 913 456 789</td>
-                        </tr>
-                        <tr>
-                            <td>Carlos Mendes</td>
-                            <td>Matemática Discreta</td>
-                            <td><a href="mailto:carlos.mendes@universidade.com">carlos.mendes@universidade.com</a></td>
-                            <td>(+351) 914 567 890</td>
-                        </tr>
-                        <!-- Adicione mais professores conforme necessário -->
-                    </tbody>
-                </table>
+
+        <!-- Tab Criar Novos -->
+        <div class="tab-pane fade" id="criar-novos" role="tabpanel" aria-labelledby="criar-novos-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Criar novos Professores</h2>
+                </div>
+                <div class="card-body">
+                    <p>Preencha o formulário abaixo para adicionar novos professores, associando-os a cursos e Unidades Curriculares específicas.</p>
+                    
+                    <form>
+                        <!-- Nome do Professor -->
+                        <div class="mb-3">
+                            <label for="nome-professor" class="form-label">Nome</label>
+                            <input type="text" id="nome-professor" class="form-control" placeholder="Digite o nome do professor">
+                        </div>
+
+                        <!-- Data de Nascimento -->
+                        <div class="mb-3">
+                            <label for="data-nascimento" class="form-label">Data de Nascimento</label>
+                            <input type="date" id="data-nascimento" class="form-control">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="mb-3">
+                            <label for="email-professor" class="form-label">Email</label>
+                            <input type="email" id="email-professor" class="form-control" placeholder="Digite o email do professor">
+                        </div>
+                        
+                        <!-- Password -->
+                        <div class="mb-3">
+                            <label for="password-professor" class="form-label">Password</label>
+                            <input type="password" id="password-professor" class="form-control" placeholder="Digite uma senha para o professor">
+                        </div>
+
+                        <!-- Telefone -->
+                        <div class="mb-3">
+                            <label for="telefone-professor" class="form-label">Telefone</label>
+                            <input type="tel" id="telefone-professor" class="form-control" placeholder="Digite o telefone do professor">
+                        </div>
+
+                        <!-- Localidade -->
+                        <div class="mb-3">
+                            <label for="localidade-professor" class="form-label">Localidade</label>
+                            <input type="text" id="localidade-professor" class="form-control" placeholder="Digite a localidade do professor">
+                        </div>
+                        <!-- Botão Criar -->
+                        <button type="submit" class="btn btn-primary">Criar Professor</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Cursos -->
+        <div class="tab-pane fade" id="cursos" role="tabpanel" aria-labelledby="cursos-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Selecionar Cursos e Unidades Curriculares</h2>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <!-- Cursos -->
+                        <div class="mb-3">
+                            <label for="cursos-professor" class="form-label">Cursos</label>
+                            <select id="cursos-professor" class="form-select" multiple>
+                                <option value="1">Engenharia Informática</option>
+                                <option value="2">Gestão</option>
+                                <option value="3">Economia</option>
+                            </select>
+                        </div>
+
+                        <!-- Unidades Curriculares -->
+                        <div id="ucs-container">
+                            <p class="text-muted">Selecione um curso acima para ver as Unidades Curriculares associadas.</p>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Salvar Associações</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const unidadesCurriculares = {
+            1: ["Programação", "Redes de Computadores", "Sistemas Operativos"],
+            2: ["Marketing", "Gestão Financeira", "Recursos Humanos"],
+            3: ["Microeconomia", "Macroeconomia", "Teoria dos Jogos"]
+        };
+
+        const cursosSelect = document.getElementById("cursos-professor");
+        const ucsContainer = document.getElementById("ucs-container");
+
+        cursosSelect.addEventListener("change", function () {
+            const selectedCourses = Array.from(cursosSelect.selectedOptions).map(option => option.value);
+            ucsContainer.innerHTML = "";
+
+            selectedCourses.forEach(courseId => {
+                if (unidadesCurriculares[courseId]) {
+                    unidadesCurriculares[courseId].forEach(uc => {
+                        const checkbox = document.createElement("input");
+                        checkbox.type = "checkbox";
+                        checkbox.value = uc;
+                        checkbox.id = `uc-${uc}`;
+                        checkbox.className = "form-check-input";
+
+                        const label = document.createElement("label");
+                        label.htmlFor = `uc-${uc}`;
+                        label.className = "form-check-label ms-2";
+                        label.innerText = uc;
+
+                        const div = document.createElement("div");
+                        div.className = "form-check mb-2";
+                        div.appendChild(checkbox);
+                        div.appendChild(label);
+
+                        ucsContainer.appendChild(div);
+                    });
+                }
+            });
+
+            if (selectedCourses.length === 0) {
+                const message = document.createElement("p");
+                message.className = "text-muted";
+                message.innerText = "Selecione um curso acima para ver as Unidades Curriculares associadas.";
+                ucsContainer.appendChild(message);
+            }
+        });
+    });
+</script>

@@ -37,13 +37,14 @@
     {% elif default_content == 'matricula_funcionario' %}
         {% include "pagina_principal/funcionario/matricula_funcionario.html" %}
 
-
     {% elif default_content == 'unidades_curriculares_professor' %}
         {% include "pagina_principal/professor/unidades_curriculares_professor.html" %}
     {% elif default_content == 'unidades_curriculares_funcionario' %}
         {% include "pagina_principal/funcionario/unidades_curriculares_funcionario.html" %}
 
-
+    {% elif default_content == 'alunos_funcionario' %}
+        {% include "pagina_principal/funcionario/alunos_funcionario.html" %}
+    
     {% elif default_content == 'gestao_escola_aluno' %}
         {% include "pagina_principal/aluno/gestao_escola_aluno.html" %}
     {% elif default_content == 'gestao_escola_professor' %}
