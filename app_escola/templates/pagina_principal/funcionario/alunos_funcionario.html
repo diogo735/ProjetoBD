@@ -55,42 +55,44 @@
                     <!-- Lista de Alunos por Curso -->
                     <div id="alunos-por-curso">
                         <!-- Curso: Engenharia Informática -->
-                        <h3 class="h6 mb-3">Curso: Engenharia Informática</h3>
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Nº Mecanográfico</th>
-                                        <th>Nome</th>
+                                        <th>Primeiro Nome</th>
+                                        <th>Último Nome</th>
                                         <th>Email</th>
                                         <th>Telefone</th>
+                                        <th>Curso</th>
                                         <th>Status</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>123456</td>
-                                        <td>João Silva</td>
-                                        <td><a href="mailto:joao.silva@universidade.com">joao.silva@universidade.com</a></td>
-                                        <td>(+351) 912 345 678</td>
-                                        <td><span class="badge bg-success">Ativo</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-secondary">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Remover</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>654321</td>
-                                        <td>Maria Santos</td>
-                                        <td><a href="mailto:maria.santos@universidade.com">maria.santos@universidade.com</a></td>
-                                        <td>(+351) 913 456 789</td>
-                                        <td><span class="badge bg-danger">Inativo</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-secondary">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Remover</button>
-                                        </td>
-                                    </tr>
+                                    {% if alunos %}
+                                         {% for aluno in alunos %}
+                                        <tr>
+                                            <td>{{ aluno.1 }}</td>
+                                            <td>{{ aluno.2 }}</td>                                           
+                                            <td>{{ aluno.3 }}</td>
+                                            <td>{{ aluno.4 }}</td>
+                                            <td>{{ aluno.5 }}</td>
+                                            <td>{{ aluno.6|default:"Sem Curso" }}</td> 
+                                            <td><span class="badge bg-success">Ativo</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-secondary">Editar</button>
+                                                <button class="btn btn-sm btn-danger">Remover</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7" class="text-center">Nenhum aluno encontrado.</td>
+                                        </tr>
+                                    {% endif %}
+                                        <!--<td><span class="badge bg-danger">Inativo</span></td> -->
+
                                 </tbody>
                             </table>
                         </div>
@@ -107,55 +109,61 @@
                 </div>
                 <div class="card-body">
                     <p>Preencha o formulário abaixo para adicionar novos alunos, associando-os a cursos específicos.</p>
-                    
-                    <form>
+                    <form method="POST" action="{% url 'alunos_funcionario' %}">
+                        {% csrf_token %}
+                        
                         <!-- Nº Mecanográfico -->
                         <div class="mb-3">
                             <label for="n-mecanografico" class="form-label">Nº Mecanográfico</label>
-                            <input type="text" id="n-mecanografico" class="form-control" placeholder="Digite o nº mecanográfico">
+                            <input type="text" id="n-mecanografico" name="n_mecanografico" class="form-control" placeholder="Digite o nº mecanográfico" required>
                         </div>
-
+                    
                         <!-- Nome do Aluno -->
                         <div class="mb-3">
-                            <label for="nome-aluno" class="form-label">Nome</label>
-                            <input type="text" id="nome-aluno" class="form-control" placeholder="Digite o nome do aluno">
+                            <label for="p-nome" class="form-label">Primeiro Nome</label>
+                            <input type="text" id="p-nome" name="p_nome" class="form-control" placeholder="Digite o primeiro nome" required>
                         </div>
-
+                    
+                        <div class="mb-3">
+                            <label for="u-nome" class="form-label">Último Nome</label>
+                            <input type="text" id="u-nome" name="u_nome" class="form-control" placeholder="Digite o último nome">
+                        </div>
+                    
                         <!-- Data de Nascimento -->
                         <div class="mb-3">
                             <label for="data-nascimento" class="form-label">Data de Nascimento</label>
-                            <input type="date" id="data-nascimento" class="form-control">
+                            <input type="date" id="data-nascimento" name="data_nascimento" class="form-control">
                         </div>
-
+                    
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email-aluno" class="form-label">Email</label>
-                            <input type="email" id="email-aluno" class="form-control" placeholder="Digite o email do aluno">
+                            <input type="email" id="email-aluno" name="email" class="form-control" placeholder="Digite o email do aluno" required>
                         </div>
-
-                        
+                    
                         <!-- Password -->
                         <div class="mb-3">
                             <label for="password-aluno" class="form-label">Password</label>
-                            <input type="password" id="password-aluno" class="form-control" placeholder="Digite uma senha para o aluno">
+                            <input type="password" id="password-aluno" name="password" class="form-control" placeholder="Digite uma senha para o aluno">
                         </div>
-
+                    
                         <!-- Telefone -->
                         <div class="mb-3">
                             <label for="telefone-aluno" class="form-label">Telefone</label>
-                            <input type="tel" id="telefone-aluno" class="form-control" placeholder="Digite o telefone do aluno">
+                            <input type="tel" id="telefone-aluno" name="telefone" class="form-control" placeholder="Digite o telefone do aluno">
                         </div>
-
+                    
                         <!-- Localidade -->
                         <div class="mb-3">
                             <label for="localidade-aluno" class="form-label">Localidade</label>
-                            <input type="text" id="localidade-aluno" class="form-control" placeholder="Digite a localidade do aluno">
+                            <input type="text" id="localidade-aluno" name="localidade" class="form-control" placeholder="Digite a localidade do aluno">
                         </div>
-
+                    
                         <!-- Botão Criar -->
                         <button type="submit" class="btn btn-primary">Criar Aluno</button>
                     </form>
-                </div>
+
+              </div>
             </div>
         </div>
     </div>
