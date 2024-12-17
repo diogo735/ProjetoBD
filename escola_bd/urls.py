@@ -18,9 +18,19 @@ urlpatterns = [
     path('obter_cursos/', views.obter_cursos, name='obter_cursos'),
     path('criar_turno/', views.criar_turno, name='criar_turno'),
     path('buscar_dados/', views.buscar_turnos, name='buscar_turnos'),
+    path('atualizar_turno/', views.atualizar_turno_view, name='atualizar_turno'),
+    path('obter_detalhes_turno/<int:turno_id>/', views.obter_detalhes_turno, name='obter_detalhes_turno'),
+    path('verificar_eliminar_turno/', views.verificar_eliminar_turno, name='verificar_eliminar_turno'),
+    path('eliminar_turno/', views.eliminar_turno, name='eliminar_turno'),
+    path('pesquisar_horarios/', views.pesquisar_horarios, name='pesquisar_horarios'),
+    path('obter_horarios_e_ucs/<int:turno_id>/<int:curso_id>/<str:ano>/<str:semestre>/', views.obter_horarios_e_ucs,name='obter_horarios_e_ucs'),
+     path('obter_id_curso/<str:nome_curso>/', views.obter_id_curso, name='obter_id_curso'),
 
 
 
+
+
+     
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
 
