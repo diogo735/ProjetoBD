@@ -440,7 +440,57 @@ def obter_horarios_e_ucs(request, turno_id, curso_id, ano, semestre):
 
 
 
+@funcionario_required
+def alunos_funcionario(request):
+    mensagem = None
+    status = None
+    alunos = []  # Lista para armazenar os alunos
 
+    if request.method == 'POST':
+        # Obter os dados enviados pelo formulário
+        p_nome = request.POST.get('p_nome')
+        u_nome = request.POST.get('u_nome')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        telefone = request.POST.get('telefone')
+        localidade = request.POST.get('localidade')
+
+        try:
+            # Chamar o procedimento armazenado no banco de dados
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CALL p_aluno_insert(%s, %s, %s, %s, %s, %s)
+                """, [
+                    p_nome,      
+                    u_nome,      
+                    email,      
+                    password,   
+                    telefone,    
+                    localidade   
+                ])
+
+            # Mensagem de sucesso
+            mensagem = "Aluno criado com sucesso!"
+            status = "success"
+        except Exception as e:
+            # Mensagem de erro
+            mensagem = f"Erro ao criar aluno: {str(e)}"
+            status = "error"
+
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM f_listar_alunos()")
+            alunos = cursor.fetchall()  
+
+
+        return render(request, 'pagina_principal/main.html', {
+            'default_content': 'alunos_funcionario',
+            'alunos': alunos,
+            'mensagem': mensagem,
+            'status': status,
+        })
+
+    # GET: Renderizar a página inicial
+    return render(request, 'pagina_principal/main.html', {'default_content': 'alunos_funcionario'})
 
 
 
@@ -471,10 +521,6 @@ def professores_aluno(request):
 @funcionario_required
 def professores_funcionario(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'professores_funcionario'})
-
-@funcionario_required
-def alunos_funcionario(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'alunos_funcionario'})
 
 @aluno_required
 def avaliacoes_aluno(request):
