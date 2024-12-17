@@ -1,13 +1,10 @@
 from django.shortcuts import render, redirect
-from django.shortcuts import render
-from django.http import JsonResponse
 from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
 import psycopg2
 from .utils import aluno_required, professor_required, funcionario_required
-
 
 def home(request):
     try:
@@ -23,8 +20,25 @@ def home(request):
     return render(request, 'pagina_login/home.html', {'db_status': status})
 
 
+
+def obter_nome_id_user(email, user_type):
+    with connection.cursor() as cursor:
+        # Chamar a função SQL do banco de dados que você criou
+        cursor.execute("SELECT * FROM get_user_info(%s, %s)", [email, user_type])
+        result = cursor.fetchone()
+
+        if result:
+            user_id, first_name, last_name = result
+            return {
+                'user_id': user_id,
+                'first_name': first_name,
+                'last_name': last_name,
+            }
+        return None
+
 def login_view(request):
     try:
+        # Testa a conexão com o banco de dados
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
         status = "OK"
@@ -37,19 +51,36 @@ def login_view(request):
         user_type = request.POST.get('user_type')
 
         with connection.cursor() as cursor:
-            # Executa a consulta para verificar se o email existe no banco de dados
-            cursor.execute(f'SELECT * FROM public.{user_type.lower()} WHERE email = %s', [email])
-            user = cursor.fetchone()
+            # Primeiro, verifica se o email existe na tabela correta
+            cursor.execute("""
+                SELECT email FROM public.%s WHERE email = %s
+            """ % (user_type.lower() + 's', '%s'), [email])
+            email_check = cursor.fetchone()
 
-            if user:
-                # Extrair os nomes das colunas do cursor
-                columns = [col[0] for col in cursor.description]
-                # Mapear os valores da tupla para um dicionário
-                user_dict = dict(zip(columns, user))
+            if email_check:  # Email existe
+                # Agora, verifica se o email e a senha correspondem
+                cursor.execute("SELECT id, p_nome, u_nome, email FROM public.check_login_credenciais(%s, %s, %s)", 
+                               [email, password, user_type])
+                user = cursor.fetchone()
 
-                # Verifica se a senha está correta
-                if user_dict['password'] == password:
+                if user:  # Email e senha estão corretos
+                    # Extrai os dados retornados pela função SQL
+                    user_id, first_name, last_name, user_email = user
+
+                    # Armazena as informações na sessão
+                    request.session['user_id'] = user_id
+                    request.session['user_name'] = f"{first_name} {last_name}"
                     request.session['user_type'] = user_type
+
+                    # Define o avatar baseado no tipo de utilizador e no último caractere do nome
+                    if user_type.lower() == 'aluno':
+                        request.session['user_avatar'] = 'images/aluno.png' if first_name[-1].lower() != 'a' else 'images/aluna.png'
+                    elif user_type.lower() == 'professor':
+                        request.session['user_avatar'] = 'images/professor.png' if first_name[-1].lower() != 'a' else 'images/professora.png'
+                    elif user_type.lower() == 'funcionario':
+                        request.session['user_avatar'] = 'images/funcionario.png' if first_name[-1].lower() != 'a' else 'images/funcionaria.png'
+
+                    # Redireciona para a página de carregamento
                     return redirect('loading_page')
                 else:
                     messages.error(request, 'Senha incorreta, tente novamente.')
@@ -57,6 +88,8 @@ def login_view(request):
                 messages.error(request, 'Email não encontrado, tente novamente.')
 
     return render(request, 'pagina_login/home.html', {'db_status': status})
+
+
 
 
 def loading_page(request):
@@ -79,59 +112,6 @@ def loading_page(request):
 # def pagina_principal(request):
 #     user_type = request.session.get('user_type', None)
 #     return render(request, 'pagina_principal/base_main.html', {'user_type': user_type})
-
-@funcionario_required
-def alunos_funcionario(request):
-    mensagem = None
-    status = None
-    alunos = []  # Lista para armazenar os alunos
-
-    if request.method == 'POST':
-        # Obter os dados enviados pelo formulário
-        p_nome = request.POST.get('p_nome')
-        u_nome = request.POST.get('u_nome')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        telefone = request.POST.get('telefone')
-        localidade = request.POST.get('localidade')
-
-        try:
-            # Chamar o procedimento armazenado no banco de dados
-            with connection.cursor() as cursor:
-                cursor.execute("""
-                    CALL p_aluno_insert(%s, %s, %s, %s, %s, %s)
-                """, [
-                    p_nome,      
-                    u_nome,      
-                    email,      
-                    password,   
-                    telefone,    
-                    localidade   
-                ])
-
-            # Mensagem de sucesso
-            mensagem = "Aluno criado com sucesso!"
-            status = "success"
-        except Exception as e:
-            # Mensagem de erro
-            mensagem = f"Erro ao criar aluno: {str(e)}"
-            status = "error"
-
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM f_listar_alunos()")
-            alunos = cursor.fetchall()  
-
-
-        return render(request, 'pagina_principal/main.html', {
-            'default_content': 'alunos_funcionario',
-            'alunos': alunos,
-            'mensagem': mensagem,
-            'status': status,
-        })
-
-    # GET: Renderizar a página inicial
-    return render(request, 'pagina_principal/main.html', {'default_content': 'alunos_funcionario'})
-
 
 @aluno_required
 def dashboard_aluno(request):
@@ -197,9 +177,7 @@ def gestao_escola_aluno(request):
 def unidades_curriculares_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_professor'})
 
-@funcionario_required
-def unidades_curriculares_funcionario(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
+
 
 @professor_required
 def gestao_escola_professor(request):
