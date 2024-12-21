@@ -5,40 +5,34 @@
             <h2 class="h5 mb-0">Lista de Professores</h2>
         </div>
         <div class="card-body">
-            <p>Consulte abaixo a lista de professores responsáveis pelas Unidades Curriculares e suas informações de contacto.</p>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nome</th>
-                            <th>Unidade Curricular</th>
-                            <th>Email</th>
-                            <th>Telefone</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>João Silva</td>
-                            <td>Programação</td>
-                            <td><a href="mailto:joao.silva@universidade.com">joao.silva@universidade.com</a></td>
-                            <td>(+351) 912 345 678</td>
-                        </tr>
-                        <tr>
-                            <td>Ana Pereira</td>
-                            <td>Redes de Computadores</td>
-                            <td><a href="mailto:ana.pereira@universidade.com">ana.pereira@universidade.com</a></td>
-                            <td>(+351) 913 456 789</td>
-                        </tr>
-                        <tr>
-                            <td>Carlos Mendes</td>
-                            <td>Matemática Discreta</td>
-                            <td><a href="mailto:carlos.mendes@universidade.com">carlos.mendes@universidade.com</a></td>
-                            <td>(+351) 914 567 890</td>
-                        </tr>
-                        <!-- Adicione mais professores conforme necessário -->
-                    </tbody>
-                </table>
-            </div>
+            {% if default_content == 'professores_aluno' %}
+        
+                <p>Consulte abaixo a lista de professores responsáveis pelas Unidades Curriculares e suas informações de contacto.</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Unidade Curricular</th>
+                                    <th>Email</th>
+                                    <th>Telefone</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for professor in professores %}
+                                    <tr>
+                                        <td>{{ professor.nome }}</td>
+                                        <td>{{ professor.unidade_curricular }}</td>
+                                        <td><a href="mailto:{{ professor.email }}">{{ professor.email }}</a></td>
+                                        <td>{{ professor.telefone }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+            {% endif %}
+
         </div>
     </div>
 </div>

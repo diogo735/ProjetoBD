@@ -24,19 +24,16 @@ urlpatterns = [
     path('eliminar_turno/', views.eliminar_turno, name='eliminar_turno'),
     path('pesquisar_horarios/', views.pesquisar_horarios, name='pesquisar_horarios'),
     path('obter_horarios_e_ucs/<int:turno_id>/<int:curso_id>/<str:ano>/<str:semestre>/', views.obter_horarios_e_ucs,name='obter_horarios_e_ucs'),
-     path('obter_id_curso/<str:nome_curso>/', views.obter_id_curso, name='obter_id_curso'),
+    path('obter_id_curso/<str:nome_curso>/', views.obter_id_curso, name='obter_id_curso'),
 
-
-
-
-
-     
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
 
     path('aluno/professores/', views.professores_aluno, name='professores_aluno'),
     path('funcionario/professores/', views.professores_funcionario, name='professores_funcionario'),
-    
+    path('funcionarios/professores/remover/<int:id_professor>/', views.professor_delete, name='professor_delete'),
+    path('funcionario/professores/editar/<int:id_professor>/', views.professor_editar, name='professor_editar'),
+
     path('aluno/avaliacoes/', views.avaliacoes_aluno, name='avaliacoes_aluno'),
     path('professor/avaliacoes/', views.avaliacoes_professor, name='avaliacoes_professor'),
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
@@ -52,7 +49,10 @@ urlpatterns = [
     path('funcionario/obter_horarios/<int:id_turno>/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
     path('funcionarios/alunos/', views.alunos_funcionario, name='alunos_funcionario'),
-    
+    path('funcionarios/delete/<int:id_aluno>/', views.aluno_delete, name='aluno_delete'),
+    path('funcionarios/editar/<int:id_aluno>/', views.aluno_editar, name='aluno_editar'),
+
+
     path('aluno/gestao_escola/', views.gestao_escola_aluno, name='gestao_escola_aluno'),
     path('professor/gestao_escola/', views.gestao_escola_professor, name='gestao_escola_professor'),
     path('funcionario/gestao_escola/', views.gestao_escola_funcionario, name='gestao_escola_funcionario'),

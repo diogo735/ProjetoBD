@@ -40,9 +40,14 @@ def obter_nome_id_user(email, user_type):
             }
         return None
 
+TABLE_MAPPING = {
+    'aluno': 'alunos',
+    'professor': 'professores',
+    'funcionario': 'funcionarios',
+}
+
 def login_view(request):
     try:
-        # Testa a conexão com o banco de dados
         with connection.cursor() as cursor:
             cursor.execute("SELECT 1")
         status = "OK"
@@ -54,11 +59,17 @@ def login_view(request):
         password = request.POST.get('password')
         user_type = request.POST.get('user_type')
 
+        table_name = TABLE_MAPPING.get(user_type.lower())
+
+        if not table_name:
+            messages.error(request, 'Tipo de utilizador inválido.')
+            return render(request, 'pagina_login/home.html', {'db_status': status})
+
+
         with connection.cursor() as cursor:
             # Primeiro, verifica se o email existe na tabela correta
-            cursor.execute("""
-                SELECT email FROM public.%s WHERE email = %s
-            """ % (user_type.lower() + 's', '%s'), [email])
+            cursor.execute(f"SELECT email FROM public.{table_name} WHERE email = %s", [email])
+
             email_check = cursor.fetchone()
 
             if email_check:  # Email existe
@@ -438,8 +449,6 @@ def obter_horarios_e_ucs(request, turno_id, curso_id, ano, semestre):
     return JsonResponse({"success": False, "error": "Método inválido"}, status=405)
 
 
-
-
 @funcionario_required
 def alunos_funcionario(request):
     mensagem = None
@@ -477,22 +486,214 @@ def alunos_funcionario(request):
             mensagem = f"Erro ao criar aluno: {str(e)}"
             status = "error"
 
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM f_listar_alunos()")
+        alunos = cursor.fetchall()  
+
+
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'alunos_funcionario',
+        'alunos': alunos,
+        'mensagem': mensagem,
+        'status': status,
+    })
+
+@funcionario_required
+def aluno_delete(request, id_aluno):
+    mensagem = None
+    status = None
+
+    try:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM f_listar_alunos()")
-            alunos = cursor.fetchall()  
+            cursor.execute("CALL p_aluno_delete(%s);", [id_aluno])
+
+        mensagem = "Aluno removido com sucesso!"
+        status = "success"
+    except Exception as e:
+        mensagem = f"Erro ao remover aluno: {str(e)}"
+        status = "error"
+
+    return redirect('alunos_funcionario')  
+
+@funcionario_required
+def aluno_editar(request, id_aluno):
+    mensagem = None
+    status = None
+
+    if request.method == 'POST':
+        # Capturar os dados enviados pelo formulário
+        p_nome = request.POST.get('p_nome')
+        u_nome = request.POST.get('u_nome')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        localidade = request.POST.get('localidade')
+
+        try:
+            # Atualizar os dados usando o procedimento armazenado
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CALL p_aluno_update(%s, %s, %s, %s, %s, %s);
+                """, [id_aluno, p_nome, u_nome, email, telefone, localidade])
+
+            mensagem = "Aluno atualizado com sucesso!"
+            status = "success"
+        except Exception as e:
+            mensagem = f"Erro ao atualizar aluno: {str(e)}"
+            status = "error"
+
+    return redirect('alunos_funcionario')
 
 
+@funcionario_required
+def professores_funcionario(request):
+    mensagem = None
+    status = None
+    professores = []  # Lista para armazenar os professores
+
+    if request.method == 'POST':
+        # Obter os dados enviados pelo formulário
+        p_nome = request.POST.get('p_nome')
+        u_nome = request.POST.get('u_nome')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        telefone = request.POST.get('telefone')
+        localidade = request.POST.get('localidade')
+        
+                 # Debug: Verifique os valores capturados
+        print("Dados recebidos do formulário:")
+        print(f"Nome: {p_nome}, Sobrenome: {u_nome}, Email: {email}, Telefone: {telefone}, Localidade: {localidade}")
+
+        try:
+            # Chamar o procedimento armazenado no banco de dados
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CALL p_professor_insert(%s, %s, %s, %s, %s, %s)
+                """, [
+                    p_nome,
+                    u_nome,
+                    email,
+                    password,
+                    telefone,
+                    localidade
+                ])
+
+
+            # Mensagem de sucesso
+            mensagem = "Professor criado com sucesso!"
+            status = "success"
+        except Exception as e:
+            # Mensagem de erro
+            mensagem = f"Erro ao criar professor: {str(e)}"
+            status = "error"
+
+    # Recuperar lista de professores usando a função f_listar_professores
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM f_listar_professores()")
+        professores = cursor.fetchall()
+
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'professores_funcionario',
+        'professores': professores,
+        'mensagem': mensagem,
+        'status': status,
+    })
+
+
+@funcionario_required
+def professor_delete(request, id_professor):
+    mensagem = None
+    status = None
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("CALL p_professor_delete(%s);", [id_professor])
+
+        mensagem = "Professor removido com sucesso!"
+        status = "success"
+    except Exception as e:
+        mensagem = f"Erro ao remover professor: {str(e)}"
+        status = "error"
+
+    return redirect('professores_funcionario')  
+
+
+@funcionario_required
+def professor_editar(request, id_professor):
+    mensagem = None
+    status = None
+
+    if request.method == 'POST':
+        # Capturar os dados enviados pelo formulário
+        p_nome = request.POST.get('p_nome')
+        u_nome = request.POST.get('u_nome')
+        email = request.POST.get('email')
+        telefone = request.POST.get('telefone')
+        localidade = request.POST.get('localidade')
+
+        try:
+            # Atualizar os dados usando o procedimento armazenado
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CALL p_professor_update(%s, %s, %s, %s, %s, %s);
+                """, [id_professor, p_nome, u_nome, email, telefone, localidade])
+
+            mensagem = "Professor atualizado com sucesso!"
+            status = "success"
+        except Exception as e:
+            mensagem = f"Erro ao atualizar professor: {str(e)}"
+            status = "error"
+
+    return redirect('professores_funcionario')
+
+@aluno_required
+def professores_aluno(request):
+    # Obtém o ID do aluno logado
+    id_aluno = request.user.id  # Ajuste conforme seu modelo
+    
+    # Buscar o ID do Curso pela Matrícula
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT ID_Curso 
+            FROM Matriculas 
+            WHERE ID_Aluno = %s 
+            LIMIT 1;
+        """, [id_aluno])
+        
+        row = cursor.fetchone()
+        if row:
+            id_curso = row[0]
+        else:
+            id_curso = None
+
+    if not id_curso:
         return render(request, 'pagina_principal/main.html', {
-            'default_content': 'alunos_funcionario',
-            'alunos': alunos,
-            'mensagem': mensagem,
-            'status': status,
+            'default_content': 'professores_aluno',
+            'error': 'Curso não encontrado para este aluno.'
         })
 
-    # GET: Renderizar a página inicial
-    return render(request, 'pagina_principal/main.html', {'default_content': 'alunos_funcionario'})
+    # Buscar os Professores usando a Função SQL
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT * 
+            FROM fn_professores_curso_aluno(%s, %s);
+        """, [id_curso, id_aluno])
 
+        # Obtém os resultados
+        professores = [
+            {
+                'nome': row[1],
+                'unidade_curricular': row[2],
+                'email': row[3],
+                'telefone': row[4]
+            } 
+            for row in cursor.fetchall()
+        ]
 
+    # Renderiza os dados na view
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'professores_aluno',
+        'professores': professores
+    })
 
 @aluno_required
 def dashboard_aluno(request):
@@ -513,14 +714,6 @@ def horarios_aluno(request):
 @professor_required
 def horarios_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'horarios_professor'})
-
-@aluno_required
-def professores_aluno(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
-
-@funcionario_required
-def professores_funcionario(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'professores_funcionario'})
 
 @aluno_required
 def avaliacoes_aluno(request):
