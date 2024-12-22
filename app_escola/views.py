@@ -493,6 +493,116 @@ def alunos_funcionario(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'alunos_funcionario'})
 
 
+#Pagamentos
+#Listar os pagamentos em falta do aluno logado na aplicação
+def pagamentos_em_falta_alunos(request):
+    mensagem_pendentes = None
+    mensagem_historico = None
+    status_pendentes = None
+    status_historico = None
+    pagamentos_pendentes = []
+    historico_pagamentos = []
+
+    try:
+        # Verifica se o usuário está logado
+        user_id = request.session.get('user_id')
+       
+        # Buscar os pagamentos pendentes do usuário logado
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM public.f_pagamentos_em_falta_alunos(%s)
+            """, [user_id])
+            pagamentos_pendentes = [
+                {
+                    'descricao': pagamento[0],
+                    'valor': pagamento[1],
+                    'multa': pagamento[4],
+                    'data_vencimento': pagamento[2],
+                    'estado': pagamento[3]
+                }
+                for pagamento in cursor.fetchall()
+            ]
+
+        # Buscar o histórico de pagamentos do usuário logado
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM public.f_pagamentos_historico_pagamentos_alunos(%s)
+            """, [user_id])
+            historico_pagamentos = [
+                {
+                    'descricao': pagamento[0],
+                    'valor': pagamento[1],
+                    'multa': pagamento[4],
+                    'data_vencimento': pagamento[2],
+                    'estado': pagamento[3]
+                }
+                for pagamento in cursor.fetchall()
+            ]
+
+        mensagem_pendentes = "Pagamentos pendentes carregados com sucesso."
+        status_pendentes = "success"
+        mensagem_historico = "Histórico de pagamentos carregado com sucesso."
+        status_historico = "success"
+
+    except Exception as e:
+        # Mensagens de erro
+        mensagem_pendentes = f"Erro ao carregar pagamentos pendentes: {str(e)}"
+        status_pendentes = "error"
+        mensagem_historico = f"Erro ao carregar histórico de pagamentos: {str(e)}"
+        status_historico = "error"
+
+    # Renderizar a página com os dados das duas tabs
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'pagamentos_aluno',
+        'pagamentos_pendentes': pagamentos_pendentes,
+        'historico_pagamentos': historico_pagamentos,
+        'mensagem_pendentes': mensagem_pendentes,
+        'status_pendentes': status_pendentes,
+        'mensagem_historico': mensagem_historico,
+        'status_historico': status_historico,
+    })
+
+
+def funcionario_listar_pagamentos(request):
+    mensagem_todos_pagamentos = None
+    status_todos_pagamentos = None
+    todos_pagamentos = []
+
+    try:
+        # Chamar a função SQL para listar todos os pagamentos
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM public.f_funcionario_listar_pagamentos();
+            """)
+            todos_pagamentos = [
+                {
+                    'id_pagamento': pagamento[0],
+                    'nome_aluno': pagamento[1],
+                    'descricao': pagamento[2],
+                    'valor': pagamento[3],
+                    'data_vencimento': pagamento[4],
+                    'estado': pagamento[5],
+                    'multa': pagamento[6]
+                }
+                for pagamento in cursor.fetchall()
+            ]
+
+        mensagem_todos_pagamentos = "Todos os pagamentos carregados com sucesso."
+        status_todos_pagamentos = "success"
+
+    except Exception as e:
+        # Mensagem de erro
+        mensagem_todos_pagamentos = f"Erro ao carregar os pagamentos: {str(e)}"
+        status_todos_pagamentos = "error"
+
+    # Renderizar a página com os dados
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'pagamentos_funcionario',
+        'todos_pagamentos': todos_pagamentos,
+        'mensagem_todos_pagamentos': mensagem_todos_pagamentos,
+        'status_todos_pagamentos': status_todos_pagamentos,
+    })
+
 
 @aluno_required
 def dashboard_aluno(request):
@@ -557,8 +667,6 @@ def gestao_escola_aluno(request):
 @professor_required
 def unidades_curriculares_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_professor'})
-
-
 
 @professor_required
 def gestao_escola_professor(request):

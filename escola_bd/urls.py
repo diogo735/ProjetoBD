@@ -24,13 +24,9 @@ urlpatterns = [
     path('eliminar_turno/', views.eliminar_turno, name='eliminar_turno'),
     path('pesquisar_horarios/', views.pesquisar_horarios, name='pesquisar_horarios'),
     path('obter_horarios_e_ucs/<int:turno_id>/<int:curso_id>/<str:ano>/<str:semestre>/', views.obter_horarios_e_ucs,name='obter_horarios_e_ucs'),
-     path('obter_id_curso/<str:nome_curso>/', views.obter_id_curso, name='obter_id_curso'),
+    path('obter_id_curso/<str:nome_curso>/', views.obter_id_curso, name='obter_id_curso'),
 
 
-
-
-
-     
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
 
@@ -41,8 +37,8 @@ urlpatterns = [
     path('professor/avaliacoes/', views.avaliacoes_professor, name='avaliacoes_professor'),
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
 
-    path('aluno/pagamentos/', views.pagamentos_aluno, name='pagamentos_aluno'),
-    path('funcionario/pagamentos/', views.pagamentos_funcionario, name='pagamentos_funcionario'),
+    path('aluno/pagamentos/', views.pagamentos_em_falta_alunos, name='pagamentos_aluno'),
+    path('funcionario/pagamentos/', views.funcionario_listar_pagamentos, name='pagamentos_funcionario'),
 
     path('aluno/matricula/', views.matricula_aluno, name='matricula_aluno'),
     path('funcionario/matricula/', views.matricula_funcionario, name='matricula_funcionario'),

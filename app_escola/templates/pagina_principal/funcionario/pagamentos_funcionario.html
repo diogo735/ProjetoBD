@@ -1,293 +1,62 @@
 <div class="container py-4">
 
-    <!-- Tabs para Pagamentos em Falta e Histórico de Pagamentos -->
+    <!-- Tabs para Lista de Pagamentos -->
     <ul class="nav nav-tabs" id="pagamentosTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pagamentos-falta-tab" data-bs-toggle="tab" data-bs-target="#pagamentos-falta" type="button" role="tab" aria-controls="pagamentos-falta" aria-selected="true">
-                Pagamentos em Falta
-            </button>
-        </li>
-        <li class="nav-item" role="presentation">
-            <button class="nav-link" id="historico-pagamentos-tab" data-bs-toggle="tab" data-bs-target="#historico-pagamentos" type="button" role="tab" aria-controls="historico-pagamentos" aria-selected="false">
-                Histórico de Pagamentos
+            <button class="nav-link active" id="pagamentos-lista-tab" data-bs-toggle="tab" data-bs-target="#pagamentos-lista" type="button" role="tab" aria-controls="pagamentos-lista" aria-selected="true">
+                Lista de Pagamentos
             </button>
         </li>
     </ul>
 
     <div class="tab-content mt-4" id="pagamentosTabContent">
-        <!-- Tab Pagamentos em Falta -->
-        <div class="tab-pane fade show active" id="pagamentos-falta" role="tabpanel" aria-labelledby="pagamentos-falta-tab">
+        <!-- Tab Lista de Pagamentos -->
+        <div class="tab-pane fade show active" id="pagamentos-lista" role="tabpanel" aria-labelledby="pagamentos-lista-tab">
             <div class="card shadow">
                 <div class="card-header bg-light">
-                    <h2 class="h5 mb-0">Pagamentos em Falta</h2>
+                    <h2 class="h5 mb-0">Pagamentos dos Alunos</h2>
                 </div>
                 <div class="card-body">
-                    <p>Consulte abaixo as propinas pendentes e realize os pagamentos necessários.</p>
+                    <p>Pagamentos de todos os alunos presentes na Universidade</p>
 
-                    <!-- Multa -->
-                    <div class="alert alert-warning">
-                        <strong>Atenção:</strong> Multa de 10% aplicada em pagamentos atrasados.
-                    </div>
-
-                    <!-- Tabela de Pagamentos em Falta -->
+                    <!-- Tabela de Pagamentos -->
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Ano Letivo</th>
-                                    <th>Mês</th>
+                                    <th>ID Pagamento</th>
+                                    <th>Nome do Aluno</th>
+                                    <th>Descrição</th>
                                     <th>Valor (€)</th>
+                                    <th>Data de Vencimento</th>
+                                    <th>Estado</th>
                                     <th>Multa (€)</th>
-                                    <th>Data de Vencimento</th>
-                                    <th>Estado</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>outubro</td>
-                                    <td>55.99</td>
-                                    <td>5.00</td>
-                                    <td>2024-10-31</td>                                    
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>novembro</td>
-                                    <td>50.99</td>
-                                    <td>0.00</td>
-                                    <td>2024-11-30</td>                                    
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>dezembro</td>
-                                    <td>50.99</td>
-                                    <td>0.00</td>
-                                    <td>2024-12-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>janeiro</td>
-                                    <td>50.99</td>
-                                    <td>0.00</td>
-                                    <td>2025-01-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>fevereiro</td>
-                                    <td>50.99</td>
-                                    <td>0.00</td>
-                                    <td>2024-02-28</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>março</td>
-                                    <td>50.99</td>
-                                    <td>0.00</td>
-                                    <td>2025-03-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>abril</td>
-                                    <td>50.99</td>
-                                    <td>0.00</td>
-                                    <td>2025-04-30</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>maio</td>
-                                    <td>50.99</td>
-                                    <td>0.00</td>
-                                    <td>2025-05-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
+                                {% if todos_pagamentos %}
+                                    {% for pagamento in todos_pagamentos %}
+                                    <tr>
+                                        <td>{{ pagamento.id_pagamento }}</td>
+                                        <td>{{ pagamento.nome_aluno }}</td>
+                                        <td>{{ pagamento.descricao }}</td>
+                                        <td>{{ pagamento.valor }}</td>
+                                        <td>{{ pagamento.data_vencimento }}</td>
+                                        <td>{{ pagamento.estado }}</td>
+                                        <td>{{ pagamento.multa}}</td>
 
-                                <!-- Adicione mais pagamentos conforme necessário -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tab Histórico de Pagamentos -->
-        <div class="tab-pane fade" id="historico-pagamentos" role="tabpanel" aria-labelledby="historico-pagamentos-tab">
-            <div class="card shadow">
-                <div class="card-header bg-light">
-                    <h2 class="h5 mb-0">Histórico de Pagamentos</h2>
-                </div>
-                <div class="card-body">
-                    <p>Veja os pagamentos realizados e pendentes ao longo dos anos letivos.</p>
-
-                    <!-- Formulário de Pesquisa -->
-                    <form class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label for="mes" class="form-label">Mês</label>
-                            <select id="mes" class="form-select">
-                                <option selected>Escolha o mês...</option>
-                                <option value="1">setembro</option>
-                                <option value="2">outubro</option>
-                                <option value="3">novembro</option>
-                                <option value="4">dezembro</option>
-                                <option value="4">janeiro</option>
-                                <option value="4">fevereiro</option>
-                                <option value="4">março</option>
-                                <option value="4">abril</option>
-                                <option value="4">maio</option>
-                                <!-- Adicione os outros meses -->
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="ano-letivo" class="form-label">Ano Letivo</label>
-                            <select id="ano-letivo" class="form-select">
-                                <option selected>Escolha o ano letivo...</option>
-                                <option value="2023/2024">2023/2024</option>
-                                <option value="2022/2023">2024/2025</option>
-                                <!-- Adicione outros anos letivos -->
-                            </select>
-                        </div>
-                        <div class="col-12">
-                            <button type="button" class="btn btn-outline-primary">Pesquisar</button>
-                        </div>
-                    </form>
-
-                    <!-- Tabela de Histórico de Pagamentos -->
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Ano Letivo</th>
-                                    <th>Mês</th>
-                                    <th>Valor (€)</th>
-                                    <th>Data de Vencimento</th>
-                                    <th>Estado</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>setembro</td>
-                                    <td>60.99</td>
-                                    <td>2024-09-30</td>
-                                    <td>Pago</td>
-                                    <td>
-                                        <button class="btn btn-secondary btn-sm" disabled>Pago</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>outubro</td>
-                                    <td>50.99</td>
-                                    <td>2024-10-31</td>
-                                    <td>Pago</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>novembro</td>
-                                    <td>50.99</td>
-                                    <td>2024-11-30</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>dezembro</td>
-                                    <td>50.99</td>
-                                    <td>2024-12-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>janeiro</td>
-                                    <td>50.99</td>
-                                    <td>2025-01-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>fevereiro</td>
-                                    <td>50.99</td>
-                                    <td>2024-02-28</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>março</td>
-                                    <td>50.99</td>
-                                    <td>2025-03-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>abril</td>
-                                    <td>50.99</td>
-                                    <td>2025-04-30</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>2024/2025</td>
-                                    <td>maio</td>
-                                    <td>50.99</td>
-                                    <td>2025-05-31</td>
-                                    <td>Pendente</td>
-                                    <td>
-                                        <button class="btn btn-success btn-sm">Efetuar Pagamento</button>
-                                    </td>
-                                </tr>
-
-                                <!-- Adicione mais registros conforme necessário -->
+                                        <td>
+                                            <button class="btn btn-sm btn-secondary">Editar</button>
+                                            <button class="btn btn-sm btn-danger">Remover</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">Nenhum pagamento encontrado.</td>
+                                    </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
