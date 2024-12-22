@@ -37,7 +37,6 @@
                                             
                     <!-- Filtros de Pesquisa -->
 
-
                     <div class="row mb-4">
                         <div class="col-md-6">
                             <label for="pesquisa-curso" class="form-label">Pesquisar por Curso</label>
@@ -48,57 +47,137 @@
                                 <option value="Economia">Economia</option>
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label for="pesquisa-status" class="form-label">Pesquisar por Status</label>
-                            <select id="pesquisa-status" class="form-select">
-                                <option value="" selected>Todos os Status</option>
-                                <option value="Ativo">Ativo</option>
-                                <option value="Inativo">Inativo</option>
-                            </select>
-                        </div>
                     </div>
+                    
+                    <div class="container py-4">
 
-                    <!-- Lista de Professores por Curso -->
-                    <div id="professores-por-curso">
-                        <!-- Curso: Engenharia Informática -->
+                        <!-- Lista de Professores por Curso -->
+                        <div id="professores-por-curso">
+                            <!-- Curso: Engenharia Informática -->
                         <h3 class="h6 mb-3">Curso: Engenharia Informática</h3>
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Unidade Curricular</th>
-                                        <th>Email</th>
-                                        <th>Telefone</th>
-                                        <th>Status</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>João Silva</td>
-                                        <td>Programação</td>
-                                        <td><a href="mailto:joao.silva@universidade.com">joao.silva@universidade.com</a></td>
-                                        <td>(+351) 912 345 678</td>
-                                        <td><span class="badge bg-success">Ativo</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-secondary">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Remover</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Maria Cardoso</td>
-                                        <td>Matemátiva Discreta</td>
-                                        <td><a href="mailto:joao.silva@universidade.com">matematica.discreta@universidade.com</a></td>
-                                        <td>(+351) 912 345 678</td>
-                                        <td><span class="badge bg-success">Ativo</span></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-secondary">Editar</button>
-                                            <button class="btn btn-sm btn-danger">Remover</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Primeiro Nome</th>
+                                            <th>Último Nome</th>
+                                            <th>Email</th>
+                                            <!-- <th>Unidade Curricular</th>  -->
+                                            <th>Telefone</th>
+                                            <th>Localidade</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if professores %}
+                                            {% for professor in professores %}
+                                            <tr>
+                                                <td>{{ professor.1 }}</td>
+                                                <td>{{ professor.2 }}</td>                                           
+                                                <td>{{ professor.3 }}</td>
+                                                <!-- <td></td> -->
+                                                <td>{{ professor.4 }}</td>
+                                                <td>{{ professor.5 }}</td>
+                                                <td>{{ professor.6 }}</td> 
+                                            
+                                                <td>
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <!-- Botão Editar -->
+                                                        <button type="button" class="btn btn-sm btn-secondary"
+                                                        data-bs-toggle="modal" data-bs-target="#editarModal-{{ professor.0 }}">
+                                                        Editar
+                                                        </button>
+
+                                                        <!-- Modal para Editar Professor -->
+                                                        <div class="modal fade" id="editarModal-{{ professor.0 }}" tabindex="-1" aria-labelledby="editarModalLabel-{{ professor.0 }}" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="editarModalLabel-{{ professor.0 }}">Editar Professor</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form method="POST" action="{% url 'professor_editar' professor.0 %}">
+                                                                            {% csrf_token %}
+                                                                            <div class="mb-3">
+                                                                                <label for="p-nome-{{ professor.0 }}" class="form-label">Primeiro Nome</label>
+                                                                                <input type="text" name="p_nome" id="p-nome-{{ professor.0 }}" 
+                                                                                        class="form-control" value="{{ professor.1 }}" required>
+                                                                            </div>
+
+                                                                            <div class="mb-3">
+                                                                                <label for="u-nome-{{ professor.0 }}" class="form-label">Último Nome</label>
+                                                                                <input type="text" name="u_nome" id="u-nome-{{ professor.0 }}" 
+                                                                                        class="form-control" value="{{ professor.2 }}" required>
+                                                                            </div>
+
+                                                                            <div class="mb-3">
+                                                                                <label for="email-{{ professor.0 }}" class="form-label">Email</label>
+                                                                                <input type="email" name="email" id="email-{{ professor.0 }}" 
+                                                                                        class="form-control" value="{{ professor.3 }}" required>
+                                                                            </div>
+
+                                                                            <div class="mb-3">
+                                                                                <label for="telefone-{{ professor.0 }}" class="form-label">Telefone</label>
+                                                                                <input type="text" name="telefone" id="telefone-{{ professor.0 }}" 
+                                                                                        class="form-control" value="{{ professor.4 }}">
+                                                                            </div>
+
+                                                                            <div class="mb-3">
+                                                                                <label for="localidade-{{ professor.0 }}" class="form-label">Localidade</label>
+                                                                                <input type="text" name="localidade" id="localidade-{{ professor.0 }}" 
+                                                                                        class="form-control" value="{{ professor.5 }}">
+                                                                            </div>
+
+                                                                            <div class="d-flex justify-content-end gap-2">
+                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+                                                        <!-- Botão Remover -->
+                                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removerModal-{{ professor.0 }}">
+                                                            Remover
+                                                        </button>
+
+                                                        <!-- Modal para Confirmar Remoção -->
+                                                        <div class="modal fade" id="removerModal-{{ professor.0 }}" tabindex="-1" aria-labelledby="removerModalLabel-{{ professor.0 }}" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="removerModalLabel-{{ professor.0 }}">Confirmar Remoção</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>Tem certeza que deseja remover o professor <strong>{{ professor.1 }} {{ professor.2 }}</strong>?</p>
+                                                                    </div>
+                                                                    <div class="modal-footer d-flex justify-content-end gap-2">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                        <form method="POST" action="{% url 'professor_delete' professor.0 %}">
+                                                                            {% csrf_token %}
+                                                                            <button type="submit" class="btn btn-danger">Remover</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% else %}
+                                            <tr>
+                                                <td colspan="7" class="text-center">Nenhum aluno encontrado.</td>
+                                            </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,42 +192,42 @@
                 </div>
                 <div class="card-body">
                     <p>Preencha o formulário abaixo para adicionar novos professores, associando-os a cursos e Unidades Curriculares específicas.</p>
-                    
-                    <form>
+                    <form method="POST" action="{% url 'professores_funcionario' %}">
+                        {% csrf_token %}
+
                         <!-- Nome do Professor -->
                         <div class="mb-3">
-                            <label for="nome-professor" class="form-label">Nome</label>
-                            <input type="text" id="nome-professor" class="form-control" placeholder="Digite o nome do professor">
+                            <label for="p-nome-professor" class="form-label">Primeiro Nome</label>
+                            <input type="text" id="p-nome-professor" name="p_nome" class="form-control" placeholder="Digite o primeiro nome" required>
                         </div>
-
-                        <!-- Data de Nascimento -->
+                                            
                         <div class="mb-3">
-                            <label for="data-nascimento" class="form-label">Data de Nascimento</label>
-                            <input type="date" id="data-nascimento" class="form-control">
+                            <label for="u-nome-professor" class="form-label">Último Nome</label>
+                            <input type="text" id="u-nome-professor" name="u_nome" class="form-control" placeholder="Digite o último nome">
                         </div>
 
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email-professor" class="form-label">Email</label>
-                            <input type="email" id="email-professor" class="form-control" placeholder="Digite o email do professor">
+                            <input type="email" id="email-professor" name="email" class="form-control" placeholder="Digite o email do professor">
                         </div>
                         
                         <!-- Password -->
                         <div class="mb-3">
                             <label for="password-professor" class="form-label">Password</label>
-                            <input type="password" id="password-professor" class="form-control" placeholder="Digite uma senha para o professor">
+                            <input type="password" id="password-professor" name="password" class="form-control" placeholder="Digite uma senha para o professor">
                         </div>
 
                         <!-- Telefone -->
                         <div class="mb-3">
                             <label for="telefone-professor" class="form-label">Telefone</label>
-                            <input type="tel" id="telefone-professor" class="form-control" placeholder="Digite o telefone do professor">
+                            <input type="tel" id="telefone-professor" name="telefone" class="form-control" placeholder="Digite o telefone do professor">
                         </div>
 
                         <!-- Localidade -->
                         <div class="mb-3">
                             <label for="localidade-professor" class="form-label">Localidade</label>
-                            <input type="text" id="localidade-professor" class="form-control" placeholder="Digite a localidade do professor">
+                            <input type="text" id="localidade-professor" name="localidade" class="form-control" placeholder="Digite a localidade do professor">
                         </div>
                         <!-- Botão Criar -->
                         <button type="submit" class="btn btn-primary">Criar Professor</button>
@@ -191,49 +270,32 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const unidadesCurriculares = {
-            1: ["Programação", "Redes de Computadores", "Sistemas Operativos"],
-            2: ["Marketing", "Gestão Financeira", "Recursos Humanos"],
-            3: ["Microeconomia", "Macroeconomia", "Teoria dos Jogos"]
-        };
+        // Input de pesquisa
+        const searchInput = document.getElementById("nome-professor");
+        // Corpo da tabela
+        const tableBody = document.querySelector("#professores-por-curso tbody");
 
-        const cursosSelect = document.getElementById("cursos-professor");
-        const ucsContainer = document.getElementById("ucs-container");
+        // Evento de entrada no campo de pesquisa
+        searchInput.addEventListener("input", function () {
+            const searchValue = searchInput.value.toLowerCase(); // Valor digitado pelo usuário
+            const rows = tableBody.querySelectorAll("tr"); // Todas as linhas da tabela
 
-        cursosSelect.addEventListener("change", function () {
-            const selectedCourses = Array.from(cursosSelect.selectedOptions).map(option => option.value);
-            ucsContainer.innerHTML = "";
+            // Iterar sobre as linhas e verificar se o valor da pesquisa está presente
+            rows.forEach((row) => {
+                const cells = row.querySelectorAll("td");
+                const primeiroNome = cells[0]?.textContent.toLowerCase(); // Primeiro nome (coluna 0)
+                const ultimoNome = cells[1]?.textContent.toLowerCase(); // Último nome (coluna 1)
 
-            selectedCourses.forEach(courseId => {
-                if (unidadesCurriculares[courseId]) {
-                    unidadesCurriculares[courseId].forEach(uc => {
-                        const checkbox = document.createElement("input");
-                        checkbox.type = "checkbox";
-                        checkbox.value = uc;
-                        checkbox.id = `uc-${uc}`;
-                        checkbox.className = "form-check-input";
-
-                        const label = document.createElement("label");
-                        label.htmlFor = `uc-${uc}`;
-                        label.className = "form-check-label ms-2";
-                        label.innerText = uc;
-
-                        const div = document.createElement("div");
-                        div.className = "form-check mb-2";
-                        div.appendChild(checkbox);
-                        div.appendChild(label);
-
-                        ucsContainer.appendChild(div);
-                    });
+                // Verificar se o valor digitado está no primeiro ou último nome
+                if (
+                    primeiroNome.includes(searchValue) ||
+                    ultimoNome.includes(searchValue)
+                ) {
+                    row.style.display = ""; // Mostrar linha
+                } else {
+                    row.style.display = "none"; // Ocultar linha
                 }
             });
-
-            if (selectedCourses.length === 0) {
-                const message = document.createElement("p");
-                message.className = "text-muted";
-                message.innerText = "Selecione um curso acima para ver as Unidades Curriculares associadas.";
-                ucsContainer.appendChild(message);
-            }
         });
     });
 </script>
