@@ -851,6 +851,58 @@ def funcionario_delete_pagamentos(request, id_pagamento):
     return redirect('pagamentos_funcionario')
 
 
+#Inserção da matricula do aluno
+def matricula_aluno(request):
+
+    user_id = request.session.get('user_id')  # ID do aluno logado
+    aluno_data = {}
+
+    try:
+        # Buscar os dados do aluno logado
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT p_nome, u_nome, email, telefone, localidade
+                FROM alunos
+                WHERE id_aluno = %s
+            """, [user_id])
+            aluno = cursor.fetchone()
+
+        if aluno:
+            aluno_data = {
+                'p_nome': aluno[0],
+                'u_nome': aluno[1],
+                'email': aluno[2],
+                'telefone': aluno[3],
+                'localidade': aluno[4],
+            }
+        else:
+            messages.error(request, "Aluno não encontrado.")
+            return redirect('dashboard')  # Redireciona caso o aluno não seja encontrado
+
+        if request.method == 'POST':
+            # Capturar os dados enviados pelo formulário
+            id_curso = request.POST.get('id_curso')
+            ano_letivo = request.POST.get('ano_letivo')
+            data_inscricao = request.POST.get('ano_inscricao')
+
+            # Inserir matrícula usando o procedimento armazenado
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CALL p_matricula_insert(%s, %s, %s, %s);
+                """, [user_id, id_curso, data_inscricao, ano_letivo])
+
+            messages.success(request, "Matrícula realizada com sucesso!")
+            return redirect('matricula_aluno')
+
+    except Exception as e:
+        messages.error(request, f"Erro ao carregar os dados do aluno ou realizar a matrícula: {str(e)}")
+
+    # Renderizar o formulário de inscrição com os dados do aluno preenchidos
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'matricula_aluno',
+        'aluno_data': aluno_data,
+    })
+
 
 @aluno_required
 def dashboard_aluno(request):
@@ -891,10 +943,6 @@ def pagamentos_aluno(request):
 @funcionario_required
 def pagamentos_funcionario(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos_funcionario'})
-
-@aluno_required
-def matricula_aluno(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'matricula_aluno'})
 
 @funcionario_required
 def matricula_funcionario(request):
