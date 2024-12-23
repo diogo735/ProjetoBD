@@ -35,6 +35,8 @@ urlpatterns = [
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
 
+
+
     path('funcionarios/alunos/', views.alunos_funcionario, name='alunos_funcionario'),
     
     path('aluno/gestao_escola/', views.gestao_escola_aluno, name='gestao_escola_aluno'),

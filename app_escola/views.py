@@ -156,3 +156,52 @@ def gestao_escola_professor(request):
 @funcionario_required
 def gestao_escola_funcionario(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_funcionario'})
+
+@professor_required
+def unidades_curriculares_professor(request):
+    """
+    Retorna as unidades curriculares associadas aos turnos do professor logado,
+    com suporte a filtros de turno, ano e semestre.
+    """
+    id_professor = request.session.get('user_id')  # Obtém o ID do professor da sessão
+
+    turno = request.GET.get('turno')  # Filtro por turno
+    ano = request.GET.get('ano')      # Filtro por ano
+    semestre = request.GET.get('semestre')  # Filtro por semestre
+
+    try:
+        with connection.cursor() as cursor:
+            query = """
+                SELECT uc.id_uc, uc.nome AS unidade_curricular, uc.id_ano, uc.id_semestre, uc.ects, t.turno_nome
+                FROM public.unidades_curriculares uc
+                JOIN public.turnos t ON uc.id_uc = t.id_uc
+                JOIN public.turnos_professor tp ON t.id_turno = tp.id_turno
+                WHERE tp.id_professor = %s
+            """
+            params = [id_professor]
+
+            if turno:
+                query += " AND t.turno_nome = %s"
+                params.append(turno)
+
+            if ano:
+                query += " AND uc.id_ano = %s"
+                params.append(ano)
+
+            if semestre:
+                query += " AND uc.id_semestre = %s"
+                params.append(semestre)
+
+            cursor.execute(query, params)
+            unidades_curriculares = cursor.fetchall()
+            
+            colunas = [col[0] for col in cursor.description]
+            unidades_formatadas = [dict(zip(colunas, uc)) for uc in unidades_curriculares]
+
+        return render(request, 'pagina_principal/main.html', {
+            'default_content': 'unidades_curriculares_professor',
+            'unidades_curriculares': unidades_formatadas,
+        })
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)})

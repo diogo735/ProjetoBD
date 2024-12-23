@@ -1,0 +1,141 @@
+<div class="container py-4">
+    <h2 class="mb-4">Unidades Curriculares do Professor</h2>
+
+    <!-- Filtros -->
+    <div class="card shadow mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Filtros</h5>
+        </div>
+        <div class="card-body">
+            <form id="filtroForm" class="row g-3">
+                <!-- Filtro Turno -->
+                <div class="col-md-4">
+                    <label for="filtroTurno" class="form-label">Turno</label>
+                    <select id="filtroTurno" class="form-select">
+                        <option value="" selected>Todos os Turnos</option>
+                        <option value="Manha">Manhã</option>
+                        <option value="Tarde">Tarde</option>
+                        <option value="Noite">Noite</option>
+                    </select>
+                </div>
+
+                <!-- Filtro Ano -->
+                <div class="col-md-4">
+                    <label for="filtroAno" class="form-label">Ano</label>
+                    <select id="filtroAno" class="form-select">
+                        <option value="" selected>Todos os Anos</option>
+                        <option value="1">1º Ano</option>
+                        <option value="2">2º Ano</option>
+                        <option value="3">3º Ano</option>
+                    </select>
+                </div>
+
+                <!-- Filtro Semestre -->
+                <div class="col-md-4">
+                    <label for="filtroSemestre" class="form-label">Semestre</label>
+                    <select id="filtroSemestre" class="form-select">
+                        <option value="" selected>Todos os Semestres</option>
+                        <option value="1">1º Semestre</option>
+                        <option value="2">2º Semestre</option>
+                    </select>
+                </div>
+
+                <!-- Botões de Filtro -->
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" onclick="aplicarFiltros()">Aplicar Filtros</button>
+                    <button type="button" class="btn btn-secondary" onclick="limparFiltros()">Limpar Filtros</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabela de Resultados -->
+    <div class="card shadow">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Resultados</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Turno</th>
+                        <th>Ano</th>
+                        <th>Semestre</th>
+                        <th>Nome</th>
+                        <th>ECTS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for uc in unidades_curriculares %}
+                    <tr>
+                        <td>{{ uc.id_uc }}</td>
+                        <td>{{ uc.turno_nome }}</td>
+                        <td>{{ uc.id_ano }}</td>
+                        <td>{{ uc.id_semestre }}</td>
+                        <td>{{ uc.unidade_curricular }}</td>
+                        <td>{{ uc.ects }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-center">Nenhuma unidade encontrada.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
+
+<script>
+    /**
+     * Aplica filtros com base nos valores selecionados.
+     */
+    function aplicarFiltros() {
+        const turno = document.getElementById('filtroTurno').value;
+        const ano = document.getElementById('filtroAno').value;
+        const semestre = document.getElementById('filtroSemestre').value;
+
+        // Montar URL com os parâmetros
+        let url = `/professor/unidades_curriculares?`;
+        if (turno) url += `turno=${turno}&`;
+        if (ano) url += `ano=${ano}&`;
+        if (semestre) url += `semestre=${semestre}&`;
+
+        // Remover o último "&" se houver
+        url = url.replace(/&$/, '');
+
+        // Redirecionar para a URL com os parâmetros aplicados
+        window.location.href = url;
+    }
+
+    /**
+     * Limpa todos os filtros e recarrega a página sem parâmetros.
+     */
+    function limparFiltros() {
+        document.getElementById('filtroTurno').value = '';
+        document.getElementById('filtroAno').value = '';
+        document.getElementById('filtroSemestre').value = '';
+
+        window.location.href = `/professor/unidades_curriculares`;
+    }
+
+    /**
+     * Pré-seleciona os filtros com base nos parâmetros da URL.
+     */
+    function inicializarFiltros() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        const turno = urlParams.get('turno');
+        const ano = urlParams.get('ano');
+        const semestre = urlParams.get('semestre');
+
+        if (turno) document.getElementById('filtroTurno').value = turno;
+        if (ano) document.getElementById('filtroAno').value = ano;
+        if (semestre) document.getElementById('filtroSemestre').value = semestre;
+    }
+
+    // Inicializar os filtros ao carregar a página
+    document.addEventListener('DOMContentLoaded', inicializarFiltros);
+</script>
+
