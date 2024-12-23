@@ -2,12 +2,14 @@
     <!-- Tabs -->
     <ul class="nav nav-tabs" id="pagamentosTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pendentes-tab" data-bs-toggle="tab" data-bs-target="#pendentes" type="button" role="tab" aria-controls="pendentes" aria-selected="true">
+            <button class="nav-link active" id="pendentes-tab" data-bs-toggle="tab" data-bs-target="#pendentes"
+                type="button" role="tab" aria-controls="pendentes" aria-selected="true">
                 Pagamentos Pendentes
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico" type="button" role="tab" aria-controls="historico" aria-selected="false">
+            <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico" type="button"
+                role="tab" aria-controls="historico" aria-selected="false">
                 Histórico de Pagamentos
             </button>
         </li>
@@ -27,18 +29,6 @@
                         <strong>Atenção:</strong> Multa de 10% aplicada em pagamentos atrasados.
                     </div>
 
-                    <!-- Filtros -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="pesquisa-ano" class="form-label">Pesquisar por Ano</label>
-                            <select id="pesquisa-ano" class="form-select">
-                                <option value="" selected>Todos os Anos</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <!-- Lista de Pagamentos Pendentes -->
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -54,22 +44,58 @@
                             </thead>
                             <tbody>
                                 {% if pagamentos_pendentes %}
-                                    {% for pagamento in pagamentos_pendentes %}
-                                    <tr>
-                                        <td>{{ pagamento.descricao }}</td>
-                                        <td>{{ pagamento.valor }}</td>
-                                        <td>{{ pagamento.multa }}</td>
-                                        <td>{{ pagamento.data_vencimento }}</td>
-                                        <td>{{ pagamento.estado }}</td>
-                                        <td>
-                                            <button class="btn btn-sm btn-success">Pagar</button>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
+                                {% for pagamento in pagamentos_pendentes %}
+                                <tr>
+                                    <td>{{ pagamento.descricao }}</td>
+                                    <td>{{ pagamento.valor }}</td>
+                                    <td>{{ pagamento.multa }}</td>
+                                    <td>{{ pagamento.data_vencimento }}</td>
+                                    <td>{{ pagamento.estado }}</td>
+                                    <td>
+                                        <!-- Botão Pagar -->
+                                        <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal"
+                                            data-bs-target="#pagarModal-{{ pagamento.id_pagamento }}"
+                                            data-descricao="{{ pagamento.descricao }}"
+                                            data-valor="{{ pagamento.valor }}" data-multa="{{ pagamento.multa }}">
+                                            Pagar
+                                        </button>
+
+                                        <!-- Modal Pagar -->
+                                        <div class="modal fade" id="pagarModal-{{ pagamento.id_pagamento }}"
+                                            tabindex="-1" aria-labelledby="pagarModalLabel-{{ pagamento.id_pagamento }}"
+                                            aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title"
+                                                            id="pagarModalLabel-{{ pagamento.id_pagamento }}">Confirmar
+                                                            Pagamento</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Tem certeza de que deseja realizar o pagamento?</p>
+                                                        <p><strong>Descrição:</strong> {{ pagamento.descricao }}</p>
+                                                        <p><strong>Valor:</strong> €{{ pagamento.valor }}</p>
+                                                        <p><strong>Multa:</strong> €{{ pagamento.multa }}</p>
+                                                        <p><strong>Total:</strong> €<span
+                                                                id="modal-total-{{ pagamento.id_pagamento }}"></span>
+                                                        </p>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Cancelar</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
                                 {% else %}
-                                    <tr>
-                                        <td colspan="6" class="text-center">Nenhum pagamento pendente encontrado.</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="6" class="text-center">Nenhum pagamento encontrado.</td>
+                                </tr>
                                 {% endif %}
                             </tbody>
                         </table>
@@ -86,21 +112,6 @@
                 </div>
                 <div class="card-body">
                     <p>Veja os pagamentos realizados ao longo do tempo.</p>
-
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="pesquisa-ano" class="form-label">Pesquisar por Ano</label>
-                            <select id="pesquisa-ano" class="form-select">
-                                <option value="" selected>Todos os Anos</option>
-                                <option value="2024">2024</option>
-                                <option value="2023">2023</option>
-                            </select>
-                        </div>
-                    </div>
-
-
-                    <!-- Tabela de Histórico -->
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -114,19 +125,19 @@
                             </thead>
                             <tbody>
                                 {% if historico_pagamentos %}
-                                    {% for pagamento in historico_pagamentos %}
-                                    <tr>
-                                        <td>{{ pagamento.descricao }}</td>
-                                        <td>{{ pagamento.valor}}</td>
-                                        <td>{{ pagamento.multa}}</td>
-                                        <td>{{ pagamento.data_vencimento }}</td>
-                                        <td>{{pagamento.estado}}</td>
-                                    </tr>
-                                    {% endfor %}
+                                {% for pagamento in historico_pagamentos %}
+                                <tr>
+                                    <td>{{ pagamento.descricao }}</td>
+                                    <td>{{ pagamento.valor }}</td>
+                                    <td>{{ pagamento.multa }}</td>
+                                    <td>{{ pagamento.data_vencimento }}</td>
+                                    <td>{{ pagamento.estado }}</td>
+                                </tr>
+                                {% endfor %}
                                 {% else %}
-                                    <tr>
-                                        <td colspan="4" class="text-center">Nenhum histórico encontrado.</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="5" class="text-center">Nenhum histórico encontrado.</td>
+                                </tr>
                                 {% endif %}
                             </tbody>
                         </table>
@@ -136,3 +147,23 @@
         </div>
     </div>
 </div>
+
+<!-- Script para inicializar modais e calcular o total -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modals = document.querySelectorAll(".modal");
+        modals.forEach(modal => {
+            modal.addEventListener("show.bs.modal", function (event) {
+                const button = event.relatedTarget;
+                const descricao = button.getAttribute("data-descricao");
+                const valor = parseFloat(button.getAttribute("data-valor"));
+                const multa = parseFloat(button.getAttribute("data-multa"));
+
+                const total = (valor + multa).toFixed(2);
+
+                const modalId = modal.getAttribute("id").split("-")[1];
+                document.querySelector(`#modal-total-${modalId}`).textContent = total;
+            });
+        });
+    });
+</script>

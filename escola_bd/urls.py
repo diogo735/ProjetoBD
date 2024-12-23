@@ -52,6 +52,10 @@ urlpatterns = [
     path('funcionarios/delete/<int:id_aluno>/', views.aluno_delete, name='aluno_delete'),
     path('funcionarios/editar/<int:id_aluno>/', views.aluno_editar, name='aluno_editar'),
 
+    path('funcionarios/pagamentos/delete/<int:id_pagamento>/', views.funcionario_delete_pagamentos, name='funcionario_delete_pagamentos'),
+    path('funcionarios/pagamentos/update/<int:id_pagamento>/', views.funcionario_update_pagamentos, name='funcionario_update_pagamentos'),
+
+
 
     path('aluno/gestao_escola/', views.gestao_escola_aluno, name='gestao_escola_aluno'),
     path('professor/gestao_escola/', views.gestao_escola_professor, name='gestao_escola_professor'),

@@ -9,7 +9,6 @@ from .utils import aluno_required, professor_required, funcionario_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-
 def home(request):
     try:
         # Tenta fazer uma consulta simples ao banco de dados
@@ -698,6 +697,7 @@ def pagamentos_em_falta_alunos(request):
     status_historico = None
     pagamentos_pendentes = []
     historico_pagamentos = []
+    pagamentos = []
 
     try:
         # Verifica se o usuário está logado
@@ -718,6 +718,10 @@ def pagamentos_em_falta_alunos(request):
                 }
                 for pagamento in cursor.fetchall()
             ]
+
+
+        for pagamento in pagamentos:
+            pagamento['total'] = round(float(pagamento['valor']) + float(pagamento['multa']), 2)
 
         # Buscar o histórico de pagamentos do usuário logado
         with connection.cursor() as cursor:
@@ -756,6 +760,7 @@ def pagamentos_em_falta_alunos(request):
         'status_pendentes': status_pendentes,
         'mensagem_historico': mensagem_historico,
         'status_historico': status_historico,
+        'pagamentos': pagamentos,
     })
 
 
@@ -799,11 +804,52 @@ def funcionario_listar_pagamentos(request):
         'status_todos_pagamentos': status_todos_pagamentos,
     })
 
-    # Renderiza os dados na view
-    return render(request, 'pagina_principal/main.html', {
-        'default_content': 'professores_aluno',
-        'professores': professores
-    })
+def funcionario_update_pagamentos(request, id_pagamento):
+
+    if request.method == 'POST':
+        # Capturar os dados enviados pelo formulário
+        descricao = request.POST.get('descricao')
+        valor = request.POST.get('valor')
+        data_vencimento = request.POST.get('data_vencimento')
+        estado = request.POST.get('estado')
+        multa = request.POST.get('multa', 0.00)  # Valor padrão para multa
+
+        try:
+            # Atualizar os dados usando o procedimento armazenado
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CALL p_funcionario_update_pagamentos(%s, %s, %s, %s, %s, %s);
+                """, [id_pagamento, descricao, valor, data_vencimento, estado, multa])
+
+            messages.success (request, "Pagamento atualizado com sucesso!")
+        except Exception as e:
+            messages.error(request, f"Erro ao atualizar pagamento: {str(e)}")
+
+    # Redirecionar de volta à página de pagamentos com uma mensagem de sucesso ou erro
+    return redirect('pagamentos_funcionario')
+
+def funcionario_delete_pagamentos(request, id_pagamento):
+    try:
+        # Verificar se o registro existe
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM Pagamentos WHERE id_pagamento = %s", [id_pagamento])
+            if cursor.fetchone() is None:
+                messages.error(request, "Pagamento não encontrado.")
+                return redirect('pagamentos_funcionario')
+
+        # Remover o pagamento usando o procedimento armazenado
+        with connection.cursor() as cursor:
+            cursor.execute("CALL p_funcionario_delete_pagamentos(%s);", [id_pagamento])
+
+        # Adicionar uma mensagem de sucesso
+        messages.success(request, "Pagamento removido com sucesso!")
+    except Exception as e:
+        # Adicionar uma mensagem de erro
+        messages.error(request, f"Erro ao remover pagamento: {str(e)}")
+
+    # Redirecionar de volta para a página de pagamentos
+    return redirect('pagamentos_funcionario')
+
 
 
 @aluno_required
