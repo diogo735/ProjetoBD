@@ -130,18 +130,52 @@ def loading_page(request):
 #@funcionario_required
 #def unidades_curriculares_funcionario(request):
  #   return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
+
+from django.shortcuts import render
+
+from django.shortcuts import render
+from datetime import datetime
+
 @funcionario_required
 def unidades_curriculares_funcionario(request):
+    # Definindo cursos, anos, semestres e turnos
+    cursos = ['Engenharia Informática', 'Engenharia Multimedia', 'Engenharia Turismo']
+    anos = ['1º Ano', '2º Ano', '3º Ano']
+    semestres = ['1º Semestre', '2º Semestre']
+    turnos_horario = ['Manhã', 'Tarde']
+    
+    # Obter o mês atual
+    mes_atual = datetime.now().month
+    
+    # Determinar semestre atual
+    if 9 <= mes_atual >= 2:  # Setembro a Fevereiro
+        semestre_atual = '1º Semestre'
+    else:  # Março a Agosto
+        semestre_atual = '2º Semestre'
+    
     turnos = []
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM listar_turnos_ativos()")
-        columns = [col[0] for col in cursor.description]
-        turnos = [dict(zip(columns, row)) for row in cursor.fetchall()]
-
+    turno_id = 1  # Iniciamos um contador para IDs únicos
+    
+    for curso in cursos:
+        for ano in anos:
+            for semestre in semestres:
+                if semestre == semestre_atual:  # Filtrar pelo semestre atual
+                    for turno in turnos_horario:
+                        turnos.append({
+                            'curso_nome': curso,
+                            'turno_nome': turno,
+                            'ano': ano,
+                            'semestre': semestre,
+                            'vagas_disponiveis': 25,
+                            'id_turno': turno_id,
+                        })
+                        turno_id += 1  # Incrementa o ID para cada turno
+    
     return render(request, 'pagina_principal/main.html', {
         'default_content': 'unidades_curriculares_funcionario',
         'turnos': turnos,
     })
+
 
 
 @funcionario_required
