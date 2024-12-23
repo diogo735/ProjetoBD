@@ -1,5 +1,4 @@
 <div class="container py-4">
-
     <!-- Tabs para Situação Curricular e ECTS -->
     <ul class="nav nav-tabs" id="avaliacoesTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -25,38 +24,40 @@
                     <p>Consulte a sua situação curricular atual, incluindo as Unidades Curriculares (UCs) matriculadas e as suas avaliações.</p>
 
                     <!-- Formulário de Pesquisa -->
-                    <form class="row g-3 mb-4">
+                    <form method="get" class="row g-3 mb-4">
                         <div class="col-md-4">
-                            <label for="ano" class="form-label">Ano</label>
-                            <select id="ano" class="form-select">
-                                <option selected>Escolha o ano...</option>
-                                <option value="1">1º Ano</option>
-                                <option value="2">2º Ano</option>
-                                <option value="3">3º Ano</option>
+                            <label for="filtro-ano" class="form-label">Ano</label>
+                            <select id="filtro-ano" name="ano" class="form-select">
+                                <option value="">Escolha o ano...</option>
+                                {% for ano in anos %}
+                                    <option value="{{ ano }}" {% if filtros.ano == ano %}selected{% endif %}>{{ ano }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="semestre" class="form-label">Semestre</label>
-                            <select id="semestre" class="form-select">
-                                <option selected>Escolha o semestre...</option>
-                                <option value="1">1º Semestre</option>
-                                <option value="2">2º Semestre</option>
+                            <label for="filtro-semestre" class="form-label">Semestre</label>
+                            <select id="filtro-semestre" name="semestre" class="form-select">
+                                <option value="">Escolha o semestre...</option>
+                                {% for semestre in semestres %}
+                                    <option value="{{ semestre }}" {% if filtros.semestre == semestre %}selected{% endif %}>{{ semestre }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label for="epoca" class="form-label">Época de Avaliação</label>
-                            <select id="epoca" class="form-select">
-                                <option selected>Escolha a época...</option>
-                                <option value="normal">Normal</option>
-                                <option value="recurso">Recurso</option>
-                                <option value="especial">Especial</option>
+                            <label for="filtro-epoca" class="form-label">Época de Avaliação</label>
+                            <select id="filtro-epoca" name="epoca" class="form-select">
+                                <option value="">Escolha a época...</option>
+                                {% for epoca in epocas %}
+                                    <option value="{{ epoca }}" {% if filtros.epoca == epoca %}selected{% endif %}>{{ epoca }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-12">
-                            <button type="button" class="btn btn-outline-primary">Pesquisar</button>
+                            <button type="submit" class="btn btn-outline-primary">Filtrar</button>
                         </div>
                     </form>
 
+                    <!-- Tabela de Avaliações -->
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
@@ -64,57 +65,37 @@
                                     <th>Ano</th>
                                     <th>Semestre</th>
                                     <th>Unidade Curricular</th>
-                                    <th>Projeto Final</th>
-                                    <th>Testes Teóricos</th>
-                                    <th>Frequências</th>
-                                    <th>Exame Normal</th>
-                                    <th>Exame Recurso</th>
-                                    <th>Nota Final</th>
+                                    <th>Prova</th>
+                                    <th>Avaliação</th>
                                     <th>Época</th>
+                                    <th>Data Lançamento</th>
                                     <th>Estado</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1º Ano</td>
-                                    <td>1º Semestre</td>
-                                    <td>Programação</td>
-                                    <td>16</td>
-                                    <td>14</td>
-                                    <td>15</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>16</td>
-                                    <td>Normal</td>
-                                    <td>Aprovado</td>
-                                </tr>
-                                <tr>
-                                    <td>1º Ano</td>
-                                    <td>2º Semestre</td>
-                                    <td>Redes de Computadores</td>
-                                    <td>14</td>
-                                    <td>12</td>
-                                    <td>13</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>13</td>
-                                    <td>Normal</td>
-                                    <td>Aprovado</td>
-                                </tr>
-                                <tr>
-                                    <td>2º Ano</td>
-                                    <td>1º Semestre</td>
-                                    <td>Matemática Discreta</td>
-                                    <td>-</td>
-                                    <td>6</td>
-                                    <td>9</td>
-                                    <td>9,4</td>
-                                    <td>10</td>
-                                    <td>10</td>
-                                    <td>Recurso</td>
-                                    <td>Aprovado</td>
-                                </tr>
-                                <!-- Adicione mais UCs conforme necessário -->
+                                {% for avaliacao in avaliacoes %}
+                                    <tr>
+                                        <td>{{ avaliacao.ano }}</td>
+                                        <td>{{ avaliacao.semestre }}</td>
+                                        <td>{{ avaliacao.unidade_curricular }}</td>
+                                        <td>{{ avaliacao.nome }}</td>
+                                        <td>{{ avaliacao.nota }}</td>
+                                        <td>{{ avaliacao.epoca }}</td>
+                                        <td>{{ avaliacao.data_avaliacao }}</td>
+                                        <td>
+                                            <span class="badge 
+                                                {% if avaliacao.estado == 'Aprovado' %}bg-success
+                                                {% elif avaliacao.estado == 'Reprovado' %}bg-danger
+                                                {% else %}bg-warning{% endif %}">
+                                                {{ avaliacao.estado }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="8" class="text-center">Nenhuma avaliação encontrada.</td>
+                                    </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -139,24 +120,17 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for ects in ects_data %}
                                 <tr>
-                                    <td>Programação</td>
-                                    <td>6</td>
+                                    <td>{{ ects.unidade_curricular }}</td>
+                                    <td>{{ ects.valor }}</td>
                                 </tr>
-                                <tr>
-                                    <td>Redes de Computadores</td>
-                                    <td>5</td>
-                                </tr>
-                                <tr>
-                                    <td>Matemática Discreta</td>
-                                    <td>6</td>
-                                </tr>
-                                <!-- Adicione mais UCs conforme necessário -->
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
                     <div class="mt-3">
-                        <strong>TOTAL ECTS:</strong> <span>17</span>
+                        <strong>TOTAL ECTS:</strong> <span>{{ total_ects }}</span>
                     </div>
                 </div>
             </div>

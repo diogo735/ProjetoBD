@@ -21,7 +21,18 @@
                     <h2 class="h5 mb-0">Atribuir ou Editar Avaliações</h2>
                 </div>
                 <div class="card-body">
-                    <p>Todos os alunos da turma aparecem automaticamente. Salve todas as notas com um único botão, mas continue podendo editá-las posteriormente.</p>
+                    <p>Selecione uma unidade curricular para listar os alunos associados e atribuir avaliações.</p>
+
+                    <!-- Filtro de Unidade Curricular -->
+                    <div class="mb-3">
+                        <label for="filtro-uc" class="form-label">Unidade Curricular</label>
+                        <select id="filtro-uc" class="form-select">
+                            <option value="">Escolha a Unidade Curricular...</option>
+                            {% for id, nome in ucs %}
+                                <option value="{{ id }}">{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
                     <!-- Tabela de Gerenciamento de Avaliações -->
                     <div class="table-responsive">
@@ -30,49 +41,78 @@
                                 <tr>
                                     <th>Nº Mecanográfico</th>
                                     <th>Nome do Aluno</th>
-                                    <th>Nota</th>
-                                    <th>Data de Lançamento</th>
+                                    <th>Unidade Curricular</th>
                                 </tr>
                             </thead>
                             <tbody id="alunos-tbody">
-                                <tr>
-                                    <td>12345</td>
-                                    <td>João Silva</td>
+                                {% for n_meca, nome, UC in alunos %}
+                                    <tr data-uc="{{ UC }}">
+                                        <td>{{ n_meca }}</td>
+                                        <td>{{ nome }}</td>
+                                        <td>{{ UC }}</td>
+                                    </tr>
                                     <td>
-                                        <input type="number" class="form-control nota-aluno" value="16" min="0" max="20" data-id="12345">
-                                    </td>
-                                    <td>
-                                        <input type="date" class="form-control data-aluno" value="2024-01-15" data-id="12345">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>67890</td>
-                                    <td>Maria Santos</td>
-                                    <td>
-                                        <input type="number" class="form-control nota-aluno" value="14" min="0" max="20" data-id="67890">
-                                    </td>
-                                    <td>
-                                        <input type="date" class="form-control data-aluno" value="2024-01-18" data-id="67890">
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>54321</td>
-                                    <td>Pedro Oliveira</td>
-                                    <td>
-                                        <input type="number" class="form-control nota-aluno" value="15" min="0" max="20" data-id="54321">
-                                    </td>
-                                    <td>
-                                        <input type="date" class="form-control data-aluno" value="2024-01-20" data-id="54321">
-                                    </td>
-                                </tr>
-                                <!-- Adicione mais alunos conforme necessário -->
-                            </tbody>
-                        </table>
-                    </div>
+                                        <button type="button" class="btn btn-sm btn-secondary"
+                                                data-bs-toggle="modal" data-bs-target="#editarModal-{{ aluno.0 }}">
+                                            Avaliação
+                                        </button>
 
-                    <!-- Botão para Salvar Todas as Notas -->
-                    <div class="d-flex justify-content-end mt-3">
-                        <button type="button" class="btn btn-success" id="salvar-todas">Salvar Todas as Notas</button>
+                                        <div class="modal fade" id="editarModal-{{ aluno.0 }}" tabindex="-1" aria-labelledby="editarModalLabel-{{ aluno.0 }}" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="editarModalLabel-{{ aluno.0 }}">Editar Aluno</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="POST" action="">
+                                                            {% csrf_token %}
+                                                            <div class="mb-3">
+                                                                <label for="p-nome-{{ aluno.0 }}" class="form-label">Primeiro Nome</label>
+                                                                <input type="text" name="p_nome" id="p-nome-{{ aluno.0 }}" 
+                                                                        class="form-control" value="{{ aluno.2 }}" required>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="u-nome-{{ aluno.0 }}" class="form-label">Último Nome</label>
+                                                                <input type="text" name="u_nome" id="u-nome-{{ aluno.0 }}" 
+                                                                        class="form-control" value="{{ aluno.3 }}" required>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="email-{{ aluno.0 }}" class="form-label">Email</label>
+                                                                <input type="email" name="email" id="email-{{ aluno.0 }}" 
+                                                                        class="form-control" value="{{ aluno.4 }}" required>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="telefone-{{ aluno.0 }}" class="form-label">Telefone</label>
+                                                                <input type="text" name="telefone" id="telefone-{{ aluno.0 }}" 
+                                                                        class="form-control" value="{{ aluno.6 }}">
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="localidade-{{ aluno.0 }}" class="form-label">Localidade</label>
+                                                                <input type="text" name="localidade" id="localidade-{{ aluno.0 }}" 
+                                                                        class="form-control" value="{{ aluno.7 }}">
+                                                            </div>
+
+                                                            <div class="d-flex justify-content-end gap-2">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                     
+
+                                    </td>
+                                {% endfor %}
+                            </tbody>                                                       
+                        </table>
                     </div>
                 </div>
             </div>
@@ -80,33 +120,9 @@
 
         <!-- Tab Histórico Avaliações -->
         <div class="tab-pane fade" id="historico-avaliacoes" role="tabpanel" aria-labelledby="historico-avaliacoes-tab">
-            <!-- O conteúdo da aba Histórico Avaliações permanece inalterado -->
-            <!-- Adicione o código da aba Histórico Avaliações aqui -->
+            <p>Histórico de avaliações lançadas pelos professores.</p>
         </div>
     </div>
 </div>
 
-<script>
-    // Função para salvar todas as notas
-    document.getElementById("salvar-todas").addEventListener("click", function () {
-        const notas = [];
-        const datas = [];
 
-        // Coleta todas as notas e datas dos alunos
-        document.querySelectorAll(".nota-aluno").forEach(input => {
-            const alunoId = input.dataset.id;
-            const nota = input.value;
-            const data = document.querySelector(`.data-aluno[data-id='${alunoId}']`).value;
-
-            notas.push({ alunoId, nota, data });
-        });
-
-        // Simula o salvamento no backend (substitua isso por um AJAX para realmente salvar)
-        console.log("Salvando as seguintes notas:", notas);
-
-        // Exibe uma mensagem de sucesso
-        alert("Notas salvas com sucesso!");
-
-        // As notas permanecem editáveis após o salvamento
-    });
-</script>

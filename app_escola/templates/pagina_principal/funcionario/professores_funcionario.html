@@ -13,7 +13,7 @@
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="cursos-tab" data-bs-toggle="tab" data-bs-target="#cursos" type="button" role="tab" aria-controls="cursos" aria-selected="false">
-                Cursos
+                UCs
             </button>
         </li>
     </ul>
@@ -29,40 +29,23 @@
                     <p>Consulte abaixo a lista de professores por curso, edite ou remova informações, e realize a pesquisa.</p>
 
                      <!-- Nome do Professor -->
-                    <div class="mb-3">
+                    <div class="mb-3 col-md-6">
                         <label for="nome-professor" class="form-label">Nome</label>
                         <input type="text" id="nome-professor" class="form-control" placeholder="Digite o nome do professor">
                     </div>
 
-                                            
-                    <!-- Filtros de Pesquisa -->
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="pesquisa-curso" class="form-label">Pesquisar por Curso</label>
-                            <select id="pesquisa-curso" class="form-select">
-                                <option value="" selected>Todos os Cursos</option>
-                                <option value="Engenharia Informática">Engenharia Informática</option>
-                                <option value="Gestão">Gestão</option>
-                                <option value="Economia">Economia</option>
-                            </select>
-                        </div>
-                    </div>
                     
                     <div class="container py-4">
 
                         <!-- Lista de Professores por Curso -->
                         <div id="professores-por-curso">
-                            <!-- Curso: Engenharia Informática -->
-                        <h3 class="h6 mb-3">Curso: Engenharia Informática</h3>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Primeiro Nome</th>
-                                            <th>Último Nome</th>
+                                            <th>Nome</th>
                                             <th>Email</th>
-                                            <!-- <th>Unidade Curricular</th>  -->
+                                            <th>Curso</th> 
                                             <th>Telefone</th>
                                             <th>Localidade</th>
                                             <th>Ações</th>
@@ -72,10 +55,8 @@
                                         {% if professores %}
                                             {% for professor in professores %}
                                             <tr>
-                                                <td>{{ professor.1 }}</td>
-                                                <td>{{ professor.2 }}</td>                                           
+                                                <td>{{ professor.1 }} {{ professor.2 }}</td>                                        
                                                 <td>{{ professor.3 }}</td>
-                                                <!-- <td></td> -->
                                                 <td>{{ professor.4 }}</td>
                                                 <td>{{ professor.5 }}</td>
                                                 <td>{{ professor.6 }}</td> 
@@ -120,13 +101,13 @@
                                                                             <div class="mb-3">
                                                                                 <label for="telefone-{{ professor.0 }}" class="form-label">Telefone</label>
                                                                                 <input type="text" name="telefone" id="telefone-{{ professor.0 }}" 
-                                                                                        class="form-control" value="{{ professor.4 }}">
+                                                                                        class="form-control" value="{{ professor.5 }}">
                                                                             </div>
 
                                                                             <div class="mb-3">
                                                                                 <label for="localidade-{{ professor.0 }}" class="form-label">Localidade</label>
                                                                                 <input type="text" name="localidade" id="localidade-{{ professor.0 }}" 
-                                                                                        class="form-control" value="{{ professor.5 }}">
+                                                                                        class="form-control" value="{{ professor.6 }}">
                                                                             </div>
 
                                                                             <div class="d-flex justify-content-end gap-2">
@@ -172,7 +153,7 @@
                                             {% endfor %}
                                         {% else %}
                                             <tr>
-                                                <td colspan="7" class="text-center">Nenhum aluno encontrado.</td>
+                                                <td colspan="7" class="text-center">Nenhum professor encontrado.</td>
                                             </tr>
                                         {% endif %}
                                     </tbody>
@@ -236,34 +217,127 @@
             </div>
         </div>
 
-        <!-- Tab Cursos -->
-        <div class="tab-pane fade" id="cursos" role="tabpanel" aria-labelledby="cursos-tab">
+        <div class="tab-pane fade" id="cursos" role="tabpanel" aria-labelledby="ucs-tab">
             <div class="card shadow">
                 <div class="card-header bg-light">
-                    <h2 class="h5 mb-0">Selecionar Cursos e Unidades Curriculares</h2>
+                    <h2 class="h5 mb-0">Atribuir Unidades Curriculares</h2>
                 </div>
-                <div class="card-body">
-                    <form>
-                        <!-- Cursos -->
-                        <div class="mb-3">
-                            <label for="cursos-professor" class="form-label">Cursos</label>
-                            <select id="cursos-professor" class="form-select" multiple>
-                                <option value="1">Engenharia Informática</option>
-                                <option value="2">Gestão</option>
-                                <option value="3">Economia</option>
-                            </select>
-                        </div>
+                <div id="professores-por-curso">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nome</th>
+                                    <th>Email</th>
+                                    <th>Curso</th>
+                                    <th>Telefone</th>
+                                    <th>Localidade</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <h6>Debug UC:</h6>
+                                <ul>
+                                    {% for uc in unidades_curriculares %}
+                                        <li>ID: {{ uc.id }}, Nome: {{ uc.nome }}</li>
+                                    {% empty %}
+                                        <li>Nenhuma UC disponível</li>
+                                    {% endfor %}
+                                </ul>
 
-                        <!-- Unidades Curriculares -->
-                        <div id="ucs-container">
-                            <p class="text-muted">Selecione um curso acima para ver as Unidades Curriculares associadas.</p>
-                        </div>
+                                <h6>Debug Turnos:</h6>
+                                <ul>
+                                    {% for turno in turnos %}
+                                        <li>ID: {{ turno.id }}, Nome: {{ turno.nome }}</li>
+                                    {% empty %}
+                                        <li>Nenhum Turno disponível</li>
+                                    {% endfor %}
+                                </ul>
 
-                        <button type="submit" class="btn btn-primary">Salvar Associações</button>
-                    </form>
+                                {% if professores %}
+                                    {% for professor in professores %}
+                                        <tr>
+                                            <td>{{ professor.1 }} {{ professor.2 }}</td>
+                                            <td>{{ professor.3 }}</td>
+                                            <td>{{ professor.4 }}</td>
+                                            <td>{{ professor.5 }}</td>
+                                            <td>{{ professor.6 }}</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                             <!-- Botão para abrir o modal  -->
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                        data-bs-toggle="modal" data-bs-target="#atribuirUC-{{ professor.0 }}">
+                                                        Atribuir UC
+                                                    </button>
+                                                </div>
+                                                
+                             <!-- Modal para Atribuir UC e Turno  -->
+                                                <div class="modal fade" id="atribuirUC-{{ professor.0 }}" tabindex="-1" 
+                                                    aria-labelledby="atribuirUCLabel-{{ professor.0 }}" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="atribuirUCLabel-{{ professor.0 }}">
+                                                                    Atribuir UC e Turno para {{ professor.1 }} {{ professor.2 }}
+                                                                </h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form method="POST" action="{% url 'atribuir_uc_professor' professor.0 %}">
+                                                                    {% csrf_token %}
+                                                                    
+                             <!-- Dropdown para Unidades Curriculares  -->
+                                                                    <div class="mb-3">
+                                                                        <label for="nome-{{ professor.0 }}" class="form-label">Unidade Curricular</label>
+                                                                        <select name="unidade_curricular" id="nome-{{ professor.0 }}" class="form-select" required>
+                                                                            <option value="">Selecione uma UC</option>
+                                                                            {% for uc in unidades_curriculares %}
+                                                                                <option value="{{ uc.id }}">{{ uc.nome }}</option>
+                                                                            {% empty %}
+                                                                                <option value="" disabled>Nenhuma UC disponível</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+                                                                    
+        
+                             <!-- Dropdown para Turnos  -->
+                                                                    <div class="mb-3">
+                                                                        <label for="turno-nome-{{ professor.0 }}" class="form-label">Turno</label>
+                                                                        <select name="turno" id="turno_nome-{{ professor.0 }}" class="form-select" required>
+                                                                            <option value="">Selecione um Turno</option>
+                                                                            {% for turno in turnos %}
+                                                                                <option value="{{ turno.id }}">{{ turno.nome }}</option>
+                                                                            {% empty %}
+                                                                                <option value="" disabled>Nenhum Turno disponível</option>
+                                                                            {% endfor %}
+                                                                        </select>
+                                                                    </div>
+                                                                    
+        
+                                 <!-- Botões de Ação  -->
+                                                                    <div class="d-flex justify-content-end gap-2">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                        <button type="submit" class="btn btn-primary">Guardar Alterações</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">Nenhum professor encontrado.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+        </div>                
     </div>
 </div>
 
