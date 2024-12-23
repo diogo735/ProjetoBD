@@ -48,6 +48,8 @@ urlpatterns = [
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
     path('funcionario/obter_horarios/<int:id_turno>/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
+
+
     path('funcionarios/alunos/', views.alunos_funcionario, name='alunos_funcionario'),
     path('funcionarios/delete/<int:id_aluno>/', views.aluno_delete, name='aluno_delete'),
     path('funcionarios/editar/<int:id_aluno>/', views.aluno_editar, name='aluno_editar'),
