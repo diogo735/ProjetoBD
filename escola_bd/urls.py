@@ -33,10 +33,14 @@ urlpatterns = [
     path('funcionario/professores/', views.professores_funcionario, name='professores_funcionario'),
     path('funcionarios/professores/remover/<int:id_professor>/', views.professor_delete, name='professor_delete'),
     path('funcionario/professores/editar/<int:id_professor>/', views.professor_editar, name='professor_editar'),
+    path('funcionario/professores/atribuirUC/<int:id_professor>/', views.atribuir_uc_professor, name='atribuir_uc_professor'),
 
     path('aluno/avaliacoes/', views.avaliacoes_aluno, name='avaliacoes_aluno'),
     path('professor/avaliacoes/', views.avaliacoes_professor, name='avaliacoes_professor'),
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
+    path('avaliacoes/aprovar/<int:id_avaliacao>/', views.aprovar_avaliacao, name='aprovar_avaliacao'),
+    #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
+
 
     path('aluno/pagamentos/', views.pagamentos_aluno, name='pagamentos_aluno'),
     path('funcionario/pagamentos/', views.pagamentos_funcionario, name='pagamentos_funcionario'),

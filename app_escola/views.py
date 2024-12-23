@@ -4,6 +4,7 @@ from django.db import connection
 from django.contrib import messages
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 import psycopg2
 from .utils import aluno_required, professor_required, funcionario_required
 from django.http import JsonResponse
@@ -131,6 +132,7 @@ def loading_page(request):
 #@funcionario_required
 #def unidades_curriculares_funcionario(request):
  #   return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
+ 
 @funcionario_required
 def unidades_curriculares_funcionario(request):
     turnos = []
@@ -487,7 +489,7 @@ def alunos_funcionario(request):
             status = "error"
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM f_listar_alunos()")
+        cursor.execute("SELECT * FROM f_listar_alunos()") ##call procedure here
         alunos = cursor.fetchall()  
 
 
@@ -600,6 +602,66 @@ def professores_funcionario(request):
 
 
 @funcionario_required
+def atribuir_uc_professor(request, id_professor):
+    print("Entrou na view atribuir_uc_professor")  
+
+    if request.method == 'POST':
+        print("Método POST detectado")  
+
+        # Captura dos dados do formulário
+        id_unidade_curricular = request.POST.get('unidade_curricular')
+        id_turno = request.POST.get('turno')
+        print(f"Dados recebidos - Professor: {id_professor}, UC: {id_unidade_curricular}, Turno: {id_turno}")  
+
+        # Validação dos campos
+        if not (id_professor and id_unidade_curricular and id_turno):
+            messages.error(request, "Todos os campos são obrigatórios.")
+            print("Campos obrigatórios ausentes!")  
+            return redirect(reverse('atribuir_uc_professor', args=[id_professor]))
+
+        try:
+            # Chamada da procedure no banco
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    CALL p_atribuir_uc_professor(%s, %s, %s);
+                """, [id_professor, id_unidade_curricular, id_turno])
+            print("Procedure executada com sucesso!")  # Log 5
+
+            messages.success(request, "Unidade Curricular atribuída com sucesso ao professor!")
+            return redirect(reverse('atribuir_uc_professor', args=[id_professor]))
+
+        except Exception as e:
+            print(f"Erro ao atribuir UC: {e}")  # Log 6
+            messages.error(request, f"Ocorreu um erro: {e}")
+            return redirect(reverse('atribuir_uc_professor', args=[id_professor]))
+
+    print("Entrando na busca de dados para dropdowns")  # Log 7
+    with connection.cursor() as cursor:
+        # Buscar Unidades Curriculares
+        cursor.execute("SELECT ID_UC, Nome FROM Unidades_Curriculares")
+        unidades_curriculares = [{'id': row[0], 'nome': row[1]} for row in cursor.fetchall()]
+        # unidades_curriculares = cursor.fetchall()
+        print("Unidades Curriculares:", unidades_curriculares)  # Log 8
+
+        # Buscar Turnos
+        cursor.execute("SELECT ID_Turno, Turno_Nome FROM Turnos")
+        #turnos = [{'id': row[0], 'nome': row[1]} for row in cursor.fetchall()]
+        turnos = cursor.fetchall()
+        print("Turnos:", turnos)  # Log 9
+
+        cursor.execute("SELECT * FROM f_listar_professores()")
+        professores = cursor.fetchall()
+
+    print("Renderizando template com dados")  # Log 12
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'professores_funcionario',
+        'unidades_curriculares': unidades_curriculares,
+        'turnos': turnos,
+        'professores': professores
+    })
+
+
+@funcionario_required
 def professor_delete(request, id_professor):
     mensagem = None
     status = None
@@ -648,52 +710,218 @@ def professor_editar(request, id_professor):
 @aluno_required
 def professores_aluno(request):
     # Obtém o ID do aluno logado
-    id_aluno = request.user.id  # Ajuste conforme seu modelo
-    
-    # Buscar o ID do Curso pela Matrícula
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT ID_Curso 
-            FROM Matriculas 
-            WHERE ID_Aluno = %s 
-            LIMIT 1;
-        """, [id_aluno])
-        
-        row = cursor.fetchone()
-        if row:
-            id_curso = row[0]
-        else:
-            id_curso = None
+    id_aluno = request.session.get('user_id')
 
-    if not id_curso:
+    try:
+        # Buscar ID do Curso
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT ID_Curso 
+                FROM Matriculas 
+                WHERE ID_Aluno = %s 
+                LIMIT 1;
+            """, [id_aluno])
+            curso_result = cursor.fetchone()
+
+        if not curso_result:
+            messages.error(request, 'Curso não encontrado para este aluno.')
+            return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
+
+        id_curso = curso_result[0]
+
+        # Buscar os Professores usando Função SQL
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * 
+                FROM f_professores_curso_aluno(%s, %s);
+            """, [id_curso, id_aluno])
+            professores = [
+                {
+                    'nome': row[1],
+                    'unidade_curricular': row[2],
+                    'email': row[3],
+                    'telefone': row[4]
+                }
+                for row in cursor.fetchall()
+            ]
+
+        if not professores:
+            messages.warning(request, 'Nenhum professor encontrado para este curso.')
+            return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
+
         return render(request, 'pagina_principal/main.html', {
             'default_content': 'professores_aluno',
-            'error': 'Curso não encontrado para este aluno.'
+            'professores': professores
         })
 
-    # Buscar os Professores usando a Função SQL
+    except Exception as e:
+        print(f"Erro ao carregar professores: {e}")
+        messages.error(request, f"Ocorreu um erro: {str(e)}")
+        return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
+    
+
+@funcionario_required
+def avaliacoes_funcionario(request):
+    curso = request.GET.get('curso')
+    ano = request.GET.get('ano')
+    semestre = request.GET.get('semestre')
+    epoca = request.GET.get('epoca')
+    
+    query = "SELECT * FROM f_listar_avaliacoes()"
+    conditions = []
+    params = []
+
+    if curso:
+        conditions.append("curso = %s")
+        params.append(curso)
+    if ano:
+        conditions.append("ano = %s")
+        params.append(ano)
+    if semestre:
+        conditions.append("semestre = %s")
+        params.append(semestre)
+    if epoca:
+        conditions.append("epoca = %s")
+        params.append(epoca)
+
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+
     with connection.cursor() as cursor:
-        cursor.execute("""
-            SELECT * 
-            FROM fn_professores_curso_aluno(%s, %s);
-        """, [id_curso, id_aluno])
+        cursor.execute(query, params)
+        columns = [col[0] for col in cursor.description]
+        avaliacoes = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-        # Obtém os resultados
-        professores = [
-            {
-                'nome': row[1],
-                'unidade_curricular': row[2],
-                'email': row[3],
-                'telefone': row[4]
-            } 
-            for row in cursor.fetchall()
-        ]
+        # Obter opções para filtros
+        cursor.execute("SELECT DISTINCT Nome FROM Cursos")
+        cursos = [row[0] for row in cursor.fetchall()]
 
-    # Renderiza os dados na view
+        cursor.execute("SELECT DISTINCT Nome_Ano FROM Ano")
+        anos = [row[0] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT DISTINCT Nome_Semestre FROM Semestre")
+        semestres = [row[0] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT DISTINCT Epoca FROM Avaliacoes")
+        epocas = [row[0] for row in cursor.fetchall()]
+
     return render(request, 'pagina_principal/main.html', {
-        'default_content': 'professores_aluno',
-        'professores': professores
+        'default_content': 'avaliacoes_funcionario',
+        'avaliacoes': avaliacoes,
+        'cursos': cursos,
+        'anos': anos,
+        'semestres': semestres,
+        'epocas': epocas,
+        'filtros': {
+            'curso': curso,
+            'ano': ano,
+            'semestre': semestre,
+            'epoca': epoca
+        }
     })
+
+
+@funcionario_required
+def aprovar_avaliacao(request, id_avaliacao):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("CALL p_aprovar_avaliacao(%s)", [id_avaliacao])
+        messages.success(request, f"Avaliação {id_avaliacao} processada com sucesso.")
+    except Exception as e:
+        messages.error(request, f"Erro ao aprovar avaliação: {str(e)}")
+    
+    return redirect('avaliacoes_funcionario')
+
+
+@professor_required
+def avaliacoes_professor(request):
+    id_professor = request.session.get('user_id')
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            avaliacoes = data.get('avaliacoes', [])
+
+            with connection.cursor() as cursor:
+                for avaliacao in avaliacoes:
+                    cursor.execute("""
+                        CALL p_avaliacoes_professor_inserir(%s, %s, %s, %s, %s, %s, %s)
+                    """, [
+                        id_professor,
+                        avaliacao['id_aluno'],
+                        avaliacao['id_uc'],
+                        avaliacao['nome'],
+                        avaliacao['data_avaliacao'],
+                        avaliacao['epoca'],
+                        avaliacao['nota']
+                    ])
+            return JsonResponse({'success': True, 'message': 'Avaliações registadas com sucesso.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+        
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT DISTINCT UC.ID_UC, UC.Nome FROM Unidades_Curriculares UC JOIN Turnos T ON UC.ID_UC = T.ID_UC JOIN Turnos_Professor tp ON T.ID_Turno = tp.ID_Turno WHERE tp.ID_Professor_Turno = %s", (id_professor,) )
+        ucs = cursor.fetchall()
+        uc_ids = [uc[0] for uc in ucs]  # Armazena o ID de cada UC
+
+        if uc_ids:
+            cursor.execute("SELECT A.n_meca, A.P_Nome, UC.nome AS UC FROM Alunos A JOIN Matriculas M ON A.ID_Aluno = M.ID_Aluno JOIN Cursos C ON M.ID_Curso = C.ID_Curso JOIN Unidades_Curriculares UC ON C.ID_Curso = UC.ID_Curso WHERE UC.ID_UC IN %s ORDER BY UC", (tuple(uc_ids),))
+            alunos = cursor.fetchall()
+            # Query aos Alunos - filtrar por Curso e UCs do prof
+        else:
+            alunos = []
+    
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'avaliacoes_professor',
+        'ucs': ucs,
+        'alunos': alunos
+    })
+
+
+@aluno_required
+def avaliacoes_aluno(request):
+    id_aluno = request.session.get('user_id')
+    ano = request.GET.get('ano')
+    semestre = request.GET.get('semestre')
+    epoca = request.GET.get('epoca')
+    
+    query = """
+        SELECT * FROM f_listar_avaliacoes_aluno(%s, %s, %s, %s)
+    """
+    params = [
+        id_aluno,
+        ano if ano else None,
+        semestre if semestre else None,
+        epoca if epoca else None
+    ]
+
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        columns = [col[0] for col in cursor.description]
+        avaliacoes = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        
+        # Filtros
+        cursor.execute("SELECT DISTINCT Nome_Ano FROM Ano")
+        anos = [row[0] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT DISTINCT Nome_Semestre FROM Semestre")
+        semestres = [row[0] for row in cursor.fetchall()]
+
+        cursor.execute("SELECT DISTINCT Epoca FROM Avaliacoes")
+        epocas = [row[0] for row in cursor.fetchall()]
+    
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'avaliacoes_aluno',
+        'avaliacoes': avaliacoes,
+        'anos': anos,
+        'semestres': semestres,
+        'epocas': epocas,
+        'filtros': {
+            'ano': ano,
+            'semestre': semestre,
+            'epoca': epoca
+        }
+    })
+
 
 @aluno_required
 def dashboard_aluno(request):
@@ -714,18 +942,6 @@ def horarios_aluno(request):
 @professor_required
 def horarios_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'horarios_professor'})
-
-@aluno_required
-def avaliacoes_aluno(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes_aluno'})
-
-@professor_required
-def avaliacoes_professor(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes_professor'})
-
-@funcionario_required
-def avaliacoes_funcionario(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'avaliacoes_funcionario'})
 
 @aluno_required
 def pagamentos_aluno(request):

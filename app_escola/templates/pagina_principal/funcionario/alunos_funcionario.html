@@ -25,22 +25,9 @@
                     <p>Consulte abaixo a lista de alunos por curso, edite ou remova informações, e realize a pesquisa por número mecanográfico ou nome.</p>
 
                     <!-- Nome do Aluno -->
-                    <div class="mb-3">
-                        <label for="nome-aluno" class="form-label">Nome ou Nº Mecanográfico</label>
-                        <input type="text" id="nome-aluno" class="form-control" placeholder="Digite o nome ou o nº mecanográfico">
-                    </div>
-
-                    <!-- Filtros de Pesquisa -->
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <label for="pesquisa-curso" class="form-label">Pesquisar por Curso</label>
-                            <select id="pesquisa-curso" class="form-select">
-                                <option value="" selected>Todos os Cursos</option>
-                                <option value="Engenharia Informática">Engenharia Informática</option>
-                                <option value="Gestão">Gestão</option>
-                                <option value="Economia">Economia</option>
-                            </select>
-                        </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="nome-aluno" class="form-label">Nº Mecanográfico ou Nome</label>
+                        <input type="text" id="nome-aluno" class="form-control" placeholder="Digite o nº mecanográfico ou nome">
                     </div>
 
                     <div class="container py-4">
@@ -50,10 +37,10 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Número Mecanográfico</th>
-                                            <th>Primeiro Nome</th>
-                                            <th>Último Nome</th>
+                                            <th>Nº Mecanográfico</th>
+                                            <th>Nome</th>
                                             <th>Email</th>
+                                            <th>Curso</th>
                                             <th>Telefone</th>
                                             <th>Localidade</th>
                                             <th>Ações</th>
@@ -64,11 +51,11 @@
                                             {% for aluno in alunos %}
                                             <tr>
                                                 <td>{{ aluno.1 }}</td>
-                                                <td>{{ aluno.2 }}</td>                                           
-                                                <td>{{ aluno.3 }}</td>
+                                                <td>{{ aluno.2 }} {{ aluno.3 }}</td>                                           
                                                 <td>{{ aluno.4 }}</td>
                                                 <td>{{ aluno.5 }}</td>
                                                 <td>{{ aluno.6 }}</td> 
+                                                <td>{{ aluno.7 }}</td>
                                                 <td>
                                                     <!-- Botão Editar -->
                                                     <button type="button" class="btn btn-sm btn-secondary"
@@ -107,13 +94,13 @@
                                                                         <div class="mb-3">
                                                                             <label for="telefone-{{ aluno.0 }}" class="form-label">Telefone</label>
                                                                             <input type="text" name="telefone" id="telefone-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.5 }}">
+                                                                                    class="form-control" value="{{ aluno.6 }}">
                                                                         </div>
 
                                                                         <div class="mb-3">
                                                                             <label for="localidade-{{ aluno.0 }}" class="form-label">Localidade</label>
                                                                             <input type="text" name="localidade" id="localidade-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.6 }}">
+                                                                                    class="form-control" value="{{ aluno.7 }}">
                                                                         </div>
 
                                                                         <div class="d-flex justify-content-end gap-2">

@@ -1,3 +1,4 @@
+{% if default_content == 'avaliacoes_funcionario' %}
 <div class="container py-4">
     <!-- Tabs para Aprovar Avaliações -->
     <ul class="nav nav-tabs" id="avaliacoesTab" role="tablist">
@@ -9,7 +10,6 @@
     </ul>
 
     <div class="tab-content mt-4" id="avaliacoesTabContent">
-        <!-- Tab Aprovar Avaliações -->
         <div class="tab-pane fade show active" id="aprovar-avaliacoes" role="tabpanel" aria-labelledby="aprovar-avaliacoes-tab">
             <div class="card shadow">
                 <div class="card-header bg-light">
@@ -19,43 +19,45 @@
                     <p>Utilize os filtros abaixo para listar e aprovar as avaliações pendentes.</p>
 
                     <!-- Filtros de Pesquisa -->
-                    <form class="row g-3 mb-4">
+                    <form method="get" class="row g-3 mb-4">
                         <div class="col-md-4">
                             <label for="filtro-curso" class="form-label">Curso</label>
-                            <select id="filtro-curso" class="form-select">
-                                <option selected>Escolha o curso...</option>
-                                <option value="1">Engenharia Informática</option>
-                                <option value="2">Gestão</option>
+                            <select id="filtro-curso" name="curso" class="form-select">
+                                <option value="">Escolha o curso...</option>
+                                {% for curso in cursos %}
+                                    <option value="{{ curso }}" {% if filtros.curso == curso %}selected{% endif %}>{{ curso }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="filtro-ano" class="form-label">Ano</label>
-                            <select id="filtro-ano" class="form-select">
-                                <option selected>Escolha o ano...</option>
-                                <option value="1">1º Ano</option>
-                                <option value="2">2º Ano</option>
-                                <option value="3">3º Ano</option>
+                            <select id="filtro-ano" name="ano" class="form-select">
+                                <option value="">Escolha o ano...</option>
+                                {% for ano in anos %}
+                                    <option value="{{ ano }}" {% if filtros.ano == ano %}selected{% endif %}>{{ ano }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="filtro-semestre" class="form-label">Semestre</label>
-                            <select id="filtro-semestre" class="form-select">
-                                <option selected>Escolha o semestre...</option>
-                                <option value="1">1º Semestre</option>
-                                <option value="2">2º Semestre</option>
+                            <select id="filtro-semestre" name="semestre" class="form-select">
+                                <option value="">Escolha o semestre...</option>
+                                {% for semestre in semestres %}
+                                    <option value="{{ semestre }}" {% if filtros.semestre == semestre %}selected{% endif %}>{{ semestre }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-md-4">
                             <label for="filtro-epoca" class="form-label">Época de Avaliação</label>
-                            <select id="filtro-epoca" class="form-select">
-                                <option selected>Escolha a época...</option>
-                                <option value="normal">Normal</option>
-                                <option value="recurso">Recurso</option>
-                                <option value="especial">Especial</option>
+                            <select id="filtro-epoca" name="epoca" class="form-select">
+                                <option value="">Escolha a época...</option>
+                                {% for epoca in epocas %}
+                                    <option value="{{ epoca }}" {% if filtros.epoca == epoca %}selected{% endif %}>{{ epoca }}</option>
+                                {% endfor %}
                             </select>
                         </div>
                         <div class="col-12">
-                            <button type="button" class="btn btn-outline-primary">Filtrar</button>
+                            <button type="submit" class="btn btn-outline-primary">Filtrar</button>
                         </div>
                     </form>
 
@@ -67,48 +69,46 @@
                                     <th>Aluno</th>
                                     <th>Curso</th>
                                     <th>Ano</th>
-                                    <th>1º Semestre</th>
+                                    <th>Semestre</th>
                                     <th>Unidade Curricular</th>
+                                    <th>Prova</th>
                                     <th>Avaliação</th>
-                                    <th>Nota</th>
-                                    <th>Normal</th>
-                                    <th>Data de Lançamento</th>
-                                    <th>Status</th>
+                                    <th>Época</th>
+                                    <th>Data Lançamento</th>
+                                    <th>Estado</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for avaliacao in avaliacoes %}
                                 <tr>
-                                    <td>João Silva</td>
-                                    <td>Engenharia Informática</td>
-                                    <td>1º Ano</td>
-                                    <td>2º Semestre</td>
-                                    <td>Programação</td>
-                                    <td>Projeto Final</td>
-                                    <td>16</td>
-                                    <td>Normal</td>
-                                    <td>2024-12-01</td>
-                                    <td><span class="badge bg-warning">Pendente</span></td>
+                                    <td>{{ avaliacao.aluno }} {{ avaliacao.ultimonome }}</td>
+                                    <td>{{ avaliacao.curso }}</td>
+                                    <td>{{ avaliacao.ano }}</td>
+                                    <td>{{ avaliacao.semestre }}</td>
+                                    <td>{{ avaliacao.unidade_curricular }}</td>
+                                    <td>{{ avaliacao.avaliacao }}</td>
+                                    <td>{{ avaliacao.nota }}</td>
+                                    <td>{{ avaliacao.epoca }}</td>
+                                    <td>{{ avaliacao.data_avaliacao }}</td>
+                                   
                                     <td>
-                                        <button class="btn btn-sm btn-success">Aprovar</button>
+                                        <span class="badge {% if avaliacao.estado == 'Aprovado' %}bg-success{% elif avaliacao.estado == 'Reprovado' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ avaliacao.estado }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if avaliacao.estado == 'Pendente' %}
+                                            <form method="post" action="{% url 'aprovar_avaliacao' avaliacao.id_avaliacao %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-success">Confirmar</button>
+                                            </form>
+                                        {% else %}
+                                            <button class="btn btn-sm btn-secondary" disabled>{{ avaliacao.estado }}</button>
+                                        {% endif %}
                                     </td>
                                 </tr>
-                                <tr>
-                                    <td>Carlos Mendes</td>
-                                    <td>Gestão</td>
-                                    <td>1º Ano</td>
-                                    <td>1º Semestre</td>
-                                    <td>Gestão Financeira</td>
-                                    <td>Frequência</td>
-                                    <td>14</td>
-                                    <td>Época</td>
-                                    <td>2024-11-29</td>
-                                    <td><span class="badge bg-success">Aprovado</span></td>
-                                    <td>
-                                        <button class="btn btn-sm btn-secondary" disabled>Aprovado</button>
-                                    </td>
-                                </tr>
-                                <!-- Adicione mais avaliações conforme necessário -->
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>
@@ -117,3 +117,4 @@
         </div>
     </div>
 </div>
+{% endif %}
