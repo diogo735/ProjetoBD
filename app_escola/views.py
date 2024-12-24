@@ -778,6 +778,12 @@ def professores_aluno(request):
         messages.error(request, f"Ocorreu um erro: {str(e)}")
         return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
 
+    # Renderizar a página com os professores encontrados
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'professores_aluno',
+        'professores': professores,
+    })
+
 #Pagamentos
 #Listar os pagamentos em falta do aluno logado na aplicação
 def pagamentos_em_falta_alunos(request):
