@@ -16,6 +16,10 @@ urlpatterns = [
     path('professor/dashboard/', views.dashboard_professor, name='dashboard_professor'),
     path('funcionario/dashboard/', views.dashboard_funcionario, name='dashboard_funcionario'),
     path('obter_cursos/', views.obter_cursos, name='obter_cursos'),
+    path('obter_ucs/', views.obter_ucs, name='obter_ucs'),
+    path('obter_nomes_turnos/', views.obter_nomes_turnos, name='obter_nomes_turnos'),
+    path('obter_anos/', views.obter_anos, name='obter_anos'),
+    path('obter_semestres/', views.obter_semestres, name='obter_semestres'),
     path('criar_turno/', views.criar_turno, name='criar_turno'),
     path('buscar_dados/', views.buscar_turnos, name='buscar_turnos'),
     path('atualizar_turno/', views.atualizar_turno_view, name='atualizar_turno'),
@@ -50,7 +54,8 @@ urlpatterns = [
 
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
-    path('funcionario/obter_horarios/<int:id_turno>/', views.obter_horarios_turno, name='obter_horarios_turno'),
+    
+    path('funcionario/obter_horarios/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
 
 

@@ -48,17 +48,20 @@
                             <tbody>
                                 {% for turno in turnos %}
                                 <tr>
-                                    <td>{{ turno.curso_nome }}</td>
-                                    <td>{{ turno.turno_nome }}</td>
+                                    <td>{{ turno.curso }}</td>
+                                    <td>{{ turno.nome_turno }}</td>
                                     <td>{{ turno.ano }}</td>
                                     <td>{{ turno.semestre }}</td>
-                                    <td>{{ turno.vagas_disponiveis }}</td>
+                                    <td>{{ turno.vagas_totais }}</td>
                                     <td>
                                         <button type="button" class="btn btn-primary btn-sm"
-                                            data-id-turno="{{ turno.id_turno }}" data-bs-toggle="modal"
+                                            data-turno-nome="{{ turno.nome_turno }}"
+                                            data-semestre="{{ turno.semestre }}" data-ano="{{ turno.ano }}"
+                                            data-curso="{{ turno.curso }}" data-bs-toggle="modal"
                                             data-bs-target="#horarioModal" onclick="carregarHorariosComData(this)">
                                             Ver Horário
                                         </button>
+
 
                                     </td>
                                 </tr>
@@ -250,6 +253,7 @@
             </div>
         </div>
 
+
         <!-- Modal para Criar Turno -->
         <div class="modal fade" id="criarTurnoModal" tabindex="-1" aria-labelledby="criarTurnoModalLabel"
             aria-hidden="true">
@@ -263,15 +267,14 @@
                         <form id="formCriarTurno" onsubmit="event.preventDefault(); enviarFormularioCriarTurno();">
                             <div class="mb-3">
                                 <label for="nomeTurno" class="form-label">Nome do Turno</label>
-                                <input type="text" class="form-control" id="nomeTurno"
-                                    placeholder="Digite o nome do turno" required>
+                                <div class="input-group">
+                                    <select class="form-select" id="selectNomeTurno">
+                                        <option selected disabled>Escolha um turno existente...</option>
+                                    </select>
+                                    <input type="text" class="form-control" id="inputNomeTurno"
+                                        placeholder="Ou digite um novo nome">
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="editarVagasOcupadas" class="form-label">Número de Vagas Ocupadas</label>
-                                <input type="number" class="form-control" id="editarVagasOcupadas"
-                                    placeholder="Vagas ocupadas" readonly>
-                            </div>
-
                             <div class="mb-3">
                                 <label for="vagasTurno" class="form-label">Número de Vagas</label>
                                 <input type="number" class="form-control" id="vagasTurno"
@@ -287,17 +290,18 @@
                                 <label for="anoTurno" class="form-label">Ano</label>
                                 <select class="form-select" id="anoTurno" required>
                                     <option selected disabled>Escolha o ano...</option>
-                                    <option value="1">1º Ano</option>
-                                    <option value="2">2º Ano</option>
-                                    <option value="3">3º Ano</option>
                                 </select>
                             </div>
                             <div class="mb-3">
                                 <label for="semestreTurno" class="form-label">Semestre</label>
                                 <select class="form-select" id="semestreTurno" required>
                                     <option selected disabled>Escolha o semestre...</option>
-                                    <option value="1">1º Semestre</option>
-                                    <option value="2">2º Semestre</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ucTurno" class="form-label">Unidade Curricular (UC)</label>
+                                <select class="form-select" id="ucTurno" required>
+                                    <option selected disabled>Selecione Curso, Ano e Semestre</option>
                                 </select>
                             </div>
                             <div class="modal-footer">
@@ -309,6 +313,7 @@
                 </div>
             </div>
         </div>
+
 
 
 
@@ -431,7 +436,8 @@
         </div>
 
         <!-- Modal para Editar Horário -->
-        <div class="modal fade" id="editarHorarioModal" tabindex="-1" aria-labelledby="editarHorarioModalLabel" aria-hidden="true">
+        <div class="modal fade" id="editarHorarioModal" tabindex="-1" aria-labelledby="editarHorarioModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog" style="max-width: calc(100% - 20px); margin: 10px; height: calc(100% - 20px);">
                 <div class="modal-content" style="height: 100%;">
                     <div class="modal-header">
@@ -462,57 +468,172 @@
                             <!-- Disciplinas Disponíveis -->
                             <div class="col-md-4">
                                 <h6>Disciplinas Disponíveis</h6>
-                                <div id="disciplinasDisponiveis" class="border p-3" style="height: calc(100% - 40px); overflow-y: auto;">
+                                <div id="disciplinasDisponiveis" class="border p-3"
+                                    style="height: calc(100% - 40px); overflow-y: auto;">
                                     <!-- Dados dinâmicos preenchidos via JS -->
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        
-                        <button type="button" class="btn btn-primary" onclick="salvarHorarios()">Salvar Alterações</button>
+
+                        <button type="button" class="btn btn-primary" onclick="salvarHorarios()">Salvar
+                            Alterações</button>
                     </div>
                 </div>
             </div>
         </div>
-        
+
 
 
 
 
 
         <script>
-            // Função para carregar os cursos no seletor de pesquisa de turnos
-            function carregarCursosPesquisa() {
-                fetch('/obter_cursos/')
-                    .then(response => response.json())
-                    .then(data => {
-                        const selectCursoPesquisa = document.getElementById('cursoPesquisa');
-                        selectCursoPesquisa.innerHTML = '<option selected disabled>Escolha o curso...</option>'; // Limpa opções antigas
-                        data.forEach(curso => {
-                            const option = document.createElement('option');
-                            option.value = curso.id_curso;
-                            option.textContent = curso.nome_curso;
-                            selectCursoPesquisa.appendChild(option);
-                        });
-
-                        // Também carrega os cursos no modal de criar turno
-                        carregarCursosNoModal(data);
-                    })
-                    .catch(error => console.error('Erro ao carregar cursos para pesquisa:', error));
-            }
-
-            function carregarCursosNoModal(data) {
-                const selectCursoTurno = document.getElementById('cursoTurno');
-                selectCursoTurno.innerHTML = '<option selected disabled>Escolha o curso...</option>'; // Limpa opções antigas
-                data.forEach(curso => {
+            // 🚀 Função genérica para preencher selects
+            function preencherSelect(selectElement, dados, defaultOption) {
+                selectElement.innerHTML = `<option selected disabled>${defaultOption}</option>`;
+                dados.forEach(item => {
                     const option = document.createElement('option');
-                    option.value = curso.id_curso;
-                    option.textContent = curso.nome_curso;
-                    selectCursoTurno.appendChild(option);
+                    option.value = item.id || item.id_ano || item.id_semestre || item.id_curso;
+                    option.textContent = item.nome || item.nome_ano || item.nome_semestre || item.nome_curso;
+                    selectElement.appendChild(option);
                 });
             }
 
+            // ✅ Função para carregar Cursos na Pesquisa e Modal
+            function carregarCursos() {
+                fetch('/obter_cursos/')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Preenche o seletor de cursos na pesquisa
+                        const selectCursoPesquisa = document.getElementById('cursoPesquisa');
+                        preencherSelect(selectCursoPesquisa, data, 'Escolha o curso...');
+
+                        // Preenche o seletor de cursos no modal
+                        const selectCursoTurno = document.getElementById('cursoTurno');
+                        preencherSelect(selectCursoTurno, data, 'Escolha o curso...');
+                    })
+                    .catch(error => console.error('Erro ao carregar cursos:', error));
+            }
+
+            // ✅ Função para carregar Anos
+            function carregarAnos() {
+                fetch('/obter_anos/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectAno = document.getElementById('anoTurno');
+                        preencherSelect(selectAno, data, 'Escolha o ano...');
+                    })
+                    .catch(error => console.error('Erro ao carregar anos:', error));
+            }
+
+            // ✅ Função para carregar Semestres
+            function carregarSemestres() {
+                fetch('/obter_semestres/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectSemestre = document.getElementById('semestreTurno');
+                        preencherSelect(selectSemestre, data, 'Escolha o semestre...');
+                    })
+                    .catch(error => console.error('Erro ao carregar semestres:', error));
+            }
+
+            // ✅ Inicializar funções ao carregar a página
+            document.addEventListener('DOMContentLoaded', () => {
+                carregarCursos();
+                carregarAnos();
+                carregarSemestres();
+            });
+            // 🚀 Função para carregar nomes de turnos
+            function carregarNomesTurnos() {
+                fetch('/obter_nomes_turnos/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectNomeTurno = document.getElementById('selectNomeTurno');
+                        selectNomeTurno.innerHTML = '<option selected disabled>Escolha um turno existente...</option>';
+                        data.forEach(turno => {
+                            const option = document.createElement('option');
+                            option.value = turno;
+                            option.textContent = turno;
+                            selectNomeTurno.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Erro ao carregar nomes de turnos:', error));
+            }
+
+            // 🚀 Sincronizar Dropdown e Input de Turno
+            document.getElementById('selectNomeTurno').addEventListener('change', function () {
+                const inputNomeTurno = document.getElementById('inputNomeTurno');
+                inputNomeTurno.value = this.value;
+            });
+
+            // 🚀 Chamar ao Carregar a Página
+            document.addEventListener('DOMContentLoaded', () => {
+                carregarNomesTurnos();
+            });
+            function carregarUCs() {
+                const curso = document.getElementById('cursoTurno').options[document.getElementById('cursoTurno').selectedIndex].text;
+                const ano = document.getElementById('anoTurno').options[document.getElementById('anoTurno').selectedIndex].text;
+                const semestre = document.getElementById('semestreTurno').options[document.getElementById('semestreTurno').selectedIndex].text;
+                const selectUC = document.getElementById('ucTurno');
+
+                if (!curso || !ano || !semestre || curso === 'Escolha o curso...' || ano === 'Escolha o ano...' || semestre === 'Escolha o semestre...') {
+                    console.warn('Selecione Curso, Ano e Semestre antes de carregar as UCs.');
+                    selectUC.innerHTML = '<option selected disabled>Selecione Curso, Ano e Semestre</option>';
+                    return;
+                }
+
+                selectUC.innerHTML = '<option disabled selected>Carregando UCs...</option>';
+
+                console.log(`Parâmetros enviados: curso=${curso}, ano=${ano}, semestre=${semestre}`);
+
+                fetch(`/obter_ucs/?curso=${encodeURIComponent(curso)}&ano=${encodeURIComponent(ano)}&semestre=${encodeURIComponent(semestre)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao carregar UCs');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Dados recebidos:', data);
+                        selectUC.innerHTML = '<option selected disabled>Escolha uma UC...</option>';
+                        if (data.length > 0) {
+                            data.forEach(uc => {
+                                const option = document.createElement('option');
+                                option.value = uc.id_uc;
+                                option.textContent = uc.nome_uc;
+                                selectUC.appendChild(option);
+                            });
+                        } else {
+                            selectUC.innerHTML = '<option selected disabled>Nenhuma UC encontrada</option>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao carregar UCs:', error);
+                        selectUC.innerHTML = '<option selected disabled>Erro ao carregar UCs</option>';
+                    });
+            }
+
+
+            // Adiciona eventos para garantir que as UCs são carregadas após seleção dos três campos
+            ['cursoTurno', 'anoTurno', 'semestreTurno'].forEach(id => {
+                document.getElementById(id).addEventListener('change', () => {
+                    const curso = document.getElementById('cursoTurno').value;
+                    const ano = document.getElementById('anoTurno').value;
+                    const semestre = document.getElementById('semestreTurno').value;
+
+                    if (curso && ano && semestre) {
+                        carregarUCs();
+                    }
+                });
+            });
+
+
+            // Adiciona eventos nos selects para garantir a atualização correta
+            document.getElementById('cursoTurno').addEventListener('change', carregarUCs);
+            document.getElementById('anoTurno').addEventListener('change', carregarUCs);
+            document.getElementById('semestreTurno').addEventListener('change', carregarUCs);
             // Chama a função ao carregar a página
             document.addEventListener('DOMContentLoaded', function () {
                 carregarCursosPesquisa(); // Carrega cursos para pesquisa ao carregar a página
@@ -605,47 +726,48 @@
                     })
                     .catch(error => console.error('Erro ao buscar dados:', error));
             }
-            function carregarHorariosComData(button) {
-                const idTurno = button.getAttribute('data-id-turno');
-                carregarHorarios(idTurno);
-            }
-
-            // Função para carregar horários ao clicar em "Ver Horário"
-            function carregarHorarios(idTurno) {
+            function carregarHorarios(turnoNome, semestre, ano, curso) {
                 let tableBody = document.getElementById('horariosTableBody');
                 tableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
 
-                fetch(`/funcionario/obter_horarios/${idTurno}/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        tableBody.innerHTML = ''; // Limpa os dados anteriores
+                let params = new URLSearchParams({
+                    turno_nome: turnoNome,
+                    semestre: semestre.replace(' ', ''),
+                    ano: ano.replace(' ', ''),
+                    curso: curso
+                });
 
-                        // Define o intervalo de horários das 8h às 18h em intervalos de 1 hora
+                console.log('Parâmetros enviados:', params.toString());
+
+                fetch(`/funcionario/obter_horarios/?${params.toString()}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Erro HTTP: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Dados recebidos:', data);
+                        tableBody.innerHTML = ''; // Limpa a tabela
+
+                        // Definir intervalo de horários em blocos de 30 minutos
                         let startTime = new Date('1970-01-01T08:00:00');
                         let endTime = new Date('1970-01-01T18:00:00');
                         let currentTime = new Date(startTime);
 
-                        // Função para formatar a hora
+                        // Função para formatar hora
                         function formatTime(date) {
                             return date.toTimeString().split(':').slice(0, 2).join(':');
                         }
 
-                        // Preenche a tabela com intervalos de 1 hora
+                        // Preencher a tabela com blocos de 30 minutos
                         while (currentTime < endTime) {
                             let nextTime = new Date(currentTime);
-                            nextTime.setMinutes(currentTime.getMinutes() + 60); // Avança 1 hora
+                            nextTime.setMinutes(currentTime.getMinutes() + 30); // Avança 30 minutos
 
-                            // Verifica se o horário atual é 12:00 - 13:00 e aplica fundo cinza
-                            let rowClass = '';
-                            if (formatTime(currentTime) === '12:00') {
-                                rowClass = 'style="background-color: #f1f1f1;"'; // Fundo cinza claro
-                            }
-
-                            // Inicializa uma linha
-                            let row = `<tr ${rowClass}><td>${formatTime(currentTime)} - ${formatTime(nextTime)}</td>`;
+                            let row = `<tr><td>${formatTime(currentTime)} - ${formatTime(nextTime)}</td>`;
 
                             ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'].forEach(dia => {
-                                // Encontra se há uma disciplina que começa ou ocupa este intervalo
                                 let horarioOcupado = data.find(horario => {
                                     let horarioInicio = new Date(`1970-01-01T${horario.hora_inicio}`);
                                     let horarioFim = new Date(`1970-01-01T${horario.hora_fim}`);
@@ -657,20 +779,19 @@
                                 if (horarioOcupado) {
                                     let horarioInicio = new Date(`1970-01-01T${horarioOcupado.hora_inicio}`);
                                     let horarioFim = new Date(`1970-01-01T${horarioOcupado.hora_fim}`);
-                                    let rowspan = (horarioFim - horarioInicio) / (60 * 60 * 1000); // Quantos blocos de 1 hora
+                                    let rowspan = (horarioFim - horarioInicio) / (30 * 60 * 1000); // Número de blocos de 30 min
 
-                                    // Apenas insere a célula se estiver no início do bloco
+                                    // Apenas insere se estiver no início do intervalo
                                     if (currentTime.getTime() === horarioInicio.getTime()) {
                                         row += `<td rowspan="${rowspan}" style="background-color: #007bff; color: white; text-align: center; vertical-align: middle;">
-                                        ${horarioOcupado.nome_uc}
-                                    </td>`;
+                                ${horarioOcupado.nome_uc} <br> Sala: ${horarioOcupado.espaco}
+                            </td>`;
                                     }
                                 } else {
-                                    row += `<td></td>`; // Célula vazia para intervalos sem disciplinas
+                                    row += `<td></td>`; // Célula vazia
                                 }
                             });
 
-                            // Fecha a linha e adiciona à tabela
                             row += `</tr>`;
                             tableBody.innerHTML += row;
                             currentTime = nextTime; // Avança para o próximo intervalo
@@ -682,27 +803,58 @@
                     });
             }
 
+
+            // Botão para carregar os horários
+            function carregarHorariosComData(button) {
+                const turnoNome = button.getAttribute('data-turno-nome');
+                const semestre = button.getAttribute('data-semestre');
+                const ano = button.getAttribute('data-ano');
+                const curso = button.getAttribute('data-curso');
+
+                carregarHorarios(turnoNome, semestre, ano, curso);
+            }
+
+
+
             function enviarFormularioCriarTurno() {
-                const selectCurso = document.getElementById('cursoTurno');
-                const cursoSelecionado = selectCurso.options[selectCurso.selectedIndex].text;
+                // Captura dos elementos do formulário
+                const selectNomeTurno = document.getElementById('selectNomeTurno');
+                const inputNomeTurno = document.getElementById('inputNomeTurno');
+                const vagasTurno = document.getElementById('vagasTurno');
+                const cursoTurno = document.getElementById('cursoTurno');
+                const anoTurno = document.getElementById('anoTurno');
+                const semestreTurno = document.getElementById('semestreTurno');
+                const ucTurno = document.getElementById('ucTurno');
 
-                const selectAno = document.getElementById('anoTurno');
-                const anoSelecionado = selectAno.options[selectAno.selectedIndex].text;
+                // Validação básica dos campos
+                if (!cursoTurno.value || !anoTurno.value || !semestreTurno.value || !ucTurno.value) {
+                    alert('⚠️ Por favor, preencha todos os campos obrigatórios antes de salvar.');
+                    return;
+                }
 
-                const selectSemestre = document.getElementById('semestreTurno');
-                const semestreSelecionado = selectSemestre.options[selectSemestre.selectedIndex].text;
+                // Determinar qual nome do turno usar
+                const nomeTurno = inputNomeTurno.value.trim() !== ''
+                    ? inputNomeTurno.value
+                    : selectNomeTurno.value;
 
-                // Criação do objeto com dados para enviar
+                if (!nomeTurno) {
+                    alert('⚠️ Por favor, selecione ou insira um nome para o turno.');
+                    return;
+                }
+
+                // Construção do objeto com os dados para envio
                 const formData = {
-                    nome_turno: document.getElementById('nomeTurno').value,
-                    vagas_turno: document.getElementById('vagasTurno').value,
-                    id_curso: selectCurso.value,
-                    ano_turno: anoSelecionado,
-                    semestre_turno: semestreSelecionado
+                    nome_turno: nomeTurno,
+                    vagas_turno: parseInt(vagasTurno.value) || 0,
+                    id_curso: parseInt(cursoTurno.value) || 0,
+                    ano_turno: parseInt(anoTurno.value) || 0,
+                    semestre_turno: parseInt(semestreTurno.value) || 0,
+                    id_uc: parseInt(ucTurno.value) || 0
                 };
 
-                console.log('Dados enviados:', formData);
+                console.log('📤 Dados enviados:', formData);
 
+                // Envio dos dados para o backend
                 fetch('/criar_turno/', {
                     method: 'POST',
                     headers: {
@@ -711,85 +863,153 @@
                     },
                     body: JSON.stringify(formData)
                 })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Erro HTTP: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        const modalBody = document.querySelector('#criarTurnoModal .modal-body');
+                        const modalContent = document.querySelector('#criarTurnoModal .modal-content');
+                        const btnSalvar = document.querySelector('#criarTurnoModal .modal-footer .btn-primary');
+
                         if (data.success) {
-                            // Substituindo o conteúdo do modal com uma mensagem de sucesso
-                            const modalBody = document.querySelector('#criarTurnoModal .modal-body');
+                            // 🟢 Modal de Sucesso
                             modalBody.innerHTML = `
                     <div class="text-center">
-                        <h4 class="text-success">Turno criado com sucesso!</h4>
-                        <img src="{% static 'images/certo.png' %}" alt="Sucesso" style="width: 100px; margin-top: 20px;">
+                        <h4 class="text-success">✅ Turno criado com sucesso!</h4>
+                        
                     </div>
                 `;
-                            // Mudar a cor do fundo do modal para verde para indicar sucesso
-                            document.querySelector('#criarTurnoModal .modal-content').style.backgroundColor = '#d4edda';
-                            // Remover o botão "Guardar"
-                            const btnSalvar = document.querySelector('#criarTurnoModal .modal-footer .btn-primary');
+                            modalContent.style.backgroundColor = '#d4edda'; // Fundo verde
+                            modalContent.style.color = '#155724'; // Texto verde escuro
                             if (btnSalvar) {
-                                btnSalvar.style.display = 'none'; // Esconde o botão "Guardar" da visualização
+                                btnSalvar.style.display = 'none';
                             }
-                            pesquisarDados();
                         } else {
-                            alert('Erro ao criar turno: ' + data.error);
+                            // 🔴 Modal de Erro
+                            modalBody.innerHTML = `
+                    <div class="text-center">
+                        <p>${data.error}</p>
+                       
+                    </div>
+                `;
+                            modalContent.style.backgroundColor = '#f8d7da'; // Fundo vermelho
+                            modalContent.style.color = '#721c24'; // Texto vermelho escuro
+                            if (btnSalvar) {
+                                btnSalvar.style.display = 'none';
+                            }
                         }
+
                     })
-                    .catch(error => console.error('Erro ao criar turno:', error));
+                    .catch(error => {
+                        console.error('❌ Erro ao criar turno:', error);
+                        const modalBody = document.querySelector('#criarTurnoModal .modal-body');
+                        const modalContent = document.querySelector('#criarTurnoModal .modal-content');
+                        const btnSalvar = document.querySelector('#criarTurnoModal .modal-footer .btn-primary');
+
+                        // 🔴 Modal de Erro Crítico
+                        modalBody.innerHTML = `
+                <div class="text-center">
+                    <h4 class="text-danger">❌ Erro crítico ao criar turno</h4>
+                    <p>${error.message}</p>
+                   
+                </div>
+            `;
+                        modalContent.style.backgroundColor = '#f8d7da'; // Fundo vermelho
+                        modalContent.style.color = '#721c24'; // Texto vermelho escuro
+                        if (btnSalvar) {
+                            btnSalvar.style.display = 'none';
+                        }
+
+
+                    });
             }
 
-            // Carregar cursos toda vez que o modal de criar turno for aberto
-            document.getElementById('criarTurnoModal').addEventListener('show.bs.modal', function () {
-                fetch('/obter_cursos/')
-                    .then(response => response.json())
-                    .then(data => {
-                        carregarCursosNoModal(data); // Recarrega os cursos no modal
-                    })
-                    .catch(error => console.error('Erro ao carregar cursos para o modal:', error));
-            });
 
-            // Resetar o modal quando ele for fechado
-            document.getElementById('criarTurnoModal').addEventListener('hidden.bs.modal', function () {
-                const modalBody = document.querySelector('#criarTurnoModal .modal-body');
-                modalBody.innerHTML = `
-        <form id="formCriarTurno" onsubmit="event.preventDefault(); enviarFormularioCriarTurno();">
-            <div class="mb-3">
-                <label for="nomeTurno" class="form-label">Nome do Turno</label>
-                <input type="text" class="form-control" id="nomeTurno" placeholder="Digite o nome do turno" required>
+            
+            function resetarModal() {
+                const modal = document.getElementById('criarTurnoModal');
+                if (modal) {
+                    modal.remove(); // Remove o modal do DOM
+                }
+
+                // Reinsere o modal no DOM
+                const modalContainer = document.createElement('div');
+                modalContainer.innerHTML = `
+        <!-- Estrutura original do modal -->
+        <div class="modal fade" id="criarTurnoModal" tabindex="-1" aria-labelledby="criarTurnoModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="criarTurnoModalLabel">Criar Novo Turno</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formCriarTurno" onsubmit="event.preventDefault(); enviarFormularioCriarTurno();">
+                            <div class="mb-3">
+                                <label for="nomeTurno" class="form-label">Nome do Turno</label>
+                                <div class="input-group">
+                                    <select class="form-select" id="selectNomeTurno">
+                                        <option selected disabled>Escolha um turno existente...</option>
+                                    </select>
+                                    <input type="text" class="form-control" id="inputNomeTurno" placeholder="Ou digite um novo nome">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="vagasTurno" class="form-label">Número de Vagas</label>
+                                <input type="number" class="form-control" id="vagasTurno" placeholder="Digite o número de vagas" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="cursoTurno" class="form-label">Curso</label>
+                                <select class="form-select" id="cursoTurno" required>
+                                    <option selected disabled>Escolha o curso...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="anoTurno" class="form-label">Ano</label>
+                                <select class="form-select" id="anoTurno" required>
+                                    <option selected disabled>Escolha o ano...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="semestreTurno" class="form-label">Semestre</label>
+                                <select class="form-select" id="semestreTurno" required>
+                                    <option selected disabled>Escolha o semestre...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ucTurno" class="form-label">Unidade Curricular (UC)</label>
+                                <select class="form-select" id="ucTurno" required>
+                                    <option selected disabled>Selecione Curso, Ano e Semestre</option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="vagasTurno" class="form-label">Número de Vagas</label>
-                <input type="number" class="form-control" id="vagasTurno" placeholder="Digite o número de vagas" required>
-            </div>
-            <div class="mb-3">
-                <label for="cursoTurno" class="form-label">Curso</label>
-                <select class="form-select" id="cursoTurno" required>
-                    <option selected disabled>Escolha o curso...</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="anoTurno" class="form-label">Ano</label>
-                <select class="form-select" id="anoTurno" required>
-                    <option selected disabled>Escolha o ano...</option>
-                    <option value="1">1º Ano</option>
-                    <option value="2">2º Ano</option>
-                    <option value="3">3º Ano</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="semestreTurno" class="form-label">Semestre</label>
-                <select class="form-select" id="semestreTurno" required>
-                    <option selected disabled>Escolha o semestre...</option>
-                    <option value="1">1º Semestre</option>
-                    <option value="2">2º Semestre</option>
-                </select>
-            </div>
-            <div class="modal-footer">
-                <button type="submit" class="btn btn-primary">Guardar</button>
-            </div>
-        </form>
+        </div>
     `;
-                document.querySelector('#criarTurnoModal .modal-content').style.backgroundColor = '';
-            });
+                document.body.appendChild(modalContainer);
+
+                console.log('🔄 Modal recriado com sucesso!');
+            }
+            const botaoAbrirModal = document.querySelector('[data-bs-target="#criarTurnoModal"]');
+            if (botaoAbrirModal) {
+                botaoAbrirModal.addEventListener('click', () => {
+                    resetarModal();
+                    carregarNomesTurnos();
+                    carregarCursos();
+                    carregarAnos();
+                    carregarSemestres();
+                    carregarUCs();
+                    console.log('📥 Modal resetado e dados carregados.');
+                });
+            }
 
 
             // Função para obter o CSRF token

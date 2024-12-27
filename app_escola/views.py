@@ -9,6 +9,7 @@ import psycopg2
 from .utils import aluno_required, professor_required, funcionario_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 
 def home(request):
     try:
@@ -134,39 +135,28 @@ def loading_page(request):
  
 @funcionario_required
 def unidades_curriculares_funcionario(request):
-    # Definindo cursos, anos, semestres e turnos
-    cursos = ['Engenharia Informática', 'Engenharia Multimedia', 'Engenharia Turismo']
-    anos = ['1º Ano', '2º Ano', '3º Ano']
-    semestres = ['1º Semestre', '2º Semestre']
-    turnos_horario = ['Manhã', 'Tarde']
-    
     # Obter o mês atual
     mes_atual = datetime.now().month
     
     # Determinar semestre atual
-    if 9 <= mes_atual >= 2:  # Setembro a Fevereiro
-        semestre_atual = '1º Semestre'
+    if 9 <= mes_atual or mes_atual <= 2:  # Setembro a Fevereiro
+        semestre_atual = '1ºSemestre'
     else:  # Março a Agosto
-        semestre_atual = '2º Semestre'
+        semestre_atual = '2ºSemestre'
     
-    turnos = []
-    turno_id = 1  # Iniciamos um contador para IDs únicos
+    # Consulta SQL para buscar turnos filtrados pelo semestre atual
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT semestre, ano, curso, nome_turno, vagas_totais 
+            FROM diogo_vw_listar_turnos_por_curso
+            WHERE semestre = %s
+            ORDER BY curso, ano, nome_turno;
+        """, [semestre_atual])
+        
+        colunas = [desc[0] for desc in cursor.description]
+        turnos = [dict(zip(colunas, row)) for row in cursor.fetchall()]
     
-    for curso in cursos:
-        for ano in anos:
-            for semestre in semestres:
-                if semestre == semestre_atual:  # Filtrar pelo semestre atual
-                    for turno in turnos_horario:
-                        turnos.append({
-                            'curso_nome': curso,
-                            'turno_nome': turno,
-                            'ano': ano,
-                            'semestre': semestre,
-                            'vagas_disponiveis': 25,
-                            'id_turno': turno_id,
-                        })
-                        turno_id += 1  # Incrementa o ID para cada turno
-    
+    # Renderizar o template com os dados do banco
     return render(request, 'pagina_principal/main.html', {
         'default_content': 'unidades_curriculares_funcionario',
         'turnos': turnos,
@@ -175,21 +165,97 @@ def unidades_curriculares_funcionario(request):
 
 
 @funcionario_required
-def obter_horarios_turno(request, id_turno):
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM listar_horarios_por_turno(%s)", [id_turno])
-        columns = [col[0] for col in cursor.description]
-        horarios = [dict(zip(columns, row)) for row in cursor.fetchall()]
-    return JsonResponse(horarios, safe=False)
+def obter_horarios_turno(request):
+    turno_nome = request.GET.get('turno_nome')
+    semestre = request.GET.get('semestre', '').replace(' ', '')  # Remove espaços extras
+    ano = request.GET.get('ano', '').replace(' ', '')  # Remove espaços extras
+    curso = request.GET.get('curso')
+
+    print(f"Parâmetros recebidos: turno_nome={turno_nome}, semestre={semestre}, ano={ano}, curso={curso}")
+
+    if not all([turno_nome, semestre, ano, curso]):
+        return JsonResponse({'error': 'Parâmetros ausentes'}, status=400)
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM diogo_fn_obter_horarios_detalhados(%s, %s, %s, %s)
+            """, [semestre, turno_nome, ano, curso])
+            
+            colunas = [col[0] for col in cursor.description]
+            horarios = [dict(zip(colunas, row)) for row in cursor.fetchall()]
+        
+        print(f"Dados retornados: {horarios}")
+        return JsonResponse(horarios, safe=False)
+    except Exception as e:
+        print(f"Erro ao obter horários: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @funcionario_required
 def obter_cursos(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM listar_cursos()")  # Supondo que `listar_cursos` é a função do banco
+        cursor.execute("SELECT * FROM diogo_f_listar_cursos()")  # Supondo que `listar_cursos` é a função do banco
         cursos = cursor.fetchall()
         colunas = [desc[0] for desc in cursor.description]  # Pega os nomes das colunas
     cursos_formatados = [dict(zip(colunas, curso)) for curso in cursos]  # Formata os dados
     return JsonResponse(cursos_formatados, safe=False)  # Retorna como JSON
+@funcionario_required
+def obter_anos(request):
+    """
+    View para obter os anos disponíveis usando a função SQL diogo_f_listar_anos()
+    """
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM diogo_f_listar_anos();")
+        columns = [col[0] for col in cursor.description]
+        anos = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    return JsonResponse(anos, safe=False)
+
+
+@funcionario_required
+def obter_semestres(request):
+    """
+    View para obter os semestres disponíveis usando a função SQL diogo_f_listar_semestres()
+    """
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM diogo_f_listar_semestres();")
+        columns = [col[0] for col in cursor.description]
+        semestres = [dict(zip(columns, row)) for row in cursor.fetchall()]
+    return JsonResponse(semestres, safe=False)
+
+@funcionario_required
+def obter_nomes_turnos(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT DISTINCT turno_nome FROM turnos;")
+        turnos = [row[0] for row in cursor.fetchall()]
+    return JsonResponse(turnos, safe=False)
+
+@funcionario_required
+def obter_ucs(request):
+    # Obter valores diretamente da requisição
+    curso = request.GET.get('curso', '').strip()
+    ano = request.GET.get('ano', '').strip()
+    semestre = request.GET.get('semestre', '').strip()
+
+    # Validar se todos os parâmetros foram fornecidos
+    if not curso or not ano or not semestre:
+        return JsonResponse({'error': 'Parâmetros inválidos'}, status=400)
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM diogo_f_listar_ucs_por_ano_semestre_curso(%s, %s, %s)
+            """, [ano, semestre, curso])
+            columns = [col[0] for col in cursor.description]
+            ucs = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+        return JsonResponse(ucs, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+
 
 @csrf_exempt
 def criar_turno(request):
@@ -198,33 +264,32 @@ def criar_turno(request):
         try:
             with connection.cursor() as cursor:
                 cursor.execute(
-    """
-    CALL p_turno_insert(
-        %s::INTEGER,
-        %s::VARCHAR,
-        %s::SMALLINT,
-        %s::VARCHAR,
-        %s::VARCHAR,
-        %s::INTEGER,
-        %s::INTEGER
-    )
-    """,
-    [
-        data['id_curso'],
-        data['nome_turno'],
-        0,  # Estado (fixo por padrão)
-        data['ano_turno'],
-        data['semestre_turno'],
-        data['vagas_turno'],
-        data['vagas_turno']
-    ]
-)
-
-            return JsonResponse({'success': True})
+                    """
+                    CALL p_turno_insert(
+                        %s::INTEGER,
+                        %s::INTEGER,
+                        %s::INTEGER,
+                        %s::VARCHAR,
+                        %s::INTEGER
+                    )
+                    """,
+                    [
+                        int(data['id_uc']),
+                        int(data['ano_turno']),
+                        int(data['semestre_turno']),
+                        data['nome_turno'],
+                        int(data['vagas_turno'])
+                    ]
+                )
+            return JsonResponse({'success': True, 'message': '✅ Turno criado com sucesso!'})
         except Exception as e:
-            print('Erro ao criar turno:', e)  # Mostra o erro no terminal do servidor
-            return JsonResponse({'success': False, 'error': str(e)})
+            error_message = str(e)
+            if 'Turno já existe' in error_message:
+                return JsonResponse({'success': False, 'error': '❌ Turno já existe com os mesmos parâmetros!'})
+            return JsonResponse({'success': False, 'error': '❌ Erro desconhecido: ' + error_message})
     return JsonResponse({'success': False, 'error': 'Método inválido'})
+
+
 
 
 
