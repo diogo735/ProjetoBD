@@ -772,6 +772,18 @@ def professores_aluno(request):
                 for row in cursor.fetchall()
             ]
 
+            
+    except Exception as e:
+        print(f"Erro ao carregar professores: {e}")
+        messages.error(request, f"Ocorreu um erro: {str(e)}")
+        return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
+
+    # Renderizar a página com os professores encontrados
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'professores_aluno',
+        'professores': professores,
+    })
+
 #Pagamentos
 #Listar os pagamentos em falta do aluno logado na aplicação
 def pagamentos_em_falta_alunos(request):
@@ -988,10 +1000,6 @@ def matricula_aluno(request):
     })
 
 
-    except Exception as e:
-        print(f"Erro ao carregar professores: {e}")
-        messages.error(request, f"Ocorreu um erro: {str(e)}")
-        return render(request, 'pagina_principal/main.html', {'default_content': 'professores_aluno'})
     
 
 @funcionario_required
