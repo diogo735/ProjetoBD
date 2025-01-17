@@ -883,6 +883,51 @@ def editar_horario(request, id_horario):
 
 
 
+def carregar_professor_horario(request):
+    # Verifica se o usuário está logado e é professor
+    user_id = request.session.get('user_id')
+    
+    try:
+        # Consulta os horários do professor logado usando a função do banco de dados
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM diogo_f_obter_horarios_completo_professor(%s)
+            """, [user_id])
+            
+            horarios = cursor.fetchall()
+
+        # Converte os resultados para um formato JSON
+        horarios_data = [
+            {
+                'id_turno': horario[0],
+                'turno_nome': horario[1],
+                'nome_uc': horario[2],
+                'nome_semestre': horario[3],
+                'nome_ano': horario[4],
+                'espaco': horario[5],
+                'dia_semana': horario[6],
+                'hora_inicio': str(horario[7]),
+                'hora_fim': str(horario[8])
+            }
+            for horario in horarios
+        ]
+
+        return JsonResponse(horarios_data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+
+
+
+
+
+
+
+
+
+
 
 @funcionario_required
 def alunos_funcionario(request):
