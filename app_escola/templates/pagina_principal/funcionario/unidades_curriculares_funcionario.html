@@ -1,4 +1,5 @@
 {% load static %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
 <div class="container py-4">
 
@@ -97,27 +98,24 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="ano" class="form-label">Ano</label>
-                            <select id="ano" class="form-select" required>
+                            <label for="anoTurno" class="form-label">Ano</label>
+                            <select id="anoTurno" class="form-select" required>
                                 <option selected disabled>Escolha o ano...</option>
-                                <option value="1">1º Ano</option>
-                                <option value="2">2º Ano</option>
-                                <option value="3">3º Ano</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="semestre" class="form-label">Semestre</label>
-                            <select id="semestre" class="form-select" required>
+                            <label for="semestreTurno" class="form-label">Semestre</label>
+                            <select id="semestreTurno" class="form-select" required>
                                 <option selected disabled>Escolha o semestre...</option>
-                                <option value="1">1º Semestre</option>
-                                <option value="2">2º Semestre</option>
                             </select>
                         </div>
                         <div class="col-12 mt-3">
-                            <button type="button" class="btn btn-outline-primary" onclick="pesquisarDados()"> <i
-                                    class="bi bi-search"></i> Pesquisar Turno</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="pesquisarDados()">
+                                <i class="bi bi-search"></i> Pesquisar Turno
+                            </button>
                         </div>
                     </form>
+
 
                     <div class="mt-4">
                         <div class="d-flex justify-content-between align-items-center">
@@ -128,9 +126,9 @@
                                 <thead>
                                     <tr>
                                         <th>Turno</th>
+                                        <th>Nome UC</th>
                                         <th>Vagas Restantes</th>
                                         <th>Vagas Totais</th>
-                                        <th>Estado</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -145,6 +143,7 @@
                             </table>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -155,7 +154,7 @@
                 <div class="card-header bg-light d-flex justify-content-between align-items-center">
                     <h2 class="h5 mb-0">Gerenciamento de Horários</h2>
                     <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#criarHorarioModal">
+                        data-bs-target="#criarHorarioModal" onclick="carregarTurnosSemHorarios()">
                         <i class="bi bi-plus"></i> Adicionar Horário
                     </button>
                 </div>
@@ -172,17 +171,18 @@
                             <label for="ano_horario" class="form-label">Ano</label>
                             <select id="ano_horario" class="form-select" required>
                                 <option selected disabled>Escolha o ano...</option>
-                                <option value="1º Ano">1º Ano</option>
-                                <option value="2º Ano">2º Ano</option>
-                                <option value="3º Ano">3º Ano</option>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label for="semestre_horario" class="form-label">Semestre</label>
                             <select id="semestre_horario" class="form-select" required>
                                 <option selected disabled>Escolha o semestre...</option>
-                                <option value="1º Semestre">1º Semestre</option>
-                                <option value="2º Semestre">2º Semestre</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="turno_horario" class="form-label">Turno</label>
+                            <select id="turno_horario" class="form-select" required>
+                                <option selected disabled>Escolha o turno...</option>
                             </select>
                         </div>
                         <div class="col-12 mt-3">
@@ -194,16 +194,18 @@
 
                     <div class="mt-4">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h3 class="h6 mb-0">Resultados Disponíveis: <span id="quantidadeResultados"></span></h3>
+                            <h3 class="h6 mb-0">Resultados Disponíveis: <span id="quantidadeResultados_horarios"></span>
+                            </h3>
                         </div>
                         <div style="height: 23vh; overflow-y: auto;">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
                                         <th>Turno</th>
-                                        <th>Curso</th>
-                                        <th>Ano</th>
-                                        <th>Semestre</th>
+                                        <th>Unidade Curricular</th>
+                                        <th>Dia da Semana</th>
+                                        <th>Hora Início</th>
+                                        <th>Hora Fim</th>
                                         <th>Ações</th>
                                     </tr>
                                 </thead>
@@ -317,6 +319,7 @@
 
 
 
+
         <!-- Modal Editar Turno -->
         <div class="modal fade" id="editarTurnoModal" tabindex="-1" aria-labelledby="editarTurnoLabel"
             aria-hidden="true">
@@ -328,50 +331,31 @@
                     </div>
                     <div class="modal-body">
                         <form id="formEditarTurno">
+                            <!-- ID do Turno (oculto) -->
                             <input type="hidden" id="editTurnoId">
+
+                            <!-- Nome do Turno -->
                             <div class="mb-3">
                                 <label for="editarNomeTurno" class="form-label">Nome do Turno</label>
                                 <input type="text" class="form-control" id="editarNomeTurno" required>
                             </div>
+
+                            <!-- Número de Vagas Totais -->
                             <div class="mb-3">
                                 <label for="editarVagasTotais" class="form-label">Número de Vagas Totais</label>
                                 <input type="number" class="form-control" id="editarVagasTotais"
                                     placeholder="Digite o número de vagas totais" required>
                             </div>
-                            <div class="mb-3">
-                                <p id="vagasOcupadasTexto">Vagas ocupadas: <strong>--</strong></p>
-                            </div>
 
+                            <!-- Número de Vagas Ocupadas -->
                             <div class="mb-3">
-                                <label for="editarAnoTurno" class="form-label">Ano</label>
-                                <select id="editarAnoTurno" class="form-select">
-                                    <option value="1">1º Ano</option>
-                                    <option value="2">2º Ano</option>
-                                    <option value="3">3º Ano</option>
-                                </select>
+                                <p id="vagasOcupadasTexto">Número de Vagas Ocupadas: <strong
+                                        id="editarVagasOcupadas">--</strong></p>
                             </div>
-                            <div class="mb-3">
-                                <label for="editarSemestreTurno" class="form-label">Semestre</label>
-                                <select id="editarSemestreTurno" class="form-select">
-                                    <option value="1">1º Semestre</option>
-                                    <option value="2">2º Semestre</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="editarEstadoTurno" class="form-label">Estado do Turno</label>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="editarEstadoTurno">
-                                    <label class="form-check-label" for="editarEstadoTurno">
-                                        Ativo
-                                    </label>
-                                </div>
-                            </div>
-
                         </form>
                     </div>
 
                     <div class="modal-footer">
-
                         <button type="button" class="btn btn-primary" id="btnGuardarTurno"
                             onclick="enviarFormularioEditarTurno()" disabled>
                             <i class="bi bi-save me-2"></i>Guardar
@@ -383,32 +367,50 @@
 
 
 
-        <!-- Modal para Gerenciar Alunos -->
+
+        <!-- Modal para Gerenciar Alunos do Turno -->
         <div class="modal fade" id="editarVagasModal" tabindex="-1" aria-labelledby="editarVagasModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editarVagasModalLabel">Gerenciar Alunos do Turno</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="editarVagasModalLabel">Alunos Inscritos no Turno</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                        <!-- Lista de Alunos -->
-                        <h6>Alunos Inscritos</h6>
-                        <ul class="list-group mb-3" id="listaAlunosTurno">
-                            <!-- Lista será preenchida dinamicamente -->
-                        </ul>
-                        <!-- Botões de Ação -->
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-success btn-sm" onclick="adicionarAluno()">Adicionar
-                                Aluno</button>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="removerAluno()">Remover
-                                Aluno</button>
-                        </div>
+                        <table class="table table-striped">
+                            <thead>
+                                <input type="hidden" id="editTurnoId">
+                                <tr>
+                                    <th scope="col">
+                                        <input type="checkbox" id="selecionarTodos"
+                                            onchange="selecionarTodosAlunos(this)">
+                                    </th>
+                                    <th scope="col">Nº Mec</th>
+                                    <th scope="col">Nome Completo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listaAlunosTurno">
+                                <!-- Alunos serão carregados aqui -->
+                            </tbody>
+                        </table>
                     </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <!-- Botão Adicionar Aluno -->
+                        <button type="button" class="btn btn-warning text-dark" onclick="adicionarAluno()">
+                            <i class="fas fa-user-plus"></i> Adicionar Aluno
+                        </button>
+                        <!-- Botão Remover Selecionados -->
+                        <button type="button" class="btn btn-danger" id="btnRemoverAlunos"
+                            onclick="removerAlunosSelecionados()" disabled>
+                            <i class="fas fa-user-minus"></i> Remover Selecionados
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
+
 
         <!-- Modal para Eliminar Turno -->
         <div class="modal fade" id="eliminarTurnoModal" tabindex="-1" aria-labelledby="eliminarTurnoModalLabel"
@@ -416,7 +418,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="eliminarTurnoModalLabel">Confirmar Exclusão-falta verificar aluno
+                        <h5 class="modal-title" id="eliminarTurnoModalLabel">Confirmar Exclusão
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -435,56 +437,132 @@
             </div>
         </div>
 
-        <!-- Modal para Editar Horário -->
-        <div class="modal fade" id="editarHorarioModal" tabindex="-1" aria-labelledby="editarHorarioModalLabel"
+        <!-- Modal para criar horario-->
+        <div class="modal fade" id="criarHorarioModal" tabindex="-1" aria-labelledby="criarHorarioModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog" style="max-width: calc(100% - 20px); margin: 10px; height: calc(100% - 20px);">
-                <div class="modal-content" style="height: 100%;">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <!-- Cabeçalho do Modal -->
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editarHorarioModalLabel">Editar Horário</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <h5 class="modal-title" id="criarHorarioModalLabel">Adicionar Horário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
+                    <!-- Corpo do Modal -->
                     <div class="modal-body">
-                        <div class="row">
-                            <!-- Tabela de Horários -->
-                            <div class="col-md-8">
-                                <table class="table table-bordered" style="table-layout: fixed; width: 100%;">
-
-                                    <thead>
-                                        <tr>
-                                            <th>Hora</th>
-                                            <th>Segunda-feira</th>
-                                            <th>Terça-feira</th>
-                                            <th>Quarta-feira</th>
-                                            <th>Quinta-feira</th>
-                                            <th>Sexta-feira</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="horariosTableBody2">
-                                        <!-- Dados dinâmicos preenchidos via JS -->
-                                    </tbody>
-                                </table>
+                        <!-- Div para exibir mensagens de sucesso ou erro -->
+                        <div id="mensagemAlerta" class="alert d-none" role="alert"></div>
+                        <form id="formAdicionarHorario">
+                            <div class="mb-3">
+                                <label for="idTurno" class="form-label">Associar Turno</label>
+                                <select class="form-select" id="idTurno" required>
+                                    <option value="" disabled selected>Selecione o turno...</option>
+                                    <!-- Opções preenchidas dinamicamente -->
+                                </select>
                             </div>
-                            <!-- Disciplinas Disponíveis -->
-                            <div class="col-md-4">
-                                <h6>Disciplinas Disponíveis</h6>
-                                <div id="disciplinasDisponiveis" class="border p-3"
-                                    style="height: calc(100% - 40px); overflow-y: auto;">
-                                    <!-- Dados dinâmicos preenchidos via JS -->
-                                </div>
+                            <div class="mb-3">
+                                <label for="diaSemana" class="form-label">Dia da Semana</label>
+                                <select class="form-select" id="diaSemana" required>
+                                    <option value="" disabled selected>Selecione...</option>
+                                    <option value="Segunda-feira">Segunda-feira</option>
+                                    <option value="Terça-feira">Terça-feira</option>
+                                    <option value="Quarta-feira">Quarta-feira</option>
+                                    <option value="Quinta-feira">Quinta-feira</option>
+                                    <option value="Sexta-feira">Sexta-feira</option>
+                                </select>
                             </div>
-                        </div>
+                            <div class="mb-3">
+                                <label for="horaInicio" class="form-label">Hora de Início</label>
+                                <input type="time" class="form-control" id="horaInicio" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="horaFim" class="form-label">Hora de Término</label>
+                                <input type="time" class="form-control" id="horaFim" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="idEspaco" class="form-label">Espaço</label>
+                                <select class="form-select" id="idEspaco" required>
+                                    <option value="" disabled selected>Selecione o espaço...</option>
+                                </select>
+                            </div>
+                        </form>
                     </div>
+                    <!-- Rodapé do Modal -->
                     <div class="modal-footer">
 
-                        <button type="button" class="btn btn-primary" onclick="salvarHorarios()">Salvar
-                            Alterações</button>
+                        <button type="button" class="btn btn-primary" onclick="adicionarHorario()"><i
+                                class="bi bi-save me-2"></i>Guardar</button>
                     </div>
                 </div>
             </div>
         </div>
 
 
+
+
+
+        <!-- Modal para Editar Horário -->
+        <div class="modal fade" id="editarHorarioModal" tabindex="-1" aria-labelledby="editarHorarioModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning">
+                        <h5 class="modal-title" id="editarHorarioModalLabel">Editar Horário</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editarHorarioForm">
+                            <div class="mb-3">
+                                <label for="editarDiaSemana" class="form-label">Dia da Semana</label>
+                                <select id="editarDiaSemana" class="form-select" required>
+                                    <option value="" selected disabled>Escolha o dia...</option>
+                                    <option value="Segunda-feira">Segunda-feira</option>
+                                    <option value="Terça-feira">Terça-feira</option>
+                                    <option value="Quarta-feira">Quarta-feira</option>
+                                    <option value="Quinta-feira">Quinta-feira</option>
+                                    <option value="Sexta-feira">Sexta-feira</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editarHoraInicio" class="form-label">Hora de Início</label>
+                                <input type="time" id="editarHoraInicio" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editarHoraFim" class="form-label">Hora de Fim</label>
+                                <input type="time" id="editarHoraFim" class="form-control" required>
+                            </div>
+                            <input type="hidden" id="editarHorarioId">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-warning" id="botaoSalvar" disabled
+                            onclick="salvarEdicaoHorario()">Salvar</button>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para Remover Horário -->
+        <div class="modal fade" id="removerHorarioModal" tabindex="-1" aria-labelledby="removerHorarioModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="removerHorarioModalLabel">Confirmação de Remoção</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Tem a certeza que quer eliminar este horário?
+                    </div>
+                    <div class="modal-footer">
+
+                        <button id="confirmarRemocaoBtn" type="button" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Apagar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
 
@@ -500,6 +578,18 @@
                     selectElement.appendChild(option);
                 });
             }
+
+            // ✅ Função para inicializar os campos do formulário
+            function inicializarFormulario() {
+                carregarCursos();       // Preenche o seletor de cursos
+                carregarAnos();         // Preenche o seletor de anos
+                carregarSemestres();    // Preenche o seletor de semestres
+            }
+
+            // ✅ Chamando a função quando a página é carregada
+            document.addEventListener('DOMContentLoaded', () => {
+                inicializarFormulario();
+            });
 
             // ✅ Função para carregar Cursos na Pesquisa e Modal
             function carregarCursos() {
@@ -640,36 +730,56 @@
             });
 
             function pesquisarDados() {
-                console.log('Pesquisando turnos...');
-                const cursoSelecionado = document.getElementById('cursoPesquisa').value;
-                const anoSelecionado = document.getElementById('ano');
-                const anoTexto = anoSelecionado.options[anoSelecionado.selectedIndex].text.trim();
+                console.log('🔍 Iniciando pesquisa de turnos...');
 
-                const semestreSelecionado = document.getElementById('semestre');
-                const semestreTexto = semestreSelecionado.options[semestreSelecionado.selectedIndex].text.trim();
+                // Obter os elementos dos selects
+                const cursoElemento = document.getElementById('cursoPesquisa');
+                const anoElemento = document.getElementById('anoTurno');
+                const semestreElemento = document.getElementById('semestreTurno');
 
-                // Verificar se todos os campos foram selecionados
-                if (cursoSelecionado === "Escolha o curso..." || !cursoSelecionado ||
-                    anoSelecionado === "Escolha o ano..." || !anoSelecionado ||
-                    semestreSelecionado === "Escolha o semestre..." || !semestreSelecionado) {
-                    alert('Por favor, selecione o curso, ano e semestre para fazer a pesquisa.');
+                // Verificar se os elementos foram encontrados
+                console.log('🛠️ Elementos encontrados:', {
+                    cursoElemento,
+                    anoElemento,
+                    semestreElemento
+                });
+
+                if (!cursoElemento || !anoElemento || !semestreElemento) {
+                    console.error('❌ Um ou mais elementos do formulário não foram encontrados.');
+                    alert('Erro interno: Não foi possível encontrar os campos do formulário.');
                     return;
                 }
 
-                console.log('Parâmetros de pesquisa:', {
+                // Obter os valores selecionados
+                const cursoSelecionado = cursoElemento.value;
+                const anoSelecionado = anoElemento.value;
+                const semestreSelecionado = semestreElemento.value;
+
+                // Validação dos valores selecionados
+                if (
+                    cursoSelecionado === 'Escolha o curso...' ||
+                    anoSelecionado === 'Escolha o ano...' ||
+                    semestreSelecionado === 'Escolha o semestre...'
+                ) {
+                    alert('⚠️ Por favor, selecione um curso, ano e semestre válidos.');
+                    console.warn('⚠️ Um ou mais valores inválidos foram selecionados.');
+                    return;
+                }
+
+                console.log('📊 Valores selecionados:', {
                     curso: cursoSelecionado,
-                    ano: anoTexto,
-                    semestre: semestreTexto
+                    ano: anoSelecionado,
+                    semestre: semestreSelecionado
                 });
 
                 // Enviar solicitação para buscar dados com base nos parâmetros
-                fetch(`/buscar_dados/?curso=${cursoSelecionado}&ano=${anoTexto}&semestre=${semestreTexto}`)
+                fetch(`/buscar_dados/?curso=${cursoSelecionado}&ano=${anoSelecionado}&semestre=${semestreSelecionado}`)
                     .then(response => {
-                        console.log('Resposta do servidor:', response);
+                        console.log('✅ Resposta do servidor:', response);
                         return response.json();
                     })
                     .then(data => {
-                        console.log('Dados recebidos:', data);
+                        console.log('📥 Dados recebidos:', data);
                         const tabelaResultados = document.getElementById('resultadosDisponiveis');
                         tabelaResultados.innerHTML = ''; // Limpa os resultados antigos
 
@@ -677,55 +787,45 @@
                         quantidadeResultados.textContent = data.length; // Atualiza a quantidade de resultados
 
                         if (data.length > 0) {
-                            // Mostrar o spinner
                             document.getElementById('loadingSpinner').style.display = 'block';
-                            tabelaResultados.innerHTML = ''; // Limpar a tabela enquanto carrega
 
                             data.forEach(item => {
                                 const row = `
-        <tr>
-            <td>${item.turno_nome}</td>
-            <td>${item.vagas_disponiveis} Vagas</td>
-            <td>${item.vagas_totais ? item.vagas_totais + ' Vagas' : 'N/A Vagas'}</td>
-            <td>
-                <span class="badge ${item.estado === '1' ? 'bg-success' : 'bg-secondary'}">
-                    ${item.estado === '1' ? 'Ativo' : 'Inativo'}
-                </span>
-            </td>
-            <td>
-                <!-- Botão para Editar Turno -->
-                <button type="button" class="btn btn-warning btn-sm" onclick="editarTurno(${item.id_turno})">
-                    <i class="bi bi-pencil"></i> Editar Turno
-                </button>
-                <!-- Botão para Editar Vagas -->
-                <button type="button" class="btn btn-info btn-sm"
-                        onclick="editarVagas(${item.id_turno})">
-                    Editar Vagas
-                </button>
-                <!-- Botão para Eliminar Turno -->
-                <button type="button" class="btn btn-danger btn-sm"
-                        onclick="eliminarTurno(${item.id_turno})">
-                    <i class="bi bi-trash me-2"></i>Eliminar Turno
-                </button>
-            </td>
-        </tr>
-        `;
+                    <tr>
+                        <td>${item.turno_nome}</td>
+                        <td>${item.nome_uc}</td>
+                        <td>${item.vagas_restantes} Vagas</td>
+                        <td>${item.vagas_totais} Vagas</td>
+                        <td>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="editarTurno(${item.id_turno})">
+                                <i class="bi bi-pencil"></i> Editar Turno
+                            </button>
+                            <button type="button" class="btn btn-info btn-sm" onclick="editarVagas(${item.id_turno})">
+    <i class="fas fa-users"></i> Editar Vagas
+</button>
+
+                            <button type="button" class="btn btn-danger btn-sm" onclick="eliminarTurno(${item.id_turno})">
+                                <i class="bi bi-trash me-2"></i> Eliminar Turno
+                            </button>
+                        </td>
+                    </tr>`;
                                 tabelaResultados.innerHTML += row;
                             });
 
-                            // Ocultar o spinner após o carregamento
                             document.getElementById('loadingSpinner').style.display = 'none';
-                        }
-                        else {
+                        } else {
                             tabelaResultados.innerHTML = `
-                    <tr>
-                        <td colspan="5">Nenhum dado disponível para os critérios selecionados.</td>
-                    </tr>
-                `;
+                <tr>
+                    <td colspan="5">Nenhum dado disponível para os critérios selecionados.</td>
+                </tr>`;
                         }
                     })
-                    .catch(error => console.error('Erro ao buscar dados:', error));
+                    .catch(error => {
+                        console.error('❌ Erro ao buscar dados:', error);
+                        alert('Erro ao buscar dados. Verifique o console para mais informações.');
+                    });
             }
+
             function carregarHorarios(turnoNome, semestre, ano, curso) {
                 let tableBody = document.getElementById('horariosTableBody');
                 tableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
@@ -887,6 +987,10 @@
                             if (btnSalvar) {
                                 btnSalvar.style.display = 'none';
                             }
+                            // Redefinir modal após 2 segundos
+                            setTimeout(() => {
+                                resetarModal();
+                            }, 2000);
                         } else {
                             // 🔴 Modal de Erro
                             modalBody.innerHTML = `
@@ -927,82 +1031,71 @@
                     });
             }
 
-
-            
             function resetarModal() {
-                const modal = document.getElementById('criarTurnoModal');
-                if (modal) {
-                    modal.remove(); // Remove o modal do DOM
+                // Seleção dos elementos do modal
+                const formCriarTurno = document.getElementById('formCriarTurno');
+                const modalBody = document.querySelector('#criarTurnoModal .modal-body');
+                const modalContent = document.querySelector('#criarTurnoModal .modal-content');
+                const btnSalvar = document.querySelector('#criarTurnoModal .modal-footer .btn-primary');
+
+                // Redefinir o formulário somente se ele existir
+                if (formCriarTurno) {
+                    formCriarTurno.reset();
                 }
 
-                // Reinsere o modal no DOM
-                const modalContainer = document.createElement('div');
-                modalContainer.innerHTML = `
-        <!-- Estrutura original do modal -->
-        <div class="modal fade" id="criarTurnoModal" tabindex="-1" aria-labelledby="criarTurnoModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="criarTurnoModalLabel">Criar Novo Turno</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="formCriarTurno" onsubmit="event.preventDefault(); enviarFormularioCriarTurno();">
-                            <div class="mb-3">
-                                <label for="nomeTurno" class="form-label">Nome do Turno</label>
-                                <div class="input-group">
-                                    <select class="form-select" id="selectNomeTurno">
-                                        <option selected disabled>Escolha um turno existente...</option>
-                                    </select>
-                                    <input type="text" class="form-control" id="inputNomeTurno" placeholder="Ou digite um novo nome">
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="vagasTurno" class="form-label">Número de Vagas</label>
-                                <input type="number" class="form-control" id="vagasTurno" placeholder="Digite o número de vagas" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="cursoTurno" class="form-label">Curso</label>
-                                <select class="form-select" id="cursoTurno" required>
-                                    <option selected disabled>Escolha o curso...</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="anoTurno" class="form-label">Ano</label>
-                                <select class="form-select" id="anoTurno" required>
-                                    <option selected disabled>Escolha o ano...</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="semestreTurno" class="form-label">Semestre</label>
-                                <select class="form-select" id="semestreTurno" required>
-                                    <option selected disabled>Escolha o semestre...</option>
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="ucTurno" class="form-label">Unidade Curricular (UC)</label>
-                                <select class="form-select" id="ucTurno" required>
-                                    <option selected disabled>Selecione Curso, Ano e Semestre</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="submit" class="btn btn-primary"><i class="bi bi-save me-2"></i>Guardar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-                document.body.appendChild(modalContainer);
+                // Restaurar selects para a opção padrão
+                const selectNomeTurno = document.getElementById('selectNomeTurno');
+                const cursoTurno = document.getElementById('cursoTurno');
+                const anoTurno = document.getElementById('anoTurno');
+                const semestreTurno = document.getElementById('semestreTurno');
+                const ucTurno = document.getElementById('ucTurno');
 
-                console.log('🔄 Modal recriado com sucesso!');
+                if (selectNomeTurno) {
+                    selectNomeTurno.innerHTML = `
+            <option selected disabled>Escolha um turno existente...</option>
+        `;
+                }
+                if (cursoTurno) {
+                    cursoTurno.innerHTML = `
+            <option selected disabled>Escolha o curso...</option>
+        `;
+                }
+                if (anoTurno) {
+                    anoTurno.innerHTML = `
+            <option selected disabled>Escolha o ano...</option>
+        `;
+                }
+                if (semestreTurno) {
+                    semestreTurno.innerHTML = `
+            <option selected disabled>Escolha o semestre...</option>
+        `;
+                }
+                if (ucTurno) {
+                    ucTurno.innerHTML = `
+            <option selected disabled>Selecione Curso, Ano e Semestre</option>
+        `;
+                }
+
+                // Restaurar estilos padrão
+                if (modalContent) {
+                    modalContent.style.backgroundColor = '';
+                    modalContent.style.color = '';
+                }
+
+                // Restaurar botão de salvar
+                if (btnSalvar) {
+                    btnSalvar.style.display = '';
+                }
             }
+
+
+
+
             const botaoAbrirModal = document.querySelector('[data-bs-target="#criarTurnoModal"]');
             if (botaoAbrirModal) {
                 botaoAbrirModal.addEventListener('click', () => {
-                    resetarModal();
-                    carregarNomesTurnos();
+                    resetarModal(); // Redefinir o modal para o estado inicial
+                    carregarNomesTurnos(); // Recarregar os dados necessários
                     carregarCursos();
                     carregarAnos();
                     carregarSemestres();
@@ -1028,15 +1121,18 @@
                 return cookieValue;
             }
         </script>
+
         <script>
             let turnoOriginal = {};
+
             // Armazenar o conteúdo original do modal
             const modalBodyOriginal = document.querySelector('#editarTurnoModal .modal-body').innerHTML;
             const modalFooterOriginal = document.querySelector('#editarTurnoModal .modal-footer').innerHTML;
 
+            // ✅ Função para editar turno
             function editarTurno(idTurno) {
                 console.log('Editando turno com ID:', idTurno);
-                // Armazenar o ID do turno no campo oculto
+
                 // Restaurar o conteúdo original do modal antes de preencher
                 document.querySelector('#editarTurnoModal .modal-content').style.backgroundColor = '#FFFFFF';
                 document.querySelector('#editarTurnoModal .modal-body').innerHTML = modalBodyOriginal;
@@ -1044,100 +1140,54 @@
 
                 // Enviar solicitação para obter os detalhes do turno
                 fetch(`/obter_detalhes_turno/${idTurno}/`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Erro ao carregar detalhes do turno.');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         console.log('Dados recebidos:', data);
+
                         // Armazenar os valores originais
                         turnoOriginal = {
                             nome: data.turno_nome,
                             vagasTotais: data.vagas_totais,
-                            ano: data.ano,
-                            semestre: data.semestre,
-                            estado: data.estado
+                            vagasOcupadas: data.vagas_ocupadas
                         };
+
                         // Preencher o formulário com os dados do turno
-                        document.getElementById('editarNomeTurno').value = data.turno_nome;
-                        const turnoIdElement = document.getElementById('editTurnoId');
-                        if (turnoIdElement) {
-                            turnoIdElement.value = data.id_turno;
-                            //  console.log(`ID do turno definido no campo oculto: ${turnoIdElement.value}`);
-                        } else {
-                            console.error("Erro: O campo oculto 'editTurnoId' não foi encontrado.");
-                            return;
-                        }
-                        // Definir ano e semestre
-                        const anoSelect = document.getElementById('editarAnoTurno');
-                        for (let i = 0; i < anoSelect.options.length; i++) {
-                            if (anoSelect.options[i].text.includes(data.ano)) {
-                                anoSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
+                        document.getElementById('editTurnoId').value = data.id_turno;
+                        document.getElementById('editarNomeTurno').value = data.turno_nome || '';
+                        document.getElementById('editarVagasTotais').value = data.vagas_totais || 0;
 
-                        const semestreSelect = document.getElementById('editarSemestreTurno');
-                        for (let i = 0; i < semestreSelect.options.length; i++) {
-                            if (semestreSelect.options[i].text.includes(data.semestre)) {
-                                semestreSelect.selectedIndex = i;
-                                break;
-                            }
-                        }
-
-                        // Preencher o valor das vagas totais
-                        document.getElementById('editarVagasTotais').value = data.vagas_totais;
-
-                        // Calcular vagas ocupadas
-                        const vagasOcupadas = data.vagas_totais - data.vagas_disponiveis;
-                        // console.log('Vagas Ocupadas calculadas:', vagasOcupadas);
-
-                        // Mostrar o modal do Bootstrap
-                        const editarModal = new bootstrap.Modal(document.getElementById('editarTurnoModal'));
-
-                        // Preencher o valor das vagas ocupadas ANTES de mostrar o modal
-                        const vagasOcupadasTexto = document.getElementById('vagasOcupadasTexto');
-                        if (vagasOcupadasTexto) {
-                            vagasOcupadasTexto.innerHTML = `Numero de Vagas ocupadas: <strong>${vagasOcupadas}</strong>`; // Definir a frase com o valor em negrito
-                            // console.log('Frase atribuída ao campo vagasOcupadasTexto:', vagasOcupadasTexto.innerHTML);
-                        }
-                        else {
-                            console.error('Elemento vagasOcupadasTexto não encontrado.');
-                        }
-
-                        // Preencher o estado do turno (1 = Ativo, 0 = Inativo)
-                        const estadoCheckbox = document.getElementById('editarEstadoTurno');
-                        if (estadoCheckbox) {
-                            estadoCheckbox.checked = data.estado === 1;
-                            // console.log('Estado do turno:', data.estado === 1 ? 'Ativo' : 'Inativo');
-                        } else {
-                            console.error('Elemento editarEstadoTurno não encontrado.');
-                        }
+                        // Preencher o valor das vagas ocupadas
+                        document.getElementById('editarVagasOcupadas').innerText = data.vagas_ocupadas || 0;
 
                         // Mostrar o modal
-                        // Adicionar eventos para monitorar mudanças
+                        const editarModal = new bootstrap.Modal(document.getElementById('editarTurnoModal'));
                         monitorarMudancas();
                         validarVagasTotais();
                         editarModal.show();
                     })
-                    .catch(error => console.error('Erro ao obter detalhes do turno:', error));
+                    .catch(error => {
+                        console.error('❌ Erro ao obter detalhes do turno:', error);
+                        alert('Erro ao carregar detalhes do turno.');
+                    });
             }
 
-            function mostrarMensagem(tipo, mensagem) {
-                alert(`[${tipo}] ${mensagem}`);
-            }
 
+            // ✅ Função para monitorar alterações no formulário
             function monitorarMudancas() {
                 const btnGuardar = document.getElementById('btnGuardarTurno');
 
-                // Monitorar mudanças nos campos
-                document.querySelectorAll('#editarTurnoModal input, #editarTurnoModal select').forEach((campo) => {
+                document.querySelectorAll('#editarTurnoModal input').forEach((campo) => {
                     campo.addEventListener('input', () => {
                         const nomeAlterado = document.getElementById('editarNomeTurno').value !== turnoOriginal.nome;
                         const vagasTotaisAlteradas = document.getElementById('editarVagasTotais').value != turnoOriginal.vagasTotais;
-                        const anoAlterado = document.getElementById('editarAnoTurno').value !== turnoOriginal.ano;
-                        const semestreAlterado = document.getElementById('editarSemestreTurno').value !== turnoOriginal.semestre;
-                        const estadoAlterado = document.getElementById('editarEstadoTurno').checked !== (turnoOriginal.estado === 1);
 
                         // Habilitar botão se qualquer campo for alterado
-                        if (nomeAlterado || vagasTotaisAlteradas || anoAlterado || semestreAlterado || estadoAlterado) {
+                        if (nomeAlterado || vagasTotaisAlteradas) {
                             btnGuardar.removeAttribute('disabled');
                         } else {
                             btnGuardar.setAttribute('disabled', 'disabled');
@@ -1146,140 +1196,284 @@
                 });
             }
 
+            // ✅ Função para validar Vagas Totais
             function validarVagasTotais() {
                 const vagasTotaisInput = document.getElementById('editarVagasTotais');
-                const vagasOcupadas = parseInt(turnoOriginal.vagasTotais) - parseInt(turnoOriginal.vagasDisponiveis);
+                const vagasOcupadas = turnoOriginal.vagasOcupadas;
 
                 vagasTotaisInput.addEventListener('input', () => {
                     const vagasTotais = parseInt(vagasTotaisInput.value);
-                    if (parseInt(vagasTotais) < parseInt(vagasRestantes)) {
-                        mostrarMensagem('Erro', 'O número de vagas totais deve ser igual ou maior do que o número de vagas restantes.');
-                        return;
+                    if (isNaN(vagasTotais) || vagasTotais < vagasOcupadas) {
+                        mostrarMensagem('Erro', 'O número de vagas totais deve ser maior ou igual ao número de vagas ocupadas.');
+                        vagasTotaisInput.classList.add('is-invalid');
+                    } else {
+                        vagasTotaisInput.classList.remove('is-invalid');
                     }
-
                 });
             }
 
+            // ✅ Função para mostrar mensagens
+            function mostrarMensagem(tipo, mensagem) {
+                alert(`[${tipo}] ${mensagem}`);
+            }
 
-
-
+            // ✅ Função para enviar o formulário de edição
             function enviarFormularioEditarTurno() {
-                // Verificar elementos um por um
-                const turnoIdElement = document.getElementById('editTurnoId');
-                if (!turnoIdElement) {
-                    alert("Erro: O elemento com ID 'editTurnoId' não foi encontrado.");
-                    return;
-                }
+                const turnoId = document.getElementById('editTurnoId').value;
+                const nomeTurno = document.getElementById('editarNomeTurno').value;
+                const vagasTotais = parseInt(document.getElementById('editarVagasTotais').value);
 
-                const nomeTurnoElement = document.getElementById('editarNomeTurno');
-                if (!nomeTurnoElement) {
-                    alert("Erro: O elemento com ID 'editarNomeTurno' não foi encontrado.");
-                    return;
-                }
-
-                const vagasTotaisElement = document.getElementById('editarVagasTotais');
-                if (!vagasTotaisElement) {
-                    alert("Erro: O elemento com ID 'editarVagasTotais' não foi encontrado.");
-                    return;
-                }
-
-                const vagasRestantesElement = document.getElementById('vagasOcupadasTexto'); // Verifique se você quer usar 'vagasOcupadasTexto' aqui
-                if (!vagasRestantesElement) {
-                    alert("Erro: O elemento com ID 'vagasOcupadasTexto' não foi encontrado.");
-                    return;
-                }
-
-                const anoElement = document.getElementById('editarAnoTurno');
-                if (!anoElement) {
-                    alert("Erro: O elemento com ID 'editarAnoTurno' não foi encontrado.");
-                    return;
-                }
-
-                const semestreElement = document.getElementById('editarSemestreTurno');
-                if (!semestreElement) {
-                    alert("Erro: O elemento com ID 'editarSemestreTurno' não foi encontrado.");
-                    return;
-                }
-
-                const estadoElement = document.getElementById('editarEstadoTurno');
-                if (!estadoElement) {
-                    alert("Erro: O elemento com ID 'editarEstadoTurno' não foi encontrado.");
-                    return;
-                }
-
-                // Obter os valores dos elementos
-                const turnoId = turnoIdElement.value;
-                const nomeTurno = nomeTurnoElement.value;
-
-                // Aqui usamos o texto das opções selecionadas
-                const ano = anoElement.options[anoElement.selectedIndex].text;
-                const semestre = semestreElement.options[semestreElement.selectedIndex].text;
-                // console.log(`Ano enviado: ${ano}`);
-                //console.log(`Semestre enviado: ${semestre}`);
-                const estado = estadoElement.checked ? 1 : 0;
-
-                const vagasTotais = parseInt(vagasTotaisElement.value)
-                const vagasOcupadas = parseInt(vagasRestantesElement.textContent.split(':')[1].trim());
-
-                // Adicionar logs para verificar os valores
-                //console.log(`Vagas Totais informadas: ${vagasTotaisElement.value}`);
-                //console.log(`Vagas Restantes no texto: ${vagasRestantesElement.textContent.split(':')[1].trim()}`);
-                //console.log(`Vagas Ocupadas calculadas: ${vagasOcupadas}`);
-
-                // Validar se vagas totais são maiores ou iguais às vagas ocupadas
-                if (vagasTotais < vagasOcupadas) {
+                // Validação de Vagas Totais
+                const vagasOcupadas = parseInt(document.getElementById('editarVagasOcupadas').innerText);
+                if (isNaN(vagasTotais) || vagasTotais < vagasOcupadas) {
                     alert('Erro: O número de vagas totais deve ser maior ou igual ao número de vagas ocupadas.');
                     return;
                 }
 
+                console.log('Enviando dados do turno:', {
+                    turnoId,
+                    nomeTurno,
+                    vagasTotais
+                });
 
                 // Enviar os dados via AJAX
                 fetch('/atualizar_turno/', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'application/json',
                         'X-CSRFToken': getCookie('csrftoken')
                     },
-                    body: new URLSearchParams({
-                        'turno_id': turnoId,
-                        'nome_turno': nomeTurno,
-                        'vagas_totais': vagasTotais,
-                        'ano': ano,
-                        'semestre': semestre,
-                        'estado': estado
+                    body: JSON.stringify({
+                        turno_id: turnoId,
+                        nome_turno: nomeTurno,
+                        vagas_totais: vagasTotais
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Erro HTTP: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            const modalBody = document.querySelector('#editarTurnoModal .modal-body');
+                            modalBody.innerHTML = `
+                <div class="text-center">
+                    <h4 class="text-success">Turno atualizado com sucesso!</h4>
+                    <img src="{% static 'images/certo.png' %}" alt="Sucesso" style="width: 100px; margin-top: 20px;">
+                </div>
+                `;
+                            document.querySelector('#editarTurnoModal .modal-content').style.backgroundColor = '#d4edda';
+
+                            document.querySelector('#btnGuardarTurno').style.display = 'none';
+                            pesquisarDados(); // Atualizar a lista de turnos
+                        } else {
+                            alert('Erro ao atualizar turno: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao atualizar turno:', error);
+                        alert('Erro ao atualizar turno. Tente novamente.');
+                    });
+            }
+
+            // ✅ Função para obter o CSRF token
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+
+        </script>
+
+        <script>
+            function editarVagas(idTurno) {
+                console.log('Abrindo modal para gerenciar alunos do turno:', idTurno);
+                // Preencher o campo oculto com o ID do turno
+                document.getElementById('editTurnoId').value = idTurno;
+
+                fetch(`/obter_alunos_turno/${idTurno}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Dados do turno recebidos:', data);
+
+                        const listaAlunos = document.getElementById('listaAlunosTurno');
+                        listaAlunos.innerHTML = ''; // Limpar a lista atual
+
+                        if (data.success && data.alunos.length > 0) {
+                            data.alunos.forEach(aluno => {
+                                const row = `
+<tr>
+    <td>
+        <input type="checkbox" class="checkbox-aluno" data-id="${aluno.n_meca}" onchange="verificarSelecaoAlunos()">
+    </td>
+    <td>${aluno.n_meca}</td>
+    <td>${aluno.p_nome} ${aluno.u_nome}</td>
+</tr>
+`;
+
+                                listaAlunos.innerHTML += row;
+                            });
+                        } else {
+                            listaAlunos.innerHTML = `
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">Nenhum aluno inscrito.</td>
+                    </tr>
+                `;
+                        }
+
+                        const editarVagasModal = new bootstrap.Modal(document.getElementById('editarVagasModal'));
+                        editarVagasModal.show();
+                    })
+                    .catch(error => {
+                        console.error('Erro ao obter os detalhes do turno:', error);
+                        alert('Erro ao carregar as informações do turno. Tente novamente.');
+                    });
+            }
+
+            // Função para verificar se algum checkbox foi marcado
+            function verificarSelecaoAlunos() {
+                const checkboxes = document.querySelectorAll('.checkbox-aluno');
+                const btnRemover = document.getElementById('btnRemoverAlunos');
+                const algumSelecionado = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+                btnRemover.disabled = !algumSelecionado;
+            }
+
+            // Função para selecionar/deselecionar todos os checkboxes
+            function selecionarTodosAlunos(masterCheckbox) {
+                const checkboxes = document.querySelectorAll('.checkbox-aluno');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = masterCheckbox.checked;
+                });
+                verificarSelecaoAlunos();
+            }
+
+            function removerAlunosSelecionados() {
+                const checkboxes = document.querySelectorAll('.checkbox-aluno:checked');
+                const alunosSelecionados = Array.from(checkboxes).map(checkbox => checkbox.dataset.id);
+
+                const turnoId = document.getElementById('editTurnoId')?.value;
+
+                if (!turnoId) {
+                    alert('Erro: ID do turno não encontrado.');
+                    return;
+                }
+
+                if (alunosSelecionados.length === 0) {
+                    alert('Nenhum aluno selecionado para remoção.');
+                    return;
+                }
+
+                console.log('Alunos selecionados para remoção:', alunosSelecionados);
+                console.log('Turno ID:', turnoId);
+
+                fetch('/remover_alunos_turno/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({ alunos: alunosSelecionados, turno_id: turnoId })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Alunos removidos com sucesso!');
+
+                            // ✅ Fechar explicitamente o modal antes de recarregar
+                            const editarVagasModal = bootstrap.Modal.getInstance(document.getElementById('editarVagasModal'));
+                            if (editarVagasModal) {
+                                editarVagasModal.hide();
+                            }
+
+                            // ✅ Remover backdrop manualmente se necessário
+                            document.querySelector('.modal-backdrop')?.remove();
+
+                            // ✅ Recarregar os alunos no modal
+                            setTimeout(() => {
+                                editarVagas(turnoId);
+                            }, 300); // Pequeno delay para evitar conflito
+                        } else {
+                            alert('Erro ao remover alunos: ' + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao remover alunos:', error);
+                        alert('Erro ao remover alunos. Tente novamente.');
+                    });
+            }
+            document.addEventListener('hidden.bs.modal', function (event) {
+                const backdrop = document.querySelector('.modal-backdrop');
+                if (backdrop) {
+                    backdrop.remove();
+                }
+                document.body.classList.remove('modal-open'); // Remove a classe modal-open
+            });
+
+            function adicionarAluno() {
+                const turnoId = document.getElementById('editTurnoId').value;
+
+                if (!turnoId) {
+                    alert('Erro: ID do turno não encontrado.');
+                    return;
+                }
+
+                // Exibir um prompt para obter o número mecânico do aluno
+                const n_meca = prompt('Digite o número mecânico do aluno:').trim();
+
+                // Validar o número mecânico
+                if (!n_meca || isNaN(n_meca)) {
+                    alert('Por favor, insira um número mecânico válido.');
+                    return;
+                }
+
+                console.log('Adicionando aluno ao turno:', {
+                    turno_id: turnoId,
+                    n_meca,
+                });
+
+                // Enviar os dados para o backend
+                fetch('/adicionar_aluno_turno/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken') // Inclua o token CSRF
+                    },
+                    body: JSON.stringify({
+                        turno_id: turnoId,
+                        aluno: {
+                            n_meca,
+                        }
                     })
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            // Substituir conteúdo do modal com mensagem de sucesso
-                            const modalBody = document.querySelector('#editarTurnoModal .modal-body');
-                            modalBody.innerHTML = `
-                    <div class="text-center">
-                        <h4 class="text-success">Turno atualizado com sucesso!</h4>
-                        <img src="{% static 'images/certo.png' %}" alt="Sucesso" style="width: 100px; margin-top: 20px;">
-                    </div>
-                `;
-
-                            // Mudar a cor do fundo do modal para verde
-                            document.querySelector('#editarTurnoModal .modal-content').style.backgroundColor = '#d4edda';
-
-                            // Remover o botão "Guardar"
-                            const btnGuardar = document.querySelector('#editarTurnoModal .modal-footer .btn-primary');
-                            if (btnGuardar) {
-                                btnGuardar.style.display = 'none'; // Esconde o botão "Guardar"
-                            }
-
-
-
-                            pesquisarDados(); // Atualizar a lista de turnos
-                            // Atualizar a lista
+                            alert('✅ Aluno adicionado com sucesso!');
+                            // Recarregar a lista de alunos no modal
+                            editarVagas(turnoId);
                         } else {
-                            alert('Erro ao atualizar turno: ' + data.error);
+                            alert('❌ ERRO !:  ' + data.error);
                         }
                     })
-                    .catch(error => console.error('Erro ao atualizar turno:', error));
+                    .catch(error => {
+                        console.error('ERRO !:', error);
+                        alert('❌ Erro ao adicionar aluno. Tente novamente.');
+                    });
             }
+
 
 
             // Função para obter o CSRF token
@@ -1300,109 +1494,8 @@
 
 
         </script>
-        <script>
-            function editarVagas(idTurno) {
-                console.log('Abrindo modal para gerenciar alunos do turno:', idTurno);
 
-                // Enviar solicitação para obter os detalhes do turno e alunos inscritos
-                fetch(`/obter_alunos_turno/${idTurno}/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Dados do turno recebidos:', data);
 
-                        // Preencher a lista de alunos
-                        const listaAlunos = document.getElementById('listaAlunosTurno');
-                        listaAlunos.innerHTML = ''; // Limpar a lista atual
-
-                        if (data.alunos && data.alunos.length > 0) {
-                            data.alunos.forEach(aluno => {
-                                const li = document.createElement('li');
-                                li.className = 'list-group-item d-flex justify-content-between align-items-center';
-                                li.textContent = aluno.nome; // Exibe o nome do aluno
-                                li.dataset.id = aluno.id; // Salva o ID do aluno como atributo
-                                listaAlunos.appendChild(li);
-                            });
-                        } else {
-                            listaAlunos.innerHTML = '<li class="list-group-item text-center text-muted">Nenhum aluno inscrito.</li>';
-                        }
-
-                        // Abrir o modal do Bootstrap
-                        const editarVagasModal = new bootstrap.Modal(document.getElementById('editarVagasModal'));
-                        editarVagasModal.show();
-                    })
-                    .catch(error => {
-                        console.error('Erro ao obter os detalhes do turno:', error);
-                        alert('Erro ao carregar as informações do turno. Tente novamente.');
-                    });
-            }
-            function adicionarAluno() {
-                const turnoId = document.getElementById('idTurnoVagas').value; // ID do turno
-                const nomeAluno = prompt('Digite o nome do aluno para adicionar:');
-                if (!nomeAluno) {
-                    alert('Erro: Nome do aluno não pode estar vazio.');
-                    return;
-                }
-
-                // Enviar dados ao backend para adicionar o aluno
-                fetch('/adicionar_aluno/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: new URLSearchParams({
-                        'id_turno': turnoId,
-                        'nome_aluno': nomeAluno
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Aluno adicionado com sucesso!');
-                            editarVagas(turnoId); // Atualiza a lista de alunos
-                        } else {
-                            alert('Erro ao adicionar aluno: ' + data.error);
-                        }
-                    })
-                    .catch(error => console.error('Erro ao adicionar aluno:', error));
-            }
-            function removerAluno() {
-                const listaAlunos = document.getElementById('listaAlunosTurno');
-                const alunosSelecionados = [...listaAlunos.children].filter(li => li.classList.contains('selected'));
-
-                if (alunosSelecionados.length === 0) {
-                    alert('Selecione um aluno para remover.');
-                    return;
-                }
-
-                const alunoId = alunosSelecionados[0].dataset.id; // ID do primeiro aluno selecionado
-                const turnoId = document.getElementById('idTurnoVagas').value;
-
-                // Enviar dados ao backend para remover o aluno
-                fetch('/remover_aluno/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': getCookie('csrftoken')
-                    },
-                    body: new URLSearchParams({
-                        'id_turno': turnoId,
-                        'id_aluno': alunoId
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            alert('Aluno removido com sucesso!');
-                            editarVagas(turnoId); // Atualiza a lista de alunos
-                        } else {
-                            alert('Erro ao remover aluno: ' + data.error);
-                        }
-                    })
-                    .catch(error => console.error('Erro ao remover aluno:', error));
-            }
-
-        </script>
         <script>
             let turnoParaExcluir = null;
 
@@ -1413,19 +1506,20 @@
                 const modalBody = document.querySelector('#eliminarTurnoModal .modal-body');
                 const modalFooter = document.querySelector('#eliminarTurnoModal .modal-footer');
 
-                // Resetar conteúdo do modal// Restaurar a cor do modal para o padrão (branco)
+                // Resetar conteúdo do modal
                 const modalContent = document.querySelector('#eliminarTurnoModal .modal-content');
                 if (modalContent) {
                     modalContent.style.backgroundColor = '#FFFFFF'; // Cor branca padrão
                 }
 
                 modalBody.innerHTML = `
-        <p>Tem certeza de que deseja excluir o turno <span id="turnoNomeExcluir">...</span>?</p>
+        <p>Tem certeza de que deseja excluir este turno?</p>
         <div id="detalhesTurno"></div>
     `;
                 modalFooter.innerHTML = `
-        
-        <button type="button" class="btn btn-danger" onclick="confirmarExclusaoTurno()" disabled><i class="bi bi-trash me-2"></i>Excluir</button>
+        <button type="button" class="btn btn-danger" onclick="confirmarExclusaoTurno()" disabled>
+            <i class="bi bi-trash me-2"></i>Excluir
+        </button>
     `;
 
                 // Fazer uma requisição para verificar os detalhes do turno
@@ -1444,18 +1538,17 @@
                         console.log('Dados do turno recebidos:', data);
 
                         if (data.success) {
-                            // Preencher o modal com os dados do turno
-                            document.getElementById("turnoNomeExcluir").textContent = data.turno_nome || "Desconhecido";
                             turnoParaExcluir = idTurno;
-                            // Mostrar mensagem de horários associados
+
+                            // Mostrar mensagem no modal com base no retorno
                             const detalhesElemento = document.getElementById("detalhesTurno");
-                            if (data.horarios_associados > 0) {
+                            if (data.posso_eliminar) {
                                 detalhesElemento.innerHTML = `
-                        <span class="text-danger">✖ Ainda existem <strong>${data.horarios_associados}</strong> horário(s) associado(s) ao turno!!</span>
+                        <span class="text-success">${data.mensagem}</span>
                     `;
                             } else {
                                 detalhesElemento.innerHTML = `
-                        <span class="text-success">✔ Sem horários pendentes.</span>
+                        <span class="text-danger">${data.mensagem}</span>
                     `;
                             }
 
@@ -1466,6 +1559,7 @@
                             } else {
                                 btnExcluir.setAttribute("disabled", "disabled");
                             }
+
                             // Mostrar o modal de confirmação
                             const eliminarModal = new bootstrap.Modal(document.getElementById("eliminarTurnoModal"));
                             eliminarModal.show();
@@ -1478,6 +1572,7 @@
                         alert('Erro ao carregar os detalhes do turno. Tente novamente.');
                     });
             }
+
 
 
 
@@ -1531,7 +1626,141 @@
 
 
         </script>
+
         <script>
+
+            function carregarTurnosSemHorarios() {
+                fetch('/obter_turnos_sem_horarios/')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const selectTurno = document.getElementById("idTurno");
+                            selectTurno.innerHTML = ""; // Limpar opções anteriores
+                            const defaultOption = document.createElement("option");
+                            defaultOption.value = "";
+                            defaultOption.textContent = "Selecione o turno...";
+                            selectTurno.appendChild(defaultOption);
+
+                            data.turnos.forEach(turno => {
+                                const option = document.createElement("option");
+                                option.value = turno.id_turno;
+                                option.textContent = `${turno.turno_nome} (UC: ${turno.id_uc}, Semestre: ${turno.id_semestre})`;
+                                selectTurno.appendChild(option);
+                            });
+                        } else {
+                            alert("Erro ao carregar turnos: " + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erro ao carregar turnos sem horários:", error);
+                    });
+            }
+
+            function atualizarEspacosDisponiveis() {
+                const diaSemana = document.getElementById("diaSemana").value;
+                const horaInicio = document.getElementById("horaInicio").value;
+                const horaFim = document.getElementById("horaFim").value;
+
+                if (!diaSemana || !horaInicio || !horaFim) {
+                    // Caso algum campo esteja vazio, não faça nada
+                    return;
+                }
+
+                // Enviar os dados para o backend para buscar os espaços disponíveis
+                fetch('/espacos_disponiveis/', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": getCookie('csrftoken') // Inclua o token CSRF, se necessário
+                    },
+                    body: new URLSearchParams({
+                        dia_semana: diaSemana,
+                        hora_inicio: horaInicio,
+                        hora_fim: horaFim
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectEspaco = document.getElementById("idEspaco");
+                        selectEspaco.innerHTML = ""; // Limpar as opções anteriores
+
+                        if (data.success) {
+                            // Adicionar opção padrão
+                            const defaultOption = document.createElement("option");
+                            defaultOption.value = "";
+                            defaultOption.textContent = "Selecione o espaço...";
+                            defaultOption.disabled = true;
+                            defaultOption.selected = true;
+                            selectEspaco.appendChild(defaultOption);
+
+                            // Preencher o select com os espaços disponíveis
+                            data.espacos.forEach(espaco => {
+                                const option = document.createElement("option");
+                                option.value = espaco.id_espaco;
+                                option.textContent = `Sala ${espaco.numero_sala}`;
+                                selectEspaco.appendChild(option);
+                            });
+                        } else {
+                            alert("Erro ao carregar espaços disponíveis: " + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erro ao carregar espaços disponíveis:", error);
+                    });
+            }
+
+            // Adicionar eventos aos campos relevantes
+            document.getElementById("diaSemana").addEventListener("change", atualizarEspacosDisponiveis);
+            document.getElementById("horaInicio").addEventListener("change", atualizarEspacosDisponiveis);
+            document.getElementById("horaFim").addEventListener("change", atualizarEspacosDisponiveis);
+
+
+            function adicionarHorario() {
+                // Obter os valores do formulário
+                const turnoId = document.getElementById("idTurno").value;
+                const diaSemana = document.getElementById("diaSemana").value;
+                const horaInicio = document.getElementById("horaInicio").value;
+                const horaFim = document.getElementById("horaFim").value;
+                const espacoId = document.getElementById("idEspaco").value;
+
+                // Verificar se todos os campos estão preenchidos
+                if (!turnoId || !diaSemana || !horaInicio || !horaFim || !espacoId) {
+                    alert("Por favor, preencha todos os campos antes de salvar.");
+                    return;
+                }
+
+                // Enviar os dados para o backend
+                fetch("/adicionar_horario/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": getCookie("csrftoken") // Incluir token CSRF para segurança
+                    },
+                    body: JSON.stringify({
+                        turno_id: turnoId,
+                        dia_semana: diaSemana,
+                        hora_inicio: horaInicio,
+                        hora_fim: horaFim,
+                        espaco_id: espacoId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert("Horário salvo com sucesso!");
+                            // Fechar o modal
+                            const modal = bootstrap.Modal.getInstance(document.getElementById("criarHorarioModal"));
+                            modal.hide();
+
+                        } else {
+                            alert("Erro ao salvar horário: " + data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erro ao salvar horário:", error);
+                        alert("Erro ao salvar horário. Tente novamente.");
+                    });
+            }
 
             // Função para carregar os cursos na pesquisa
             function carregarCursosPesquisa_horairos() {
@@ -1572,340 +1801,388 @@
                 console.log('Aba "Horários" clicada, carregando cursos...');
                 carregarCursosPesquisa_horairos();
             });
+            // Função para carregar os anos da base de dados
+            function carregarAnos_horarios() {
+                fetch('/obter_anos/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectAno = document.getElementById('ano_horario');
+                        selectAno.innerHTML = '<option selected disabled>Escolha o ano...</option>';
+                        data.forEach(ano => {
+                            const option = document.createElement('option');
+                            option.value = ano.id_ano; // Use o campo correto da sua função SQL
+                            option.textContent = ano.nome_ano; // Exemplo: '1º Ano'
+                            selectAno.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Erro ao carregar anos:', error));
+            }
+
+            // Função para carregar os semestres da base de dados
+            function carregarSemestres_horarios() {
+                fetch('/obter_semestres/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectSemestre = document.getElementById('semestre_horario');
+                        selectSemestre.innerHTML = '<option selected disabled>Escolha o semestre...</option>';
+                        data.forEach(semestre => {
+                            const option = document.createElement('option');
+                            option.value = semestre.id_semestre; // Use o campo correto da sua função SQL
+                            option.textContent = semestre.nome_semestre; // Exemplo: '1º Semestre'
+                            selectSemestre.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Erro ao carregar semestres:', error));
+            }
+
+            function carregarTurnos_horarios() {
+                fetch('/obter_turnos/')
+                    .then(response => response.json())
+                    .then(data => {
+                        const selectTurno = document.getElementById('turno_horario');
+                        selectTurno.innerHTML = '<option selected disabled>Escolha o turno...</option>';
+                        if (data.success) {
+                            data.turnos.forEach(turno => {
+                                const option = document.createElement('option');
+                                option.value = turno;
+                                option.textContent = turno;
+                                selectTurno.appendChild(option);
+                            });
+                        } else {
+                            console.error('Erro ao carregar turnos:', data.error);
+                        }
+                    })
+                    .catch(error => console.error('Erro ao carregar turnos:', error));
+            }
+
+            // Chamando as funções ao carregar a página
+            document.addEventListener('DOMContentLoaded', () => {
+                carregarAnos_horarios();
+                carregarSemestres_horarios();
+                carregarTurnos_horarios();
+            });
 
             function pesquisarHorarios() {
                 const cursoId = document.getElementById("cursoPesquisa_horarios").value;
+                const ano = document.getElementById("ano_horario").value;
+                const semestre = document.getElementById("semestre_horario").value;
+                const turno = document.getElementById("turno_horario").value;
 
-                // Pegando ano e semestre pelos novos IDs
-                const anoSelecionado = document.getElementById("ano_horario");
-                const ano = anoSelecionado.value.trim();
-                const anoTexto = anoSelecionado.options[anoSelecionado.selectedIndex]?.text?.trim() || '';
-
-                const semestreSelecionado = document.getElementById("semestre_horario");
-                const semestre = semestreSelecionado.value.trim();
-                const semestreTexto = semestreSelecionado.options[semestreSelecionado.selectedIndex]?.text?.trim() || '';
-
-                // Validar se os campos foram preenchidos
-                if (!cursoId || !ano || !semestre) {
-                    console.error("Erro: Todos os campos são obrigatórios.");
-                    console.log("Estado atual dos campos:");
-                    console.log(`Curso ID: ${cursoId}`);
-                    console.log(`Ano: ${anoTexto || "Não selecionado"}`);
-                    console.log(`Semestre: ${semestreTexto || "Não selecionado"}`);
+                if (!cursoId || !ano || !semestre || !turno) {
+                    alert("Por favor, preencha todos os campos para realizar a pesquisa.");
                     return;
                 }
 
-                console.log("Pesquisando horários para:");
-                console.log(`Curso ID: ${cursoId}`);
-                console.log(`Ano: ${anoTexto}`);
-                console.log(`Semestre: ${semestreTexto}`);
+                // Exibir um spinner de carregamento enquanto a pesquisa é feita
+                const loadingSpinner = document.getElementById("loadingSpinner");
+                loadingSpinner.style.display = "block";
 
-                // Realiza a requisição ao backend
-                fetch(`/pesquisar_horarios/?curso_id=${cursoId}&ano=${anoTexto}&semestre=${semestreTexto}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Erro ao processar a requisição: " + response.statusText);
-                        }
-                        return response.json();
-                    })
+                fetch(`/pesquisar_horarios_filtrados/?curso_id=${cursoId}&ano=${ano}&semestre=${semestre}&turno=${turno}`)
+                    .then(response => response.json())
                     .then(data => {
+                        loadingSpinner.style.display = "none"; // Esconde o spinner
+
                         if (data.success) {
-                            console.log("Horários encontrados:", data.data);
-                            atualizarTabelaHorarios(data.data);
+                            atualizarTabelaHorarios(data.data); // Preenche a tabela com os dados
                         } else {
-                            console.error("Erro do servidor:", data.error);
+                            alert(data.error || "Erro ao buscar horários.");
                         }
                     })
-                    .catch(error => console.error("Erro na requisição:", error));
+                    .catch(error => {
+                        loadingSpinner.style.display = "none"; // Esconde o spinner
+                        console.error("Erro ao buscar horários:", error);
+                    });
+            }
+            function formatarHora(hora) {
+                // Divide a hora no formato HH:mm:ss e retorna apenas HH:mm
+                return hora.split(":").slice(0, 2).join(":");
             }
 
             function atualizarTabelaHorarios(horarios) {
                 const tabelaResultados = document.getElementById("resultadosDisponiveis_horarios");
-                tabelaResultados.innerHTML = ""; // Limpa os resultados anteriores
+                tabelaResultados.innerHTML = ""; // Limpa a tabela antes de preencher com novos resultados
+
+                // Atualiza o contador de resultados
+                document.getElementById("quantidadeResultados_horarios").textContent = horarios.length;
 
                 if (horarios.length === 0) {
                     tabelaResultados.innerHTML = "<tr><td colspan='5'>Nenhum horário encontrado.</td></tr>";
                     return;
                 }
 
+                // Preenche a tabela com os resultados retornados
                 horarios.forEach(horario => {
                     const row = `
-        <tr id="horario-${horario.id_turno}-${horario.ano}-${horario.semestre}">
-            <td>${horario.turno_nome}</td>
-            <td>${horario.curso_nome}</td>
-            <td>${horario.ano}</td>
-            <td>${horario.semestre}</td>
+            <tr>
+                <td>${horario.turno_nome}</td>
+                <td>${horario.nome_uc}</td>
+                <td>${horario.dia_semana}</td>
+                <td>${formatarHora(horario.hora_inicio)}</td>
+                <td>${formatarHora(horario.hora_fim)}</td>
+                <td>
             <td>
-    <button type="button" class="btn btn-primary btn-sm"
-        data-id-turno="${horario.id_turno}" 
-        onclick="carregarHorariosComData_horarios(this)">
-    <i class="bi bi-eye"></i> Ver Horário
-</button>
+            <button 
+                class="btn btn-warning btn-sm"
+                onclick="editarHorario(${horario.id_horario})"  
+                data-id-ano="${horario.id_ano}"
+                data-id-semestre="${horario.id_semestre}"
+                data-id-curso="${horario.id_curso}"
+                data-turno-nome="${horario.turno_nome}"
+            >
+                <i class="bi bi-pencil"></i> Editar
+            </button>
+        
+           <button type="button" class="btn btn-danger" 
+        data-bs-toggle="modal" 
+        data-bs-target="#removerHorarioModal" 
+        onclick="setHorarioParaRemover(${horario.id_horario})">
+  <i class="bi bi-trash"></i> Eliminar Horário
 
-</td>
-<td>
- <button type="button" class="btn btn-warning btn-sm"
-            data-id-turno="${horario.id_turno}" 
-            data-curso-id="${horario.curso_nome}"
-            data-ano="${horario.ano}"
-            data-semestre="${horario.semestre}"
-            data-bs-toggle="modal"
-            data-bs-target="#editarHorarioModal"
-            onclick="carregarModalEditarHorario(this)">
-            <i class="bi bi-pencil"></i> Editar Horário
-        </button>
-
-
-</td>
-
-        </tr>
-    `;
+        </td>
+            </tr>`;
                     tabelaResultados.innerHTML += row;
                 });
             }
 
-            function carregarHorariosComData_horarios(button) {
-                const idTurno = button.getAttribute('data-id-turno');
-                if (!idTurno) {
-                    console.error("Erro: ID do turno não encontrado.");
-                    return;
+
+        </script>
+        <script type="text/javascript">
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Verifica se este cookie começa com o nome desejado
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
                 }
-                carregarHorarios_2(idTurno);
-                const modal = new bootstrap.Modal(document.getElementById("horarioModal"));
-                modal.show(); // Abre o modal manualmente
+                return cookieValue;
             }
-
-            function carregarHorarios_2(idTurno) {
-                const tableBody = document.getElementById('horariosTableBody');
-                tableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>'; // Exibe carregando inicialmente
-
-                fetch(`/funcionario/obter_horarios/${idTurno}/`) // Substitua pela rota correta
-                    .then(response => response.json())
-                    .then(data => {
-                        tableBody.innerHTML = ''; // Limpa os dados anteriores
-
-                        // Define o intervalo de horários das 8h às 18h em intervalos de 1 hora
-                        const startTime = new Date('1970-01-01T08:00:00');
-                        const endTime = new Date('1970-01-01T18:00:00');
-                        let currentTime = new Date(startTime);
-
-                        // Função para formatar o horário
-                        function formatTime(date) {
-                            return date.toTimeString().split(':').slice(0, 2).join(':');
-                        }
-
-                        // Preenche a tabela com intervalos de 1 hora
-                        while (currentTime < endTime) {
-                            const nextTime = new Date(currentTime);
-                            nextTime.setMinutes(currentTime.getMinutes() + 60); // Incrementa 1 hora
-
-                            // Define estilo para horário entre 12:00 e 13:00
-                            const rowClass = formatTime(currentTime) === '12:00' ? 'style="background-color: #f1f1f1;"' : '';
-
-                            // Cria a linha com intervalo de horário
-                            let row = `<tr ${rowClass}><td>${formatTime(currentTime)} - ${formatTime(nextTime)}</td>`;
-
-                            // Adiciona colunas para os dias da semana
-                            ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'].forEach(dia => {
-                                const horarioOcupado = data.find(horario => {
-                                    const horarioInicio = new Date(`1970-01-01T${horario.hora_inicio}`);
-                                    const horarioFim = new Date(`1970-01-01T${horario.hora_fim}`);
-                                    return horario.dia_semana === dia &&
-                                        currentTime >= horarioInicio &&
-                                        currentTime < horarioFim;
-                                });
-
-                                if (horarioOcupado) {
-                                    const horarioInicio = new Date(`1970-01-01T${horarioOcupado.hora_inicio}`);
-                                    const horarioFim = new Date(`1970-01-01T${horarioOcupado.hora_fim}`);
-                                    const rowspan = (horarioFim - horarioInicio) / (60 * 60 * 1000); // Calcula o rowspan
-
-                                    // Apenas insere a célula se estiver no início do intervalo
-                                    if (currentTime.getTime() === horarioInicio.getTime()) {
-                                        row += `
-                                <td rowspan="${rowspan}" style="background-color: #007bff; color: white; text-align: center; vertical-align: middle;">
-                                    ${horarioOcupado.nome_uc}
-                                </td>`;
-                                    }
-                                } else {
-                                    row += '<td></td>'; // Célula vazia para horários livres
-                                }
-                            });
-
-                            // Fecha a linha e adiciona ao corpo da tabela
-                            row += '</tr>';
-                            tableBody.innerHTML += row;
-
-                            // Avança para o próximo intervalo de tempo
-                            currentTime = nextTime;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Erro ao carregar horários:', error);
-                        tableBody.innerHTML = '<tr><td colspan="6">Erro ao carregar horários. Tente novamente mais tarde.</td></tr>';
-                    });
-            }
+            const csrftoken = getCookie('csrftoken');
         </script>
 
         <script>
-            function carregarModalEditarHorario(button) {
-                const idTurno = button.getAttribute("data-id-turno");
-                const curso_nome = button.getAttribute("data-curso-id");
-                const ano = button.getAttribute("data-ano");
-                const semestre = button.getAttribute("data-semestre");
+            document.addEventListener("DOMContentLoaded", () => {
+                const botaoSalvar = document.getElementById("botaoSalvar");
+                const diaSemana = document.getElementById("editarDiaSemana");
+                const horaInicio = document.getElementById("editarHoraInicio");
+                const horaFim = document.getElementById("editarHoraFim");
 
-                // Primeiro fetch para obter o ID do curso
-                fetch(`/obter_id_curso/${encodeURIComponent(curso_nome)}/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            const cursoId = data.curso_id; // Obtém o ID do curso
-                            console.log("ID do Curso:", cursoId);
+                // Valores iniciais para comparação
+                let valoresOriginais = {
+                    diaSemana: "",
+                    horaInicio: "",
+                    horaFim: ""
+                };
 
-                            // Segundo fetch para obter horários e UCs
-                            return fetch(`/obter_horarios_e_ucs/${idTurno}/${cursoId}/${ano}/${semestre}/`);
-                        } else {
-                            console.error("Erro ao obter o ID do curso:", data.error);
-                            throw new Error(data.error);
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            console.log("Horários encontrados:", data.horarios);
-                            console.log("Unidades curriculares disponíveis:", data.ucs_disponiveis);
+                // Função para verificar se os valores foram alterados
+                function verificarAlteracoes() {
+                    const alterado =
+                        diaSemana.value !== valoresOriginais.diaSemana ||
+                        horaInicio.value !== valoresOriginais.horaInicio ||
+                        horaFim.value !== valoresOriginais.horaFim;
 
-                            // Preencher a tabela de horários
-                            preencherTabelaHorarios(data.horarios);
-
-                            // Preencher as disciplinas disponíveis
-                            preencherDisciplinasDisponiveis(data.ucs_disponiveis);
-                        } else {
-                            console.error("Erro ao obter horários e UCs:", data.error);
-                        }
-                    })
-                    .catch(error => console.error("Erro na requisição:", error));
-            }
-
-
-            function preencherTabelaHorarios(horarios) {
-                const tabela = document.getElementById("horariosTableBody2");
-                tabela.innerHTML = ""; // Limpa a tabela
-
-                // Define os horários das 8h às 18h
-                let startTime = new Date("1970-01-01T08:00:00");
-                let endTime = new Date("1970-01-01T18:00:00");
-                let currentTime = new Date(startTime);
-
-                while (currentTime < endTime) {
-                    const nextTime = new Date(currentTime);
-                    nextTime.setMinutes(currentTime.getMinutes() + 60); // Incrementa 1 hora
-
-                    // Formata o horário no formato "HH:mm"
-                    const horaInicioFormatada = formatTime(currentTime);
-                    const horaFimFormatada = formatTime(nextTime);
-
-                    let row = `<tr><td>${horaInicioFormatada} - ${horaFimFormatada}</td>`;
-
-                    // Para cada dia da semana, verifica se há uma disciplina correspondente
-                    ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"].forEach(dia => {
-                        const horario = horarios.find(h =>
-                            h.dia_semana === dia &&
-                            h.hora_inicio === `${horaInicioFormatada}:00` // Adapta para comparar com `HH:mm:ss`
-                        );
-
-                        if (horario) {
-                            row += `<td class="droppable" data-dia="${dia}" data-hora-inicio="${horaInicioFormatada}" data-hora-fim="${horaFimFormatada}" data-disciplina="${horario.nome_uc}">
-                    ${horario.nome_uc}
-                </td>`;
-                        } else {
-                            row += `<td class="droppable" data-dia="${dia}" data-hora-inicio="${horaInicioFormatada}" data-hora-fim="${horaFimFormatada}"></td>`;
-                        }
-                    });
-
-                    row += "</tr>";
-                    tabela.innerHTML += row;
-
-                    currentTime = nextTime; // Avança para o próximo intervalo de tempo
+                    botaoSalvar.disabled = !alterado; // Ativa o botão se algo foi alterado
                 }
-            }
 
-            function formatTime(date) {
-                return date.toTimeString().split(":").slice(0, 2).join(":"); // Retorna no formato "HH:mm"
-            }
+                // Função para preencher valores iniciais ao abrir o modal
+                function preencherValoresOriginais(dia, inicio, fim) {
+                    valoresOriginais = { diaSemana: dia, horaInicio: inicio, horaFim: fim };
+                    diaSemana.value = dia;
+                    horaInicio.value = inicio;
+                    horaFim.value = fim;
 
-            function preencherDisciplinasDisponiveis(disciplinas) {
-                const container = document.getElementById("disciplinasDisponiveis");
-                container.innerHTML = ""; // Limpa as disciplinas
-                disciplinas.forEach(disciplina => {
-                    const div = document.createElement("div");
-                    div.classList.add("draggable", "m-2", "p-2", "border", "bg-light");
-                    div.textContent = disciplina.nome_disciplina;
-                    div.setAttribute("draggable", "true");
-                    div.setAttribute("data-disciplina", disciplina.nome_disciplina);
-                    container.appendChild(div);
-                });
+                    verificarAlteracoes(); // Verificar alterações logo após o preenchimento
+                }
 
-                configurarDragAndDrop();
-            }
+                // Adiciona os eventos para verificar alterações
+                diaSemana.addEventListener("input", verificarAlteracoes);
+                horaInicio.addEventListener("input", verificarAlteracoes);
+                horaFim.addEventListener("input", verificarAlteracoes);
 
-            function formatTime(date) {
-                return date.toTimeString().split(":").slice(0, 2).join(":");
-            }
+                // Exemplo: Chamada para preencher valores originais ao abrir o modal
+                window.abrirModalEditar = function (dados) {
+                    preencherValoresOriginais(dados.diaSemana, dados.horaInicio, dados.horaFim);
+                    const modal = new bootstrap.Modal(document.getElementById("editarHorarioModal"));
+                    modal.show();
+                };
+            });
 
+            function editarHorario(idHorario) {
+                document.getElementById('editarHorarioId').value = idHorario;
+                // Obter os valores selecionados
+                const cursoSelecionado = document.getElementById('cursoPesquisa_horarios').value;
+                const anoSelecionado = document.getElementById('ano_horario').value;
+                const semestreSelecionado = document.getElementById('semestre_horario').value;
+                const turnoSelecionado = document.getElementById('turno_horario').value;
 
-            function configurarDragAndDrop() {
-                // Disciplinas arrastáveis
-                document.querySelectorAll(".draggable").forEach(item => {
-                    item.addEventListener("dragstart", event => {
-                        event.dataTransfer.setData("text/plain", event.target.dataset.disciplina);
+                // Verificar se todos os campos foram preenchidos
+                if (!cursoSelecionado || !anoSelecionado || !semestreSelecionado || !turnoSelecionado) {
+                    alert('Por favor, selecione todas as opções antes de editar o horário.');
+                    return;
+                }
+
+                // Fazer uma requisição para buscar os detalhes do horário
+                fetch(`/obter_horario/${idHorario}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Preencher o modal com os dados do horário
+                            document.getElementById('editarDiaSemana').value = data.horario.dia_semana;
+                            document.getElementById('editarHoraInicio').value = data.horario.hora_inicio;
+                            document.getElementById('editarHoraFim').value = data.horario.hora_fim;
+
+                            // Exibir o modal
+                            const editarHorarioModal = new bootstrap.Modal(document.getElementById('editarHorarioModal'));
+                            editarHorarioModal.show();
+                        } else {
+                            alert('Erro ao obter os dados do horário.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro ao obter o horário:', error);
+                        alert('Erro ao carregar os dados do horário.');
                     });
-                });
 
-                // Células como áreas de destino
-                document.querySelectorAll(".droppable").forEach(cell => {
-                    cell.addEventListener("dragover", event => event.preventDefault());
-
-                    cell.addEventListener("drop", event => {
-                        event.preventDefault();
-                        const disciplina = event.dataTransfer.getData("text/plain");
-                        event.target.textContent = disciplina;
-                        event.target.setAttribute("data-disciplina", disciplina);
-                    });
-                });
+                // Exibir os valores no console para depuração
+                console.log('Valores selecionados:');
+                console.log('Curso:', cursoSelecionado);
+                console.log('Ano:', anoSelecionado);
+                console.log('Semestre:', semestreSelecionado);
+                console.log('Turno:', turnoSelecionado);
             }
 
 
-            function salvarHorarios() {
-                const horarios = [];
-                document.querySelectorAll(".droppable").forEach(cell => {
-                    const disciplina = cell.getAttribute("data-disciplina");
-                    if (disciplina) {
-                        horarios.push({
-                            dia: cell.getAttribute("data-dia"),
-                            hora_inicio: cell.getAttribute("data-hora-inicio"),
-                            hora_fim: cell.getAttribute("data-hora-fim"),
-                            nome_uc: disciplina
-                        });
-                    }
+
+
+            function salvarEdicaoHorario() {
+                const diaaSemana = document.getElementById('editarDiaSemana')?.value;
+                if (!diaaSemana) {
+                    alert("Erro: Dia da semana não está definido.");
+                    return;
+                }
+                const horaInicio = document.getElementById('editarHoraInicio').value;
+                const horaFim = document.getElementById('editarHoraFim').value;
+                const horarioId = document.getElementById('editarHorarioId').value;
+
+                if (!horarioId) {
+                    alert("Erro: ID do horário não encontrado.");
+                    return;
+                }
+
+                // Obter os valores selecionados nos selects
+                const cursoSelecionado = document.getElementById('cursoPesquisa_horarios').value;
+                const anoSelecionado = document.getElementById('ano_horario').value;
+                const semestreSelecionado = document.getElementById('semestre_horario').value;
+                const turnoSelecionado = document.getElementById('turno_horario').value;
+
+                // Verificar se todos os campos estão preenchidos
+                if (!diaaSemana || !horaInicio || !horaFim || !cursoSelecionado || !anoSelecionado || !semestreSelecionado || !turnoSelecionado) {
+                    alert("Por favor, preencha todos os campos antes de salvar.");
+                    return;
+                }
+
+                // Exibir os dados enviados no console para depuração
+                console.log("Dados enviados para edição:", {
+                    dia_semana: diaaSemana,
+                    hora_inicio: horaInicio,
+                    hora_fim: horaFim,
+                    id_curso: cursoSelecionado,
+                    id_ano: anoSelecionado,
+                    id_semestre: semestreSelecionado,
+                    turno_nome: turnoSelecionado,
                 });
 
-                fetch(`/salvar_horarios/${idTurno}/`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ horarios })
+                // Enviar diretamente para salvar as alterações
+                fetch(`/editar_horario/${horarioId}/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        dia_semana: diaaSemana,
+                        hora_inicio: horaInicio,
+                        hora_fim: horaFim,
+                        id_curso: cursoSelecionado,
+                        id_ano: anoSelecionado,
+                        id_semestre: semestreSelecionado,
+                        turno_nome: turnoSelecionado,
+                    }),
                 })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            console.log("Horários salvos com sucesso!");
-                            // Atualize a UI ou feche o modal
+                            alert("Horário atualizado com sucesso!");
+                            // Atualiza a tabela após salvar as alterações
+                            pesquisarHorarios();
+                            // Fecha o modal
+                            const editarHorarioModal = bootstrap.Modal.getInstance(document.getElementById('editarHorarioModal'));
+                            editarHorarioModal.hide();
                         } else {
-                            console.error("Erro ao salvar horários:", data.error);
+                            alert(data.error || "Erro ao atualizar o horário.");
                         }
                     })
-                    .catch(error => console.error("Erro na requisição:", error));
+                    .catch(error => {
+                        console.error("Erro ao salvar as alterações:", error);
+                        alert("Erro ao salvar as alterações do horário.");
+                    });
             }
 
 
+
+
+
+
+
+
+        </script>
+
+        <script>
+            let horarioIdParaRemover = null;
+
+            function setHorarioParaRemover(idHorario) {
+                // Armazena o ID do horário selecionado
+                horarioIdParaRemover = idHorario;
+
+                // Opcional: Exibe o ID no modal para confirmação
+                const modalBody = document.querySelector('#removerHorarioModal .modal-body');
+                modalBody.textContent = `Tem a certeza que quer eliminar este horario?`;
+            }
+
+            // Remove o horário quando o botão de confirmação é clicado
+            document.getElementById('confirmarRemocaoBtn').addEventListener('click', function () {
+                if (!horarioIdParaRemover) {
+                    alert("Erro: Nenhum horário selecionado para remoção.");
+                    return;
+                }
+
+                // Faz a requisição DELETE para remover o horário
+                fetch(`/remover_horario/${horarioIdParaRemover}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': csrftoken, // Certifique-se de incluir o CSRF Token se necessário
+                    },
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            alert("Horário removido com sucesso!");
+                            const removerHorarioModal = bootstrap.Modal.getInstance(document.getElementById('removerHorarioModal'));
+                            removerHorarioModal.hide();
+                            pesquisarHorarios();
+                        } else {
+                            response.json().then(data => {
+                                alert(data.error || "Erro ao remover o horário.");
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Erro ao remover o horário:", error);
+                        alert("Erro ao remover o horário.");
+                    });
+            });
         </script>
