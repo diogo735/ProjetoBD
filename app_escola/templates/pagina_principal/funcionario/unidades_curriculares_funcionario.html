@@ -98,14 +98,14 @@
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="anoTurno" class="form-label">Ano</label>
-                            <select id="anoTurno" class="form-select" required>
+                            <label for="anoPesquisa" class="form-label">Ano</label>
+                            <select id="anoPesquisa" class="form-select" required>
                                 <option selected disabled>Escolha o ano...</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label for="semestreTurno" class="form-label">Semestre</label>
-                            <select id="semestreTurno" class="form-select" required>
+                            <label for="semestrePesquisa" class="form-label">Semestre</label>
+                            <select id="semestrePesquisa" class="form-select" required>
                                 <option selected disabled>Escolha o semestre...</option>
                             </select>
                         </div>
@@ -610,8 +610,17 @@
             // ✅ Função para carregar Anos
             function carregarAnos() {
                 fetch('/obter_anos/')
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('Status da resposta ao carregar anos:', response.status); // Loga o status
+                        return response.json();
+                    })
                     .then(data => {
+
+                        console.log('Dados recebidos para anos:', data); // Loga os dados recebidos
+
+                        const selectAnoPesquisa = document.getElementById('anoPesquisa');
+                        preencherSelect(selectAnoPesquisa, data, 'Escolha o ano...');
+
                         const selectAno = document.getElementById('anoTurno');
                         preencherSelect(selectAno, data, 'Escolha o ano...');
                     })
@@ -621,13 +630,22 @@
             // ✅ Função para carregar Semestres
             function carregarSemestres() {
                 fetch('/obter_semestres/')
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('Status da resposta ao carregar semestres:', response.status); // Loga o status
+                        return response.json();
+                    })
                     .then(data => {
+                        console.log('Dados recebidos para semestres:', data); // Loga os dados recebidos
+
+                        const selectSemestrePesquisa = document.getElementById('semestrePesquisa');
+                        preencherSelect(selectSemestrePesquisa, data, 'Escolha o ano...');
+
                         const selectSemestre = document.getElementById('semestreTurno');
                         preencherSelect(selectSemestre, data, 'Escolha o semestre...');
                     })
                     .catch(error => console.error('Erro ao carregar semestres:', error));
             }
+
 
             // ✅ Inicializar funções ao carregar a página
             document.addEventListener('DOMContentLoaded', () => {
@@ -635,6 +653,7 @@
                 carregarAnos();
                 carregarSemestres();
             });
+
             // 🚀 Função para carregar nomes de turnos
             function carregarNomesTurnos() {
                 fetch('/obter_nomes_turnos/')
@@ -734,8 +753,8 @@
 
                 // Obter os elementos dos selects
                 const cursoElemento = document.getElementById('cursoPesquisa');
-                const anoElemento = document.getElementById('anoTurno');
-                const semestreElemento = document.getElementById('semestreTurno');
+                const anoElemento = document.getElementById('anoPesquisa');
+                const semestreElemento = document.getElementById('semestrePesquisa');
 
                 // Verificar se os elementos foram encontrados
                 console.log('🛠️ Elementos encontrados:', {
