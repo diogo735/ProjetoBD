@@ -16,6 +16,10 @@ urlpatterns = [
     path('professor/dashboard/', views.dashboard_professor, name='dashboard_professor'),
     path('funcionario/dashboard/', views.dashboard_funcionario, name='dashboard_funcionario'),
     path('obter_cursos/', views.obter_cursos, name='obter_cursos'),
+    path('obter_ucs/', views.obter_ucs, name='obter_ucs'),
+    path('obter_nomes_turnos/', views.obter_nomes_turnos, name='obter_nomes_turnos'),
+    path('obter_anos/', views.obter_anos, name='obter_anos'),
+    path('obter_semestres/', views.obter_semestres, name='obter_semestres'),
     path('criar_turno/', views.criar_turno, name='criar_turno'),
     path('buscar_dados/', views.buscar_turnos, name='buscar_turnos'),
     path('atualizar_turno/', views.atualizar_turno_view, name='atualizar_turno'),
@@ -24,8 +28,25 @@ urlpatterns = [
     path('eliminar_turno/', views.eliminar_turno, name='eliminar_turno'),
     path('pesquisar_horarios/', views.pesquisar_horarios, name='pesquisar_horarios'),
     path('obter_horarios_e_ucs/<int:turno_id>/<int:curso_id>/<str:ano>/<str:semestre>/', views.obter_horarios_e_ucs,name='obter_horarios_e_ucs'),
+    path('obter_alunos_turno/<int:id_turno>/', views.obter_alunos_turno, name='obter_alunos_turno'),
+    path('remover_alunos_turno/', views.remover_alunos_turno, name='remover_alunos_turno'),
     path('obter_id_curso/<str:nome_curso>/', views.obter_id_curso, name='obter_id_curso'),
-     
+    path('adicionar_aluno_turno/', views.adicionar_aluno_turno, name='adicionar_aluno_turno'),
+    path('obter_turnos_sem_horarios/', views.obter_turnos_sem_horarios, name='obter_turnos_sem_horarios'),
+    path('espacos_disponiveis/', views.espacos_disponiveis, name='espacos_disponiveis'),
+    path('adicionar_horario/', views.adicionar_horario, name='adicionar_horario'),
+    path('obter_turnos/', views.obter_turnos_nomes, name='obter_turnos'),
+    path('pesquisar_horarios_filtrados/', views.pesquisar_horarios_filtrados, name='pesquisar_horarios_filtrados'),
+    path('obter_horario/<int:horario_id>/', views.obter_horario_detalhes, name='obter_horario'),
+    path('editar_horario/<int:id_horario>/', views.atualizar_horario, name='atualizar_horario'),
+    path('remover_horario/<int:id_horario>/', views.remover_horario, name='remover_horario'),
+    path('carregar_horario_professor/', views.carregar_professor_horario, name='carregar_horario_professor'),
+
+
+
+
+
+
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
 
@@ -50,7 +71,8 @@ urlpatterns = [
 
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
-    path('funcionario/obter_horarios/<int:id_turno>/', views.obter_horarios_turno, name='obter_horarios_turno'),
+    
+    path('funcionario/obter_horarios/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
 
 
