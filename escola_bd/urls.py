@@ -55,13 +55,23 @@ urlpatterns = [
     path('funcionarios/professores/remover/<int:id_professor>/', views.professor_delete, name='professor_delete'),
     path('funcionario/professores/editar/<int:id_professor>/', views.professor_editar, name='professor_editar'),
     path('funcionario/professores/atribuirUC/<int:id_professor>/', views.atribuir_uc_professor, name='atribuir_uc_professor'),
+    path('funcionario/listar_turnos/<int:id_uc>/', views.listar_turnos_por_uc, name='listar_turnos_por_uc'),
+    path("funcionario/registrar_professor_turno/", views.registrar_professor_turno, name="registrar_professor_turno"),
+
+
+
+
+
+
 
     path('aluno/avaliacoes/', views.avaliacoes_aluno, name='avaliacoes_aluno'),
     path('professor/avaliacoes/', views.avaliacoes_professor, name='avaliacoes_professor'),
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
     path('avaliacoes/aprovar/<int:id_avaliacao>/', views.aprovar_avaliacao, name='aprovar_avaliacao'),
     #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
-
+    path('funcionario/professores_nao_atribuidos/', views.professores_nao_atribuidos, name='professores_nao_atribuidos'),
+    path('funcionario/professores_atribuidos/', views.professores_atribuidos, name='professores_atribuidos'),
+    path('funcionario/listar_unidades_curriculares/', views.listar_unidades_curriculares, name='listar_unidades_curriculares'),
 
     path('aluno/pagamentos/', views.pagamentos_em_falta_alunos, name='pagamentos_aluno'),
     path('funcionario/pagamentos/', views.funcionario_listar_pagamentos, name='pagamentos_funcionario'),

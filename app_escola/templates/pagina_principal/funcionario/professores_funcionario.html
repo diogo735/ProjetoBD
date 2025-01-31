@@ -1,18 +1,24 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+
 <div class="container py-4">
     <!-- Tabs para Detalhes e Criar Novos -->
     <ul class="nav nav-tabs" id="professoresTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="detalhes-tab" data-bs-toggle="tab" data-bs-target="#detalhes" type="button" role="tab" aria-controls="detalhes" aria-selected="true">
+            <button class="nav-link active" id="detalhes-tab" data-bs-toggle="tab" data-bs-target="#detalhes"
+                type="button" role="tab" aria-controls="detalhes" aria-selected="true">
                 Detalhes
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="criar-novos-tab" data-bs-toggle="tab" data-bs-target="#criar-novos" type="button" role="tab" aria-controls="criar-novos" aria-selected="false">
+            <button class="nav-link" id="criar-novos-tab" data-bs-toggle="tab" data-bs-target="#criar-novos"
+                type="button" role="tab" aria-controls="criar-novos" aria-selected="false">
                 Criar novos
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="cursos-tab" data-bs-toggle="tab" data-bs-target="#cursos" type="button" role="tab" aria-controls="cursos" aria-selected="false">
+            <button class="nav-link" id="cursos-tab" data-bs-toggle="tab" data-bs-target="#cursos" type="button"
+                role="tab" aria-controls="cursos" aria-selected="false">
                 UCs
             </button>
         </li>
@@ -26,15 +32,17 @@
                     <h2 class="h5 mb-0">Lista dos Professores</h2>
                 </div>
                 <div class="card-body">
-                    <p>Consulte abaixo a lista de professores por curso, edite ou remova informações, e realize a pesquisa.</p>
+                    <p>Consulte abaixo a lista de professores por curso, edite ou remova informações, e realize a
+                        pesquisa.</p>
 
-                     <!-- Nome do Professor -->
+                    <!-- Nome do Professor -->
                     <div class="mb-3 col-md-6">
                         <label for="nome-professor" class="form-label">Nome</label>
-                        <input type="text" id="nome-professor" class="form-control" placeholder="Digite o nome do professor">
+                        <input type="text" id="nome-professor" class="form-control"
+                            placeholder="Digite o nome do professor">
                     </div>
 
-                    
+
                     <div class="container py-4">
 
                         <!-- Lista de Professores por Curso -->
@@ -45,7 +53,7 @@
                                         <tr>
                                             <th>Nome</th>
                                             <th>Email</th>
-                                            <th>Curso</th> 
+                                            <th>Curso</th>
                                             <th>Telefone</th>
                                             <th>Localidade</th>
                                             <th>Ações</th>
@@ -53,108 +61,152 @@
                                     </thead>
                                     <tbody>
                                         {% if professores %}
-                                            {% for professor in professores %}
-                                            <tr>
-                                                <td>{{ professor.1 }} {{ professor.2 }}</td>                                        
-                                                <td>{{ professor.3 }}</td>
-                                                <td>{{ professor.4 }}</td>
-                                                <td>{{ professor.5 }}</td>
-                                                <td>{{ professor.6 }}</td> 
-                                            
-                                                <td>
-                                                    <div class="d-flex align-items-center gap-2">
-                                                        <!-- Botão Editar -->
-                                                        <button type="button" class="btn btn-sm btn-secondary"
-                                                        data-bs-toggle="modal" data-bs-target="#editarModal-{{ professor.0 }}">
+                                        {% for professor in professores %}
+                                        <tr>
+                                            <td>{{ professor.1 }} {{ professor.2 }}</td>
+                                            <td>{{ professor.3 }}</td>
+                                            <td>{{ professor.4 }}</td>
+                                            <td>{{ professor.5 }}</td>
+                                            <td>{{ professor.6 }}</td>
+
+                                            <td>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <!-- Botão Editar -->
+                                                    <button type="button" class="btn btn-sm btn-secondary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#editarModal-{{ professor.0 }}">
                                                         Editar
-                                                        </button>
+                                                    </button>
 
-                                                        <!-- Modal para Editar Professor -->
-                                                        <div class="modal fade" id="editarModal-{{ professor.0 }}" tabindex="-1" aria-labelledby="editarModalLabel-{{ professor.0 }}" aria-hidden="true">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="editarModalLabel-{{ professor.0 }}">Editar Professor</h5>
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <form method="POST" action="{% url 'professor_editar' professor.0 %}">
-                                                                            {% csrf_token %}
-                                                                            <div class="mb-3">
-                                                                                <label for="p-nome-{{ professor.0 }}" class="form-label">Primeiro Nome</label>
-                                                                                <input type="text" name="p_nome" id="p-nome-{{ professor.0 }}" 
-                                                                                        class="form-control" value="{{ professor.1 }}" required>
-                                                                            </div>
-
-                                                                            <div class="mb-3">
-                                                                                <label for="u-nome-{{ professor.0 }}" class="form-label">Último Nome</label>
-                                                                                <input type="text" name="u_nome" id="u-nome-{{ professor.0 }}" 
-                                                                                        class="form-control" value="{{ professor.2 }}" required>
-                                                                            </div>
-
-                                                                            <div class="mb-3">
-                                                                                <label for="email-{{ professor.0 }}" class="form-label">Email</label>
-                                                                                <input type="email" name="email" id="email-{{ professor.0 }}" 
-                                                                                        class="form-control" value="{{ professor.3 }}" required>
-                                                                            </div>
-
-                                                                            <div class="mb-3">
-                                                                                <label for="telefone-{{ professor.0 }}" class="form-label">Telefone</label>
-                                                                                <input type="text" name="telefone" id="telefone-{{ professor.0 }}" 
-                                                                                        class="form-control" value="{{ professor.5 }}">
-                                                                            </div>
-
-                                                                            <div class="mb-3">
-                                                                                <label for="localidade-{{ professor.0 }}" class="form-label">Localidade</label>
-                                                                                <input type="text" name="localidade" id="localidade-{{ professor.0 }}" 
-                                                                                        class="form-control" value="{{ professor.6 }}">
-                                                                            </div>
-
-                                                                            <div class="d-flex justify-content-end gap-2">
-                                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                                                                            </div>
-                                                                        </form>
-                                                                    </div>
+                                                    <!-- Modal para Editar Professor -->
+                                                    <div class="modal fade" id="editarModal-{{ professor.0 }}"
+                                                        tabindex="-1"
+                                                        aria-labelledby="editarModalLabel-{{ professor.0 }}"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title"
+                                                                        id="editarModalLabel-{{ professor.0 }}">Editar
+                                                                        Professor</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
                                                                 </div>
-                                                            </div>
-                                                        </div>
+                                                                <div class="modal-body">
+                                                                    <form method="POST"
+                                                                        action="{% url 'professor_editar' professor.0 %}">
+                                                                        {% csrf_token %}
+                                                                        <div class="mb-3">
+                                                                            <label for="p-nome-{{ professor.0 }}"
+                                                                                class="form-label">Primeiro Nome</label>
+                                                                            <input type="text" name="p_nome"
+                                                                                id="p-nome-{{ professor.0 }}"
+                                                                                class="form-control"
+                                                                                value="{{ professor.1 }}" required>
+                                                                        </div>
 
+                                                                        <div class="mb-3">
+                                                                            <label for="u-nome-{{ professor.0 }}"
+                                                                                class="form-label">Último Nome</label>
+                                                                            <input type="text" name="u_nome"
+                                                                                id="u-nome-{{ professor.0 }}"
+                                                                                class="form-control"
+                                                                                value="{{ professor.2 }}" required>
+                                                                        </div>
 
-                                                        <!-- Botão Remover -->
-                                                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removerModal-{{ professor.0 }}">
-                                                            Remover
-                                                        </button>
+                                                                        <div class="mb-3">
+                                                                            <label for="email-{{ professor.0 }}"
+                                                                                class="form-label">Email</label>
+                                                                            <input type="email" name="email"
+                                                                                id="email-{{ professor.0 }}"
+                                                                                class="form-control"
+                                                                                value="{{ professor.3 }}" required>
+                                                                        </div>
 
-                                                        <!-- Modal para Confirmar Remoção -->
-                                                        <div class="modal fade" id="removerModal-{{ professor.0 }}" tabindex="-1" aria-labelledby="removerModalLabel-{{ professor.0 }}" aria-hidden="true">
-                                                            <div class="modal-dialog">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="removerModalLabel-{{ professor.0 }}">Confirmar Remoção</h5>
-                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <p>Tem certeza que deseja remover o professor <strong>{{ professor.1 }} {{ professor.2 }}</strong>?</p>
-                                                                    </div>
-                                                                    <div class="modal-footer d-flex justify-content-end gap-2">
-                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                        <form method="POST" action="{% url 'professor_delete' professor.0 %}">
-                                                                            {% csrf_token %}
-                                                                            <button type="submit" class="btn btn-danger">Remover</button>
-                                                                        </form>
-                                                                    </div>
+                                                                        <div class="mb-3">
+                                                                            <label for="telefone-{{ professor.0 }}"
+                                                                                class="form-label">Telefone</label>
+                                                                            <input type="text" name="telefone"
+                                                                                id="telefone-{{ professor.0 }}"
+                                                                                class="form-control"
+                                                                                value="{{ professor.5 }}">
+                                                                        </div>
+
+                                                                        <div class="mb-3">
+                                                                            <label for="localidade-{{ professor.0 }}"
+                                                                                class="form-label">Localidade</label>
+                                                                            <input type="text" name="localidade"
+                                                                                id="localidade-{{ professor.0 }}"
+                                                                                class="form-control"
+                                                                                value="{{ professor.6 }}">
+                                                                        </div>
+
+                                                                        <div class="d-flex justify-content-end gap-2">
+                                                                            <button type="button"
+                                                                                class="btn btn-secondary"
+                                                                                data-bs-dismiss="modal">Cancelar</button>
+                                                                            <button type="submit"
+                                                                                class="btn btn-primary">Salvar
+                                                                                Alterações</button>
+                                                                        </div>
+                                                                    </form>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
+
+
+                                                    <!-- Botão Remover -->
+                                                    <button type="button" class="btn btn-sm btn-danger"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#removerModal-{{ professor.0 }}">
+                                                        Remover
+                                                    </button>
+
+                                                    <!-- Modal para Confirmar Remoção -->
+                                                    <div class="modal fade" id="removerModal-{{ professor.0 }}"
+                                                        tabindex="-1"
+                                                        aria-labelledby="removerModalLabel-{{ professor.0 }}"
+                                                        aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title"
+                                                                        id="removerModalLabel-{{ professor.0 }}">
+                                                                        Confirmar Remoção</h5>
+                                                                    <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    <p>Tem certeza que deseja remover o professor
+                                                                        <strong>{{ professor.1 }} {{ professor.2
+                                                                            }}</strong>?
+                                                                    </p>
+                                                                </div>
+                                                                <div
+                                                                    class="modal-footer d-flex justify-content-end gap-2">
+                                                                    <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">Cancelar</button>
+                                                                    <form method="POST"
+                                                                        action="{% url 'professor_delete' professor.0 %}">
+                                                                        {% csrf_token %}
+                                                                        <button type="submit"
+                                                                            class="btn btn-danger">Remover</button>
+                                                                    </form>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
                                         {% else %}
-                                            <tr>
-                                                <td colspan="7" class="text-center">Nenhum professor encontrado.</td>
-                                            </tr>
+                                        <tr>
+                                            <td colspan="7" class="text-center">Nenhum professor encontrado.</td>
+                                        </tr>
                                         {% endif %}
                                     </tbody>
                                 </table>
@@ -172,43 +224,50 @@
                     <h2 class="h5 mb-0">Criar novos Professores</h2>
                 </div>
                 <div class="card-body">
-                    <p>Preencha o formulário abaixo para adicionar novos professores, associando-os a cursos e Unidades Curriculares específicas.</p>
+                    <p>Preencha o formulário abaixo para adicionar novos professores, associando-os a cursos e Unidades
+                        Curriculares específicas.</p>
                     <form method="POST" action="{% url 'professores_funcionario' %}">
                         {% csrf_token %}
 
                         <!-- Nome do Professor -->
                         <div class="mb-3">
                             <label for="p-nome-professor" class="form-label">Primeiro Nome</label>
-                            <input type="text" id="p-nome-professor" name="p_nome" class="form-control" placeholder="Digite o primeiro nome" required>
+                            <input type="text" id="p-nome-professor" name="p_nome" class="form-control"
+                                placeholder="Digite o primeiro nome" required>
                         </div>
-                                            
+
                         <div class="mb-3">
                             <label for="u-nome-professor" class="form-label">Último Nome</label>
-                            <input type="text" id="u-nome-professor" name="u_nome" class="form-control" placeholder="Digite o último nome">
+                            <input type="text" id="u-nome-professor" name="u_nome" class="form-control"
+                                placeholder="Digite o último nome">
                         </div>
 
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email-professor" class="form-label">Email</label>
-                            <input type="email" id="email-professor" name="email" class="form-control" placeholder="Digite o email do professor">
+                            <input type="email" id="email-professor" name="email" class="form-control"
+                                placeholder="Digite o email do professor">
                         </div>
-                        
+
                         <!-- Password -->
                         <div class="mb-3">
                             <label for="password-professor" class="form-label">Password</label>
-                            <input type="password" id="password-professor" name="password" class="form-control" placeholder="Digite uma senha para o professor">
+                            <input type="password" id="password-professor" name="password" class="form-control"
+                                placeholder="Digite uma senha para o professor">
                         </div>
 
                         <!-- Telefone -->
                         <div class="mb-3">
                             <label for="telefone-professor" class="form-label">Telefone</label>
-                            <input type="tel" id="telefone-professor" name="telefone" class="form-control" placeholder="Digite o telefone do professor">
+                            <input type="tel" id="telefone-professor" name="telefone" class="form-control"
+                                placeholder="Digite o telefone do professor">
                         </div>
 
                         <!-- Localidade -->
                         <div class="mb-3">
                             <label for="localidade-professor" class="form-label">Localidade</label>
-                            <input type="text" id="localidade-professor" name="localidade" class="form-control" placeholder="Digite a localidade do professor">
+                            <input type="text" id="localidade-professor" name="localidade" class="form-control"
+                                placeholder="Digite a localidade do professor">
                         </div>
                         <!-- Botão Criar -->
                         <button type="submit" class="btn btn-primary">Criar Professor</button>
@@ -217,130 +276,58 @@
             </div>
         </div>
 
+        <!-- Tab Atribuir Ucs -->
         <div class="tab-pane fade" id="cursos" role="tabpanel" aria-labelledby="ucs-tab">
             <div class="card shadow">
                 <div class="card-header bg-light">
                     <h2 class="h5 mb-0">Atribuir Unidades Curriculares</h2>
                 </div>
-                <div id="professores-por-curso">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Email</th>
-                                    <th>Curso</th>
-                                    <th>Telefone</th>
-                                    <th>Localidade</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <h6>Debug UC:</h6>
-                                <ul>
-                                    {% for uc in unidades_curriculares %}
-                                        <li>ID: {{ uc.id }}, Nome: {{ uc.nome }}</li>
-                                    {% empty %}
-                                        <li>Nenhuma UC disponível</li>
-                                    {% endfor %}
-                                </ul>
+                <div class="container mt-3">
+                    <div class="d-flex gap-3">
 
-                                <h6>Debug Turnos:</h6>
-                                <ul>
-                                    {% for turno in turnos %}
-                                        <li>ID: {{ turno.id }}, Nome: {{ turno.nome }}</li>
-                                    {% empty %}
-                                        <li>Nenhum Turno disponível</li>
-                                    {% endfor %}
-                                </ul>
-
-                                {% if professores %}
-                                    {% for professor in professores %}
-                                        <tr>
-                                            <td>{{ professor.1 }} {{ professor.2 }}</td>
-                                            <td>{{ professor.3 }}</td>
-                                            <td>{{ professor.4 }}</td>
-                                            <td>{{ professor.5 }}</td>
-                                            <td>{{ professor.6 }}</td>
-                                            <td>
-                                                <div class="d-flex align-items-center gap-2">
-                             <!-- Botão para abrir o modal  -->
-                                                    <button type="button" class="btn btn-sm btn-secondary"
-                                                        data-bs-toggle="modal" data-bs-target="#atribuirUC-{{ professor.0 }}">
-                                                        Atribuir UC
-                                                    </button>
-                                                </div>
-                                                
-                             <!-- Modal para Atribuir UC e Turno  -->
-                                                <div class="modal fade" id="atribuirUC-{{ professor.0 }}" tabindex="-1" 
-                                                    aria-labelledby="atribuirUCLabel-{{ professor.0 }}" aria-hidden="true">
-                                                    <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title" id="atribuirUCLabel-{{ professor.0 }}">
-                                                                    Atribuir UC e Turno para {{ professor.1 }} {{ professor.2 }}
-                                                                </h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <form method="POST" action="{% url 'atribuir_uc_professor' professor.0 %}">
-                                                                    {% csrf_token %}
-                                                                    
-                             <!-- Dropdown para Unidades Curriculares  -->
-                                                                    <div class="mb-3">
-                                                                        <label for="nome-{{ professor.0 }}" class="form-label">Unidade Curricular</label>
-                                                                        <select name="unidade_curricular" id="nome-{{ professor.0 }}" class="form-select" required>
-                                                                            <option value="">Selecione uma UC</option>
-                                                                            {% for uc in unidades_curriculares %}
-                                                                                <option value="{{ uc.id }}">{{ uc.nome }}</option>
-                                                                            {% empty %}
-                                                                                <option value="" disabled>Nenhuma UC disponível</option>
-                                                                            {% endfor %}
-                                                                        </select>
-                                                                    </div>
-                                                                    
-        
-                             <!-- Dropdown para Turnos  -->
-                                                                    <div class="mb-3">
-                                                                        <label for="turno-nome-{{ professor.0 }}" class="form-label">Turno</label>
-                                                                        <select name="turno" id="turno_nome-{{ professor.0 }}" class="form-select" required>
-                                                                            <option value="">Selecione um Turno</option>
-                                                                            {% for turno in turnos %}
-                                                                                <option value="{{ turno.id }}">{{ turno.nome }}</option>
-                                                                            {% empty %}
-                                                                                <option value="" disabled>Nenhum Turno disponível</option>
-                                                                            {% endfor %}
-                                                                        </select>
-                                                                    </div>
-                                                                    
-        
-                                 <!-- Botões de Ação  -->
-                                                                    <div class="d-flex justify-content-end gap-2">
-                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                        <button type="submit" class="btn btn-primary">Guardar Alterações</button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="6" class="text-center">Nenhum professor encontrado.</td>
-                                    </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
+                        <button id="btnAtribuidos" class="btn btn-primary" onclick="carregarProfessoresAtribuidos()">
+                            <i class="bi bi-check-circle me-1"></i> Professores Atribuídos
+                        </button>
+                        <button id="btnNaoAtribuidos" class="btn btn-secondary">
+                            <i class="bi bi-x-circle me-1"></i> Professores Não Atribuídos
+                        </button>
                     </div>
+
+                </div>
+
+                <div class="table-responsive mt-3">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Email</th>
+                                <th>Curso</th>
+                                <th>Unidade Curricular</th>
+                                <th>Telefone</th>
+                                <th>Localidade</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaProfessoresNaoAtribuidos">
+                            <!-- Os dados serão carregados dinamicamente -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>                
+        </div>
     </div>
 </div>
 
+<div class="modal fade" id="sucessoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-success text-white">
+            <div class="modal-body text-center">
+                <i class="bi bi-check-circle-fill" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Professor atribuído com sucesso!</h5>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -373,3 +360,310 @@
         });
     });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let ucsTab = document.getElementById("cursos-tab");
+        let btnNaoAtribuidos = document.getElementById("btnNaoAtribuidos");
+
+        ucsTab.addEventListener("shown.bs.tab", function () {
+            btnNaoAtribuidos.click();
+        });
+
+        btnNaoAtribuidos.addEventListener("click", function () {
+            carregarProfessoresNaoAtribuidos();
+        });
+
+        function carregarProfessoresNaoAtribuidos() {
+            fetch("/funcionario/professores_nao_atribuidos/")
+                .then(response => response.json())
+                .then(data => {
+                    let tabela = document.getElementById("tabelaProfessoresNaoAtribuidos");
+                    let modalContainer = document.getElementById("modaisDinamicos");
+                    tabela.innerHTML = "";
+                    modalContainer.innerHTML = "";
+
+                    data.forEach(professor => {
+                        let curso = professor.curso ? professor.curso : "Sem Curso";
+                        let unidade_curricular = professor.unidade_curricular ? professor.unidade_curricular : "Nenhuma UC atribuída";
+
+                        let row = `<tr>
+                        <td>${professor.p_nome} ${professor.u_nome}</td>
+                        <td>${professor.email}</td>
+                        <td>${curso}</td>
+                        <td>${unidade_curricular}</td>
+                        <td>${professor.telefone}</td>
+                        <td>${professor.localidade}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-success"
+                                data-bs-toggle="modal" data-bs-target="#atribuirUC-${professor.id_professor}">
+                                <i class="bi bi-bookmark-plus me-1"></i> Atribuir UC
+                            </button>
+                        </td>
+                    </tr>`;
+
+                        tabela.innerHTML += row;
+                        let modal = `<div class="modal fade" id="atribuirUC-${professor.id_professor}" tabindex="-1" 
+    aria-labelledby="atribuirUCLabel-${professor.id_professor}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="atribuirUCLabel-${professor.id_professor}">
+                    Atribuir UC e Turno para ${professor.p_nome} ${professor.u_nome}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="/funcionario/professores/atribuirUC/${professor.id_professor}/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${getCSRFToken()}">
+
+                    <div class="mb-3">
+                        <label for="nome-${professor.id_professor}" class="form-label">Unidade Curricular</label>
+                        <select name="unidade_curricular" id="nome-${professor.id_professor}" class="form-select" required>
+                            <option value="">Carregando...</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="turno-nome-${professor.id_professor}" class="form-label">Turno</label>
+                        <select name="turno" id="turno_nome-${professor.id_professor}" class="form-select" required>
+                            <option value="">Selecione um Turno</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-primary" onclick="salvarAtribuicaoProfessorTurno(this)">
+    Guardar 
+</button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+                        modalContainer.innerHTML += modal;
+
+                        // Chama a função para carregar as Unidades Curriculares após a criação do modal
+                        carregarUnidadesCurriculares(`nome-${professor.id_professor}`);
+
+                    });
+
+                    // Re-inicializa os eventos do Bootstrap para os novos elementos dinâmicos
+                    document.querySelectorAll("[data-bs-toggle='modal']").forEach(button => {
+                        button.addEventListener("click", function () {
+                            let modalId = this.getAttribute("data-bs-target");
+                            let modalElement = document.querySelector(modalId);
+                            if (modalElement) {
+                                let modal = new bootstrap.Modal(modalElement);
+                                modal.show();
+                            }
+                        });
+                    });
+
+                })
+                .catch(error => console.error("Erro ao carregar professores:", error));
+        }
+
+        function getCSRFToken() {
+            return document.querySelector('[name=csrfmiddlewaretoken]').value;
+        }
+    });
+    document.addEventListener("hidden.bs.modal", function (event) {
+        let modal = event.target;
+
+        // Esconder o modal sem removê-lo do DOM
+        modal.classList.remove("show");
+        modal.setAttribute("aria-hidden", "true");
+        modal.style.display = "none";
+
+        // Remove backdrop caso tenha ficado preso
+        let backdrop = document.querySelector(".modal-backdrop");
+        if (backdrop) {
+            backdrop.remove();
+        }
+
+        // Reativa a rolagem da página
+        document.body.classList.remove("modal-open");
+    });
+
+    function carregarUnidadesCurriculares(selectElementId) {
+        console.log("Carregando Unidades Curriculares..."); // Debug
+
+        fetch("/funcionario/listar_unidades_curriculares/")  // Certifique-se que esta URL é correta
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+
+
+                let selectElement = document.getElementById(selectElementId);
+                if (!selectElement) {
+                    console.error(`Elemento select com ID '${selectElementId}' não encontrado!`);
+                    return;
+                }
+
+                selectElement.innerHTML = '<option value="">Selecione uma UC</option>';
+
+                data.forEach(uc => {
+                    let option = document.createElement("option");
+                    option.value = uc.id_uc;
+                    option.textContent = uc.nome;
+                    selectElement.appendChild(option);
+                });
+
+
+            })
+            .catch(error => console.error("Erro ao carregar unidades curriculares:", error));
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        function carregarTurnosParaUC(event) {
+            let selectUC = event.target;
+            let idUC = selectUC.value;
+            let professorId = selectUC.id.split('-')[1]; // Extrai o ID do professor
+            let selectTurno = document.getElementById(`turno_nome-${professorId}`);
+
+
+
+            if (!selectTurno) {
+                console.error(`Elemento select turno_nome-${professorId} não encontrado!`);
+                return;
+            }
+
+            if (!idUC) {
+                selectTurno.innerHTML = '<option value="">Selecione um Turno</option>';
+                return;
+            }
+
+
+
+            fetch(`/funcionario/listar_turnos/${idUC}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro HTTP! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+
+                    selectTurno.innerHTML = '<option value="">Selecione um Turno</option>';
+                    data.forEach(turno => {
+                        let option = document.createElement("option");
+                        option.value = turno.id_turno;
+                        option.textContent = turno.turno_nome;
+                        selectTurno.appendChild(option);
+                    });
+
+                    console.log(`Select ${selectTurno.id} atualizado com ${data.length} opções.`);
+                })
+                .catch(error => console.error("Erro ao carregar turnos:", error));
+        }
+
+        // 🔹 Adiciona o evento para elementos criados dinamicamente
+        document.addEventListener("change", function (event) {
+            if (event.target && event.target.matches("select[name='unidade_curricular']")) {
+                carregarTurnosParaUC(event);
+            }
+        });
+
+
+    });
+
+    function salvarAtribuicaoProfessorTurno(button) {
+        let form = button.closest("form");  // Obtém o formulário onde o botão foi clicado
+        let actionUrl = form.getAttribute("action");
+        let idProfessor = actionUrl.match(/(\d+)\/?$/)[1];
+
+        let idTurno = form.querySelector("select[name='turno']").value;
+
+        if (!idTurno) {
+            alert("Por favor, selecione um turno!");
+            return;
+        }
+
+        let csrfToken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
+
+        // 🔍 Adicionar LOGS para verificar o que está sendo enviado
+        console.log("Dados sendo enviados para o servidor:");
+        console.log("ID do Professor:", idProfessor);
+        console.log("ID do Turno:", idTurno);
+
+        fetch("/funcionario/registrar_professor_turno/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": csrfToken
+            },
+            body: new URLSearchParams({
+                "id_professor": idProfessor,
+                "id_turno": idTurno
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta do servidor:", data);
+
+                if (data.success) {
+                    let modal = button.closest(".modal");
+                    let bootstrapModal = bootstrap.Modal.getInstance(modal);
+                    bootstrapModal.hide();
+
+                    // Exibir modal de sucesso
+                    let sucessoModal = new bootstrap.Modal(document.getElementById("sucessoModal"));
+                    sucessoModal.show();
+
+                    setTimeout(() => {
+                        sucessoModal.hide();
+
+
+                        document.getElementById("btnNaoAtribuidos").click();
+
+                    }, 2000);
+                } else {
+                    alert("Erro: " + data.error);
+                }
+            })
+            .catch(error => console.error("Erro ao registrar professor no turno:", error));
+    }
+
+
+
+
+</script>
+
+<script>
+    function carregarProfessoresAtribuidos() {
+        fetch("/funcionario/professores_atribuidos/")
+            .then(response => response.json())
+            .then(data => {
+                let tabela = document.getElementById("tabelaProfessoresNaoAtribuidos");
+                tabela.innerHTML = ""; // Limpa a tabela atual
+
+                data.forEach(professor => {
+                    let row = `<tr>
+                        <td>${professor.p_nome} ${professor.u_nome}</td>
+                        <td>${professor.email}</td>
+                        <td>${professor.curso}</td>
+                        <td>${professor.unidade_curricular}</td>
+                        <td>${professor.telefone}</td>
+                        <td>${professor.localidade}</td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#atribuirUC-${professor.id_professor}">
+                                <i class="bi bi-bookmark-plus me-1"></i> Editar UC
+                            </button>
+                        </td>
+                    </tr>`;
+                    tabela.innerHTML += row;
+                });
+            })
+            .catch(error => console.error("Erro ao carregar professores atribuídos:", error));
+    }
+</script>
+<!-- Adicione este container ao final do body -->
+<div id="modaisDinamicos"></div>

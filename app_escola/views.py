@@ -1078,6 +1078,25 @@ def professores_funcionario(request):
         'status': status,
     })
 
+@funcionario_required
+def professores_nao_atribuidos(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM diogo_f_listar_professores_nao_atribuidos();")
+        
+        colunas = [desc[0] for desc in cursor.description]
+        professores = [dict(zip(colunas, row)) for row in cursor.fetchall()]
+
+    return JsonResponse(professores, safe=False)
+
+@funcionario_required
+def professores_atribuidos(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM diogo_f_listar_professores_atribuidos();")
+        colunas = [desc[0] for desc in cursor.description]
+        professores = [dict(zip(colunas, row)) for row in cursor.fetchall()]
+
+    return JsonResponse(professores, safe=False)
+
 
 @funcionario_required
 def atribuir_uc_professor(request, id_professor):
@@ -1137,6 +1156,56 @@ def atribuir_uc_professor(request, id_professor):
         'turnos': turnos,
         'professores': professores
     })
+
+def listar_unidades_curriculares(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM diogo_f_listar_unidades_curriculares()")
+            unidades = cursor.fetchall()
+
+        unidades_list = [{"id_uc": row[0], "nome": row[1]} for row in unidades]
+
+        return JsonResponse(unidades_list, safe=False)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+def listar_turnos_por_uc(request, id_uc):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM diogo_f_listar_turnos_por_uc(%s)", [id_uc])
+            turnos = cursor.fetchall()
+
+        turnos_list = [{"id_turno": row[0], "turno_nome": row[1]} for row in turnos]
+
+        print(f"Turnos para UC {id_uc}: {turnos_list}")  # 🔹 Debug no terminal
+
+        return JsonResponse(turnos_list, safe=False)
+    except Exception as e:
+        print(f"Erro na view: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
+    
+def registrar_professor_turno(request):
+    if request.method == "POST":
+        try:
+            print("Dados recebidos:", request.POST)
+            id_professor = request.POST.get("id_professor")
+            id_turno = request.POST.get("id_turno")
+
+            if not id_professor or not id_turno:
+                return JsonResponse({"error": "Parâmetros inválidos"}, status=400)
+
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT diogo_f_registrar_professor_turno_uc(%s, %s)", [id_professor, id_turno])
+
+            return JsonResponse({"success": f"Professor {id_professor} registrado no turno {id_turno} com 15 horas!"})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Método não permitido"}, status=405)
+
+
+
+
 
 
 @funcionario_required
