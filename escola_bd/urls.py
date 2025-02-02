@@ -41,6 +41,7 @@ urlpatterns = [
     path('editar_horario/<int:id_horario>/', views.atualizar_horario, name='atualizar_horario'),
     path('remover_horario/<int:id_horario>/', views.remover_horario, name='remover_horario'),
     path('carregar_horario_professor/', views.carregar_professor_horario, name='carregar_horario_professor'),
+    path('carregar_horario_aluno/', views.carregar_horario_aluno, name='carregar_horario_aluno'),
 
 
 

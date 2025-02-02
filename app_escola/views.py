@@ -1716,14 +1716,115 @@ def avaliacoes_aluno(request):
         }
     })
 
+def carregar_horario_aluno(request):
+    # Verifica se o usuário está logado e é aluno
+    user_id = request.session.get('user_id')
+
+    try:
+        # Consulta os horários do aluno usando uma função SQL equivalente
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM diogo_f_obter_horarios_completo_aluno(%s)
+            """, [user_id])
+
+            horarios = cursor.fetchall()
+
+        # Converte os resultados para um formato JSON
+        horarios_data = [
+            {
+                'id_turno': horario[0],
+                'turno_nome': horario[1],
+                'nome_uc': horario[2],
+                'nome_semestre': horario[3],
+                'nome_ano': horario[4],
+                'espaco': horario[5],
+                'dia_semana': horario[6],
+                'hora_inicio': str(horario[7]),
+                'hora_fim': str(horario[8])
+            }
+            for horario in horarios
+        ]
+
+        return JsonResponse(horarios_data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @aluno_required
 def dashboard_aluno(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_aluno'})
+    user_id = request.session.get('user_id')  # Obtém o ID do aluno logado
+
+    try:
+        with connection.cursor() as cursor:
+            # Buscar resumo acadêmico do aluno
+            cursor.execute("SELECT * FROM diogo_f_resumo_academico_aluno(%s);", [user_id])
+            resultado = cursor.fetchone()
+
+        with connection.cursor() as cursor:
+            # Buscar avaliações recentes do aluno
+            cursor.execute("SELECT * FROM diogo_f_obter_avaliacoes_recentes_aluno(%s);", [user_id])
+            avaliacoes = cursor.fetchall()
+
+        # Definir valores padrão quando o aluno não está matriculado ou não tem dados
+        contexto = {
+            'curso_nome': resultado[0] if resultado and resultado[0] else "Não Matriculado",
+            'unidades_curriculares': resultado[1] if resultado and resultado[1] else "Sem turnos inscritos",
+            'propinas_pendentes': resultado[2] if resultado and resultado[2] > 0 else "Sem propinas pendentes",
+            'avaliacoes': [
+                {
+                    'nome_uc': av[0],
+                    'nome_metodo': av[1],
+                    'data_avaliacao': av[2],
+                    'nota': av[3]
+                }
+                for av in avaliacoes
+            ] if avaliacoes else [],
+            'default_content': 'dashboard_aluno'  # Define o conteúdo padrão da página
+        }
+
+    except Exception as e:
+        contexto = {
+            'curso_nome': "Erro ao carregar curso",
+            'unidades_curriculares': "Erro ao carregar UC",
+            'propinas_pendentes': "Erro",
+            'avaliacoes': [],
+            'default_content': 'dashboard_aluno'
+        }
+
+    return render(request, 'pagina_principal/main.html', contexto)
+
 
 @professor_required
 def dashboard_professor(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_professor'})
+    user_id = request.session.get('user_id')  # Obtém o ID do professor logado
+
+    try:
+        with connection.cursor() as cursor:
+            # Buscar os dados acadêmicos do professor
+            cursor.execute("SELECT * FROM diogo_f_resumo_academico_professor(%s);", [user_id])
+            resultado = cursor.fetchone()
+
+        if resultado:
+            contexto = {
+                'curso_nome': resultado[0] if resultado[0] else "Não leciona cursos",
+                'unidades_curriculares': resultado[1] if resultado[1] else "Não leciona unidades curriculares",
+                'default_content': 'dashboard_professor'
+            }
+        else:
+            contexto = {
+                'curso_nome': "Não leciona cursos",
+                'unidades_curriculares': "Não leciona unidades curriculares",
+                'default_content': 'dashboard_professor'
+            }
+
+    except Exception as e:
+        contexto = {
+            'curso_nome': "Erro ao carregar curso",
+            'unidades_curriculares': "Erro ao carregar UC",
+            'default_content': 'dashboard_professor'
+        }
+
+    return render(request, 'pagina_principal/main.html', contexto)
 
 @funcionario_required
 def dashboard_funcionario(request):
