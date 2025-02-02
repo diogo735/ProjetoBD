@@ -57,8 +57,8 @@ urlpatterns = [
     path('funcionario/professores/atribuirUC/<int:id_professor>/', views.atribuir_uc_professor, name='atribuir_uc_professor'),
     path('funcionario/listar_turnos/<int:id_uc>/', views.listar_turnos_por_uc, name='listar_turnos_por_uc'),
     path("funcionario/registrar_professor_turno/", views.registrar_professor_turno, name="registrar_professor_turno"),
-
-
+    path('funcionario/remover_uc_professor/', views.remover_atribuicao_uc_professor, name='remover_uc_professor'),
+  
 
 
 

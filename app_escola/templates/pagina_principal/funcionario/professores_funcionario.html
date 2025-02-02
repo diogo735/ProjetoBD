@@ -329,6 +329,30 @@
     </div>
 </div>
 
+<!-- Modal de Confirmação -->
+<div class="modal fade" id="confirmarRemocaoUCModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar Remoção</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="bi bi-exclamation-circle-fill text-warning" id="icon-modal"></i>
+                <p id="mensagem-modal">Tem certeza que deseja remover esta Unidade Curricular do professor?</p>
+                <input type="hidden" id="modal-id-professor">
+                <input type="hidden" id="modal-nome-uc">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn-confirmar-remocao"
+                    onclick="removerUCProfessor()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Input de pesquisa
@@ -361,6 +385,8 @@
     });
 </script>
 
+
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let ucsTab = document.getElementById("cursos-tab");
@@ -382,133 +408,132 @@
                     let modalContainer = document.getElementById("modaisDinamicos");
                     tabela.innerHTML = "";
                     modalContainer.innerHTML = "";
-
-                    data.forEach(professor => {
-                        let curso = professor.curso ? professor.curso : "Sem Curso";
-                        let unidade_curricular = professor.unidade_curricular ? professor.unidade_curricular : "Nenhuma UC atribuída";
-
-                        let row = `<tr>
-                        <td>${professor.p_nome} ${professor.u_nome}</td>
-                        <td>${professor.email}</td>
-                        <td>${curso}</td>
-                        <td>${unidade_curricular}</td>
-                        <td>${professor.telefone}</td>
-                        <td>${professor.localidade}</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-success"
-                                data-bs-toggle="modal" data-bs-target="#atribuirUC-${professor.id_professor}">
-                                <i class="bi bi-bookmark-plus me-1"></i> Atribuir UC
-                            </button>
+                    if (data.length === 0) {
+                        // ✅ Exibir mensagem caso não haja professores não atribuídos
+                        tabela.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <strong>Todos os professores estão atribuídos</strong>
                         </td>
                     </tr>`;
+                        return;
+                    }
+                    data.forEach(professor => {
+                        let curso = professor.curso || "Sem Curso";
+                        let unidade_curricular = professor.unidade_curricular || "Nenhuma UC atribuída";
+
+                        let row = `<tr>
+                            <td>${professor.p_nome} ${professor.u_nome}</td>
+                            <td>${professor.email}</td>
+                            <td>${curso}</td>
+                            <td>${unidade_curricular}</td>
+                            <td>${professor.telefone}</td>
+                            <td>${professor.localidade}</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-success"
+                                    data-bs-toggle="modal" data-bs-target="#atribuirUC-${professor.id_professor}">
+                                    <i class="bi bi-bookmark-plus me-1"></i> Atribuir UC
+                                </button>
+                            </td>
+                        </tr>`;
 
                         tabela.innerHTML += row;
-                        let modal = `<div class="modal fade" id="atribuirUC-${professor.id_professor}" tabindex="-1" 
-    aria-labelledby="atribuirUCLabel-${professor.id_professor}" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="atribuirUCLabel-${professor.id_professor}">
-                    Atribuir UC e Turno para ${professor.p_nome} ${professor.u_nome}
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="/funcionario/professores/atribuirUC/${professor.id_professor}/">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="${getCSRFToken()}">
 
-                    <div class="mb-3">
-                        <label for="nome-${professor.id_professor}" class="form-label">Unidade Curricular</label>
-                        <select name="unidade_curricular" id="nome-${professor.id_professor}" class="form-select" required>
-                            <option value="">Carregando...</option>
-                        </select>
-                    </div>
+                        let modal = `<div class="modal fade" id="atribuirUC-${professor.id_professor}" tabindex="-1"
+                            aria-labelledby="atribuirUCLabel-${professor.id_professor}" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">
+                                            Atribuir UC e Turno para ${professor.p_nome} ${professor.u_nome}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" action="/funcionario/professores/atribuirUC/${professor.id_professor}/">
+                                            <input type="hidden" name="csrfmiddlewaretoken" value="${getCSRFToken()}">
 
-                    <div class="mb-3">
-                        <label for="turno-nome-${professor.id_professor}" class="form-label">Turno</label>
-                        <select name="turno" id="turno_nome-${professor.id_professor}" class="form-select" required>
-                            <option value="">Selecione um Turno</option>
-                        </select>
-                    </div>
+                                            <div id="ucTurnoContainer-${professor.id_professor}">
+                                                <!-- Aqui os UCs e Turnos serão adicionados dinamicamente -->
+                                            </div>
 
-                    <div class="d-flex justify-content-end gap-2">
-                        <button type="button" class="btn btn-primary" onclick="salvarAtribuicaoProfessorTurno(this)">
-    Guardar 
-</button>
+                                            <button type="button" class="btn btn-secondary mt-2"
+                                                onclick="adicionarUCTurno(${professor.id_professor})">
+                                                + Adicionar UC e Turno
+                                            </button>
 
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>`;
+                                            <div class="d-flex justify-content-end gap-2 mt-3">
+                                                <button type="button" class="btn btn-primary" 
+                                                    onclick="salvarAtribuicaoProfessorTurno(this)">
+                                                    Guardar
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
 
                         modalContainer.innerHTML += modal;
 
-                        // Chama a função para carregar as Unidades Curriculares após a criação do modal
-                        carregarUnidadesCurriculares(`nome-${professor.id_professor}`);
-
+                        // Carregar UCs após criar o modal
+                        adicionarUCTurno(professor.id_professor);
                     });
-
-                    // Re-inicializa os eventos do Bootstrap para os novos elementos dinâmicos
-                    document.querySelectorAll("[data-bs-toggle='modal']").forEach(button => {
-                        button.addEventListener("click", function () {
-                            let modalId = this.getAttribute("data-bs-target");
-                            let modalElement = document.querySelector(modalId);
-                            if (modalElement) {
-                                let modal = new bootstrap.Modal(modalElement);
-                                modal.show();
-                            }
-                        });
-                    });
-
                 })
                 .catch(error => console.error("Erro ao carregar professores:", error));
         }
-
-        function getCSRFToken() {
-            return document.querySelector('[name=csrfmiddlewaretoken]').value;
-        }
     });
-    document.addEventListener("hidden.bs.modal", function (event) {
-        let modal = event.target;
 
-        // Esconder o modal sem removê-lo do DOM
-        modal.classList.remove("show");
-        modal.setAttribute("aria-hidden", "true");
-        modal.style.display = "none";
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
 
-        // Remove backdrop caso tenha ficado preso
-        let backdrop = document.querySelector(".modal-backdrop");
-        if (backdrop) {
-            backdrop.remove();
-        }
+    function adicionarUCTurno(professorId) {
+        let container = document.getElementById(`ucTurnoContainer-${professorId}`);
+        let index = container.children.length;
 
-        // Reativa a rolagem da página
-        document.body.classList.remove("modal-open");
-    });
+        let newFields = document.createElement("div");
+        newFields.classList.add("mb-3", "uc-turno-pair");
+        newFields.innerHTML = `
+            <div class="row">
+                <div class="col-md-5">
+                    <label class="form-label">Unidade Curricular</label>
+                    <select name="unidade_curricular[]" id="uc-${professorId}-${index}" class="form-select" required>
+                        <option value="">Carregando...</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Turno</label>
+                    <select name="turno[]" id="turno-${professorId}-${index}" class="form-select" required>
+                        <option value="">Selecione um Turno</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removerUCTurno(this)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        container.appendChild(newFields);
+
+        // Carregar UCs e adicionar evento para carregar turnos
+        carregarUnidadesCurriculares(`uc-${professorId}-${index}`);
+    }
+
+    function removerUCTurno(button) {
+        button.closest(".uc-turno-pair").remove();
+    }
 
     function carregarUnidadesCurriculares(selectElementId) {
-        console.log("Carregando Unidades Curriculares..."); // Debug
-
-        fetch("/funcionario/listar_unidades_curriculares/")  // Certifique-se que esta URL é correta
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP! Status: ${response.status}`);
-                }
-                return response.json();
-            })
+        fetch("/funcionario/listar_unidades_curriculares/")
+            .then(response => response.json())
             .then(data => {
-
-
                 let selectElement = document.getElementById(selectElementId);
-                if (!selectElement) {
-                    console.error(`Elemento select com ID '${selectElementId}' não encontrado!`);
-                    return;
-                }
+                if (!selectElement) return;
 
                 selectElement.innerHTML = '<option value="">Selecione uma UC</option>';
-
                 data.forEach(uc => {
                     let option = document.createElement("option");
                     option.value = uc.id_uc;
@@ -516,93 +541,60 @@
                     selectElement.appendChild(option);
                 });
 
-
+                selectElement.addEventListener("change", function () {
+                    carregarTurnosParaUC(this);
+                });
             })
             .catch(error => console.error("Erro ao carregar unidades curriculares:", error));
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
-        function carregarTurnosParaUC(event) {
-            let selectUC = event.target;
-            let idUC = selectUC.value;
-            let professorId = selectUC.id.split('-')[1]; // Extrai o ID do professor
-            let selectTurno = document.getElementById(`turno_nome-${professorId}`);
+    function carregarTurnosParaUC(selectUC) {
+        let idUC = selectUC.value;
+        let professorId = selectUC.id.split('-')[1];
+        let selectTurno = document.getElementById(`turno-${professorId}-${selectUC.id.split('-')[2]}`);
 
-
-
-            if (!selectTurno) {
-                console.error(`Elemento select turno_nome-${professorId} não encontrado!`);
-                return;
-            }
-
-            if (!idUC) {
-                selectTurno.innerHTML = '<option value="">Selecione um Turno</option>';
-                return;
-            }
-
-
-
-            fetch(`/funcionario/listar_turnos/${idUC}/`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Erro HTTP! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-
-
-                    selectTurno.innerHTML = '<option value="">Selecione um Turno</option>';
-                    data.forEach(turno => {
-                        let option = document.createElement("option");
-                        option.value = turno.id_turno;
-                        option.textContent = turno.turno_nome;
-                        selectTurno.appendChild(option);
-                    });
-
-                    console.log(`Select ${selectTurno.id} atualizado com ${data.length} opções.`);
-                })
-                .catch(error => console.error("Erro ao carregar turnos:", error));
-        }
-
-        // 🔹 Adiciona o evento para elementos criados dinamicamente
-        document.addEventListener("change", function (event) {
-            if (event.target && event.target.matches("select[name='unidade_curricular']")) {
-                carregarTurnosParaUC(event);
-            }
-        });
-
-
-    });
-
-    function salvarAtribuicaoProfessorTurno(button) {
-        let form = button.closest("form");  // Obtém o formulário onde o botão foi clicado
-        let actionUrl = form.getAttribute("action");
-        let idProfessor = actionUrl.match(/(\d+)\/?$/)[1];
-
-        let idTurno = form.querySelector("select[name='turno']").value;
-
-        if (!idTurno) {
-            alert("Por favor, selecione um turno!");
+        if (!selectTurno || !idUC) {
+            selectTurno.innerHTML = '<option value="">Selecione um Turno</option>';
             return;
         }
 
-        let csrfToken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
+        fetch(`/funcionario/listar_turnos/${idUC}/`)
+            .then(response => response.json())
+            .then(data => {
+                selectTurno.innerHTML = '<option value="">Selecione um Turno</option>';
+                data.forEach(turno => {
+                    let option = document.createElement("option");
+                    option.value = turno.id_turno;
+                    option.textContent = turno.turno_nome;
+                    selectTurno.appendChild(option);
+                });
+            })
+            .catch(error => console.error("Erro ao carregar turnos:", error));
+    }
 
-        // 🔍 Adicionar LOGS para verificar o que está sendo enviado
-        console.log("Dados sendo enviados para o servidor:");
-        console.log("ID do Professor:", idProfessor);
-        console.log("ID do Turno:", idTurno);
+    function salvarAtribuicaoProfessorTurno(button) {
+        let form = button.closest("form");
+        let idProfessor = form.getAttribute("action").match(/(\d+)\/?$/)[1];
+
+        let csrfToken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
+        let ucs = [...form.querySelectorAll("select[name='unidade_curricular[]']")].map(select => select.value);
+        let turnos = [...form.querySelectorAll("select[name='turno[]']")].map(select => select.value);
+
+        if (ucs.includes("") || turnos.includes("")) {
+            alert("Por favor, selecione todas as UCs e turnos antes de salvar!");
+            return;
+        }
 
         fetch("/funcionario/registrar_professor_turno/", {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/json",
                 "X-CSRFToken": csrfToken
             },
-            body: new URLSearchParams({
+            body: JSON.stringify({
                 "id_professor": idProfessor,
-                "id_turno": idTurno
+                "unidades_curriculares": ucs,
+                "turnos": turnos
             })
         })
             .then(response => response.json())
@@ -621,7 +613,7 @@
                     setTimeout(() => {
                         sucessoModal.hide();
 
-
+                        // Atualiza a lista de professores não atribuídos automaticamente
                         document.getElementById("btnNaoAtribuidos").click();
 
                     }, 2000);
@@ -632,10 +624,10 @@
             .catch(error => console.error("Erro ao registrar professor no turno:", error));
     }
 
-
-
-
 </script>
+
+
+
 
 <script>
     function carregarProfessoresAtribuidos() {
@@ -644,7 +636,16 @@
             .then(data => {
                 let tabela = document.getElementById("tabelaProfessoresNaoAtribuidos");
                 tabela.innerHTML = ""; // Limpa a tabela atual
-
+                if (data.length === 0) {
+                // ✅ Exibir mensagem caso não haja professores atribuídos
+                tabela.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            <strong>Nenhum professor atribuído</strong>
+                        </td>
+                    </tr>`;
+                return;
+            }
                 data.forEach(professor => {
                     let row = `<tr>
                         <td>${professor.p_nome} ${professor.u_nome}</td>
@@ -654,9 +655,14 @@
                         <td>${professor.telefone}</td>
                         <td>${professor.localidade}</td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#atribuirUC-${professor.id_professor}">
-                                <i class="bi bi-bookmark-plus me-1"></i> Editar UC
-                            </button>
+                   <button type="button" class="btn btn-sm btn-danger" 
+        onclick="confirmarRemocaoUC(this)" 
+        data-id-professor="${professor.id_professor}" 
+        data-nome-uc="${professor.unidade_curricular}">
+    <i class="bi bi-x-circle me-1"></i> Remover UC
+</button>
+
+
                         </td>
                     </tr>`;
                     tabela.innerHTML += row;
@@ -664,6 +670,105 @@
             })
             .catch(error => console.error("Erro ao carregar professores atribuídos:", error));
     }
+
+    function confirmarRemocaoUC(button) {
+        let idProfessor = button.getAttribute("data-id-professor");
+        let nomeUC = button.getAttribute("data-nome-uc");
+
+        console.log("ID Professor:", idProfessor); // 🔍 Debug
+        console.log("Nome UC:", nomeUC); // 🔍 Debug
+
+        if (!idProfessor || !nomeUC) {
+            alert("Erro: ID do professor ou nome da UC está vazio!");
+            return;
+        }
+
+        document.getElementById("modal-id-professor").value = idProfessor;
+        document.getElementById("modal-nome-uc").value = nomeUC;
+
+        let modal = new bootstrap.Modal(document.getElementById("confirmarRemocaoUCModal"));
+        modal.show();
+    }
+    function removerUCProfessor() {
+        let idProfessor = document.getElementById("modal-id-professor").value;
+        let nomeUC = document.getElementById("modal-nome-uc").value;
+
+        fetch("/funcionario/remover_uc_professor/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+            },
+            body: new URLSearchParams({
+                "id_professor": idProfessor,
+                "nome_uc": nomeUC
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Resposta do servidor:", data);
+
+                if (data.success) {
+                    let modal = document.getElementById("confirmarRemocaoUCModal");
+                    let modalContent = modal.querySelector(".modal-content");
+
+                    // Alterar a cor para sucesso
+                    modalContent.classList.remove("bg-danger");
+                    modalContent.classList.add("bg-success", "text-white");
+
+                    let iconModal = document.getElementById("icon-modal");
+                    iconModal.classList.remove("bi-exclamation-circle-fill", "text-warning");
+                    iconModal.classList.add("bi-check-circle-fill", "text-white");
+
+                    let mensagemModal = document.getElementById("mensagem-modal");
+                    mensagemModal.innerHTML = `Atribuição da UC <strong>'${nomeUC}'</strong> removida com sucesso para o professor ${idProfessor}!`;
+
+                    // Ocultar botão de confirmação para evitar cliques extras
+                    let botaoConfirmar = document.getElementById("btn-confirmar-remocao");
+                    botaoConfirmar.style.display = "none";
+
+                    setTimeout(() => {
+                        // Fechar o modal após 2 segundos
+                        let bootstrapModal = bootstrap.Modal.getInstance(modal);
+                        bootstrapModal.hide();
+
+                        // Resetar o modal para futuras remoções
+                        resetarModalRemocao();
+
+                        // Atualizar a tabela de professores atribuídos
+                        carregarProfessoresAtribuidos();
+                    }, 2000);
+                } else {
+                    alert("Erro: " + data.error);
+                }
+            })
+            .catch(error => console.error("Erro ao remover UC:", error));
+    }
+
+    // 🔥 Nova função para resetar o modal
+    function resetarModalRemocao() {
+        let modal = document.getElementById("confirmarRemocaoUCModal");
+
+        // Resetar a cor do modal
+        let modalContent = modal.querySelector(".modal-content");
+        modalContent.classList.remove("bg-success", "text-white");
+        modalContent.classList.add("bg-danger");
+
+        // Resetar o ícone do modal
+        let iconModal = document.getElementById("icon-modal");
+        iconModal.classList.remove("bi-check-circle-fill", "text-white");
+        iconModal.classList.add("bi-exclamation-circle-fill", "text-warning");
+
+        // Resetar a mensagem original
+        let mensagemModal = document.getElementById("mensagem-modal");
+        mensagemModal.innerHTML = `Tem certeza que deseja remover esta Unidade Curricular do professor?`;
+
+        // Reexibir o botão de confirmação
+        let botaoConfirmar = document.getElementById("btn-confirmar-remocao");
+        botaoConfirmar.style.display = "block";
+    }
+
+
 </script>
 <!-- Adicione este container ao final do body -->
 <div id="modaisDinamicos"></div>
