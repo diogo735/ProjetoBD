@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'app_escola',
 ]
 
-INSTALLED_APPS += ['livereload']
+#INSTALLED_APPS += ['livereload']
 
 # settings.py
 STATIC_URL = '/static/'
@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-MIDDLEWARE += ['livereload.middleware.LiveReloadScript']
+#MIDDLEWARE += ['livereload.middleware.LiveReloadScript']
 
 ROOT_URLCONF = 'escola_bd.urls'
 
@@ -99,8 +99,6 @@ DATABASES = {
         'PORT': '5432',             # Porta do banco
     }
 }
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators

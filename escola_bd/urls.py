@@ -42,11 +42,6 @@ urlpatterns = [
     path('remover_horario/<int:id_horario>/', views.remover_horario, name='remover_horario'),
     path('carregar_horario_professor/', views.carregar_professor_horario, name='carregar_horario_professor'),
 
-
-
-
-
-
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
 
@@ -62,7 +57,6 @@ urlpatterns = [
     path('avaliacoes/aprovar/<int:id_avaliacao>/', views.aprovar_avaliacao, name='aprovar_avaliacao'),
     #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
 
-
     path('aluno/pagamentos/', views.pagamentos_em_falta_alunos, name='pagamentos_aluno'),
     path('funcionario/pagamentos/', views.funcionario_listar_pagamentos, name='pagamentos_funcionario'),
 
@@ -74,8 +68,6 @@ urlpatterns = [
     #path('matricula_detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
     path('funcionario/matricula/detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
     path('funcionario/matricula/remover/<int:id_matricula>/', views.funcionario_delete_matricula, name='funcionario_delete_matricula'),
-
-
 
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
