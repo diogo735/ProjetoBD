@@ -947,14 +947,15 @@ def funcionario_delete_pagamentos(request, id_pagamento):
     return redirect('pagamentos_funcionario')
 
 
-#Inserção da matricula do aluno
+# Inserção da matricula do aluno
 def matricula_aluno(request):
-
-    user_id = request.session.get('user_id')  # ID do aluno logado
+    user_id = request.session.get('user_id')  # ID do aluno logado na aplicação
     aluno_data = {}
+    detalhes_matricula = None
+    ucs_matricula = []
 
     try:
-        # Buscar os dados do aluno logado
+        # Vai obter os dados do aluno que está logado
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT p_nome, u_nome, email, telefone, localidade
@@ -973,34 +974,214 @@ def matricula_aluno(request):
             }
         else:
             messages.error(request, "Aluno não encontrado.")
-            return redirect('dashboard')  # Redireciona caso o aluno não seja encontrado
+            return redirect('dashboard')
 
+        # Captura os dados do formulário
         if request.method == 'POST':
-            # Capturar os dados enviados pelo formulário
             id_curso = request.POST.get('id_curso')
             ano_letivo = request.POST.get('ano_letivo')
             data_inscricao = request.POST.get('ano_inscricao')
+            ucs_selecionadas = request.POST.getlist('ucs[]')  # Lista dos IDs das UCs selecionados
 
-            # Inserir matrícula usando o procedimento armazenado
+            # Captura os dados dos turnos
+            turnos_selecionados = []
+            for uc_id in ucs_selecionadas:
+                turno_id = request.POST.get(f"turno_{uc_id}")
+                if turno_id:
+                    turnos_selecionados.append((int(uc_id), int(turno_id)))
+
+            # Inserção da matricula
             with connection.cursor() as cursor:
+                print("Executando CALL p_matricula_insert com:", user_id, id_curso, data_inscricao, ano_letivo)
                 cursor.execute("""
                     CALL p_matricula_insert(%s, %s, %s, %s);
                 """, [user_id, id_curso, data_inscricao, ano_letivo])
 
+                # Vai buscar o ID da matrícula criada
+                cursor.execute("SELECT currval('matriculas_id_matricula_seq');")
+                id_matricula = cursor.fetchone()[0]
+
+            if not id_matricula:
+                messages.error(request, "Erro ao criar a matrícula.")
+                return redirect('matricula_aluno')
+
+            # Inserção dos turnos na tabela matriculas_turnos
+            if turnos_selecionados:
+                with connection.cursor() as cursor:
+                    for uc_id, turno_id in turnos_selecionados:
+                        print(f"Inserindo turno {turno_id} para a matrícula {id_matricula}")
+                        cursor.execute("""
+                            CALL p_matriculas_turno_insert(%s, %s);
+                        """, [id_matricula, turno_id])
+                    connection.commit() 
+
             messages.success(request, "Matrícula realizada com sucesso!")
             return redirect('matricula_aluno')
 
-    except Exception as e:
-        messages.error(request, f"Erro ao carregar os dados do aluno ou realizar a matrícula: {str(e)}")
+        # Dados da matricula atual do aluno logado na aplicação
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM vw_alunos_detalhes_matricula WHERE id_aluno = %s", [user_id])
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
 
-    # Renderizar o formulário de inscrição com os dados do aluno preenchidos
+        if rows:
+            matricula = [dict(zip(columns, row)) for row in rows]
+
+            # Dados gerais da matricula
+            detalhes_matricula = {
+                'curso': matricula[0]['curso'],
+                'ano_letivo': matricula[0]['ano_letivo'],
+                'data_matricula': matricula[0]['data_matricula']
+            }
+
+            # Criação das lista dos turnos e UCs que o aluno inscreveu-se
+            for item in matricula:
+                ucs_matricula.append({
+                    'unidade_curricular': item['unidade_curricular'],
+                    'turno': item['turno']
+                })
+
+    except Exception as e:
+        messages.error(request, f"Erro ao carregar os dados: {str(e)}")
+
     return render(request, 'pagina_principal/main.html', {
         'default_content': 'matricula_aluno',
         'aluno_data': aluno_data,
+        'detalhes_matricula': detalhes_matricula,
+        'ucs_matricula': ucs_matricula,
+        'mensagem_matricula': "Matrícula carregada com sucesso." if detalhes_matricula else "Nenhuma matrícula encontrada.",
+        'status_matriculas': "sucesso" if detalhes_matricula else "erro",
     })
 
 
+# Fetch do cursos
+def get_cursos(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT id_curso, nome
+                FROM cursos
+            """)
+            cursos = cursor.fetchall()
+        return JsonResponse([{'id': curso[0], 'nome': curso[1]} for curso in cursos], safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
     
+# Fetch das UCs de cada curso
+def get_ucs(request, curso_id, ano_id):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT id_uc, nome, id_semestre
+                FROM unidades_curriculares
+                WHERE id_curso = %s AND id_ano = %s
+                ORDER BY id_semestre, nome
+            """, [curso_id, ano_id])
+            ucs = cursor.fetchall()
+
+        return JsonResponse([
+            {'id_uc': uc[0], 'nome': uc[1], 'id_semestre': uc[2]} for uc in ucs
+        ], safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+#Fetch turnos
+def get_turnos(request, uc_id):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT id_turno, turno_nome, vagas_totais
+                FROM turnos
+                WHERE id_uc = %s
+                ORDER BY turno_nome
+            """, [uc_id])
+            turnos = cursor.fetchall()
+
+        return JsonResponse([
+            {'id_turno': turno[0], 'turno_nome': turno[1], 'vagas_totais': turno[2]} for turno in turnos
+        ], safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+# Listar todas as matriculas através do funcionário
+def listar_matriculas(request):
+    mensagem_todas_matriculas = None
+    status_todas_matriculas = None
+    todas_matriculas = []
+
+    try:
+        # Chamar a função SQL para listar todas as matrículas
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM public.f_funcionario_listar_matriculas();
+            """)
+            todas_matriculas = [
+                {
+                    'id_matricula': matricula[0],
+                    'nome_aluno': matricula[1],
+                    'nome_curso': matricula[2],
+                    'data_matricula': matricula[3],
+                    'ano_letivo': matricula[4]
+                }
+                for matricula in cursor.fetchall()
+            ]
+
+        mensagem_todas_matriculas = "Todas as matrículas foram carregadas com sucesso."
+        status_todas_matriculas = "success"
+
+    except Exception as e:
+        # Mensagem de erro
+        mensagem_todas_matriculas = f"Erro ao carregar as matrículas: {str(e)}"
+        status_todas_matriculas = "error"
+
+    # Renderizar a página com os dados das matrículas
+    return render(request, 'pagina_principal/main.html', {
+        'default_content': 'matricula_funcionario',
+        'todas_matriculas': todas_matriculas,
+        'mensagem_todas_matriculas': mensagem_todas_matriculas,
+        'status_todas_matriculas': status_todas_matriculas,
+    })
+
+# Carregar os detalhes da matricula ao pressionar o botão Ver Detalhes
+def matricula_detalhes(request, id_matricula):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM public.f_funcionario_listar_matricula_detalhes(%s)", [id_matricula])
+        rows = cursor.fetchall()
+
+    dados = {
+        'id_matricula': rows[0][0],
+        'nome_aluno': rows[0][1],
+        'nome_curso': rows[0][2],
+        'ano_letivo': rows[0][3],
+        'data_matricula': rows[0][4],
+        'ucs': [{'unidade_curricular': row[5], 'turno': row[6]} for row in rows]
+    }
+
+    return JsonResponse(dados)
+
+# Eliminação da matricula pelo funcionario 
+def funcionario_delete_matricula(request, id_matricula):
+    try:
+        # Verificar se a matrícula existe
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1 FROM Matriculas WHERE id_matricula = %s", [id_matricula])
+            if cursor.fetchone() is None:
+                messages.error(request, "Matrícula não encontrada.")
+                return redirect('funcionario_matriculas')
+
+        # Remover a matrícula utilizando o procedimento armazenado
+        with connection.cursor() as cursor:
+            cursor.execute("CALL p_funcionario_delete_matricula(%s);", [id_matricula])
+
+        # Mensagem de sucesso
+        messages.success(request, "Matrícula removida com sucesso!")
+    except Exception as e:
+        # Adicionar uma mensagem de erro
+        messages.error(request, f"Erro ao remover matrícula: {str(e)}")
+
+    # Redirecionar de volta para a página de matrículas
+    return redirect('matricula_funcionario')
+
 
 @funcionario_required
 def avaliacoes_funcionario(request):

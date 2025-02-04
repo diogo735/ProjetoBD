@@ -18,91 +18,272 @@
     <div class="tab-content mt-4" id="matriculaTabContent">
         <!-- Tab Detalhes -->
         <div class="tab-pane fade show active" id="detalhes" role="tabpanel" aria-labelledby="detalhes-tab">
-            <div class="card mb-4 shadow">
+            <div class="card shadow">
                 <div class="card-header bg-light">
-                    <h2 class="h5 mb-0">Detalhes da Matrícula Atual</h2>
+                    <h2 class="h5 mb-0">Detalhes da Matrícula</h2>
                 </div>
                 <div class="card-body">
-                    <p>Confira os detalhes da sua matrícula para o ano letivo atual.</p>
-                    <ul class="list-group">
-                        <li class="list-group-item">
-                            <strong>Curso:</strong> Engenharia Informática
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Ano Letivo:</strong> 2024/2025
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Status:</strong> Ativo
-                        </li>
-                        <li class="list-group-item">
-                            <strong>Data de Matrícula:</strong> 01/09/2024
-                        </li>
+                    <p>Confira abaixo os detalhes da sua matrícula atual.</p>
+
+                    {% if detalhes_matricula %}
+                    <!-- Exibir detalhes gerais da matrícula -->
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item"><strong>Curso:</strong> {{ detalhes_matricula.curso }}</li>
+                        <li class="list-group-item"><strong>Ano Letivo:</strong> {{ detalhes_matricula.ano_letivo }}</li>
+                        <li class="list-group-item"><strong>Data da Matrícula:</strong> {{ detalhes_matricula.data_matricula }}</li>
                     </ul>
+
+                    <!-- Lista de Unidades Curriculares e Turnos -->
+                    <h5 class="mt-3">Unidades Curriculares e Turnos</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Unidade Curricular</th>
+                                    <th>Turno</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if ucs_matricula %}
+                                    {% for uc in ucs_matricula %}
+                                    <tr>
+                                        <td>{{ uc.unidade_curricular }}</td>
+                                        <td>{{ uc.turno }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center">Nenhuma unidade curricular encontrada.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {% else %}
+                    <p class="text-danger">Nenhuma matrícula encontrada.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-            <!-- Tab Inscrição -->
-            <div class="tab-pane fade" id="inscricao" role="tabpanel" aria-labelledby="inscricao-tab">
-                <div class="card shadow">
-                    <div class="card-header bg-light">
-                        <h2 class="h5 mb-0">Inscrição</h2>
-                    </div>
-                    <div class="card-body">
-                        <p>Realize a sua matrícula para o ano letivo atual.</p>
+    <!-- Tab Inscrição -->
+    <div class="tab-pane fade" id="inscricao" role="tabpanel" aria-labelledby="inscricao-tab">
+        <div class="card shadow">
+            <div class="card-header bg-light">
+                <h2 class="h5 mb-0">Inscrição</h2>
+            </div>
+            <div class="card-body">
+                <p>Realize a sua matrícula para o ano letivo atual.</p>
 
-                        <!-- Formulário de Matrícula -->
-                        <form method="POST" action="{% url 'matricula_aluno' %}">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="primeiro_nome" class="form-label">Primeiro Nome</label>
-                                <input type="text" class="form-control" id="primeiro_nome" name="primeiro_nome"
-                                    value="{{ aluno_data.p_nome }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="ultimo_nome" class="form-label">Último Nome</label>
-                                <input type="text" class="form-control" id="ultimo_nome" name="ultimo_nome"
-                                    value="{{ aluno_data.u_nome }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email"
-                                    value="{{ aluno_data.email }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="telefone" class="form-label">Telemóvel/Telefone</label>
-                                <input type="text" class="form-control" id="telefone" name="telefone"
-                                    value="{{ aluno_data.telefone }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="localidade" class="form-label">Localidade</label>
-                                <input type="text" class="form-control" id="localidade" name="localidade"
-                                    value="{{ aluno_data.localidade }}" readonly>
-                            </div>
-                            <div class="mb-3">
-                                <label for="ano_letivo" class="form-label">Ano letivo</label>
-                                <input type="text" class="form-control" id="ano_letivo" name="ano_letivo" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="id_curso" class="form-label">Selecione o Curso</label>
-                                <select id="id_curso" name="id_curso" class="form-select" required>
-                                    <option value="" selected>Escolha o curso...</option>
-                                    <option value="1">Engenharia Informática</option>
-                                    <option value="2">Gestão Empresarial</option>
-                                    <!-- Adicione mais cursos conforme necessário -->
-                                </select>
-                            </div>
-                            <div class="mb-3">
-                                <label for="ano_inscricao" class="form-label">Ano de Inscrição</label>
-                                <input type="date" class="form-control" id="ano_inscricao" name="ano_inscricao">
-                            </div>
-
-                            <button type="submit" class="btn btn-success">Realizar Matrícula</button>
-                            <button type="reset" class="btn btn-danger">Apagar Dados</button>
-                        </form>
+                <!-- Formulário de Matrícula -->
+                <form id="formMatricula" method="POST" action="{% url 'matricula_aluno' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="primeiro_nome" class="form-label">Primeiro Nome</label>
+                        <input type="text" class="form-control" id="primeiro_nome" name="primeiro_nome"
+                            value="{{ aluno_data.p_nome }}" readonly>
                     </div>
-                </div>
+                    <div class="mb-3">
+                        <label for="ultimo_nome" class="form-label">Último Nome</label>
+                        <input type="text" class="form-control" id="ultimo_nome" name="ultimo_nome"
+                            value="{{ aluno_data.u_nome }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ aluno_data.email }}"
+                            readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefone" class="form-label">Telemóvel/Telefone</label>
+                        <input type="text" class="form-control" id="telefone" name="telefone"
+                            value="{{ aluno_data.telefone }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="localidade" class="form-label">Localidade</label>
+                        <input type="text" class="form-control" id="localidade" name="localidade"
+                            value="{{ aluno_data.localidade }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ano_letivo" class="form-label">Ano letivo</label>
+                        <input type="text" class="form-control" id="ano_letivo" name="ano_letivo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ano_inscricao" class="form-label">Data da Inscrição</label>
+                        <input type="date" class="form-control" id="ano_inscricao" name="ano_inscricao">
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_curso" class="form-label">Selecione o Curso</label>
+                        <select id="id_curso" name="id_curso" class="form-select" required>
+                            <option value="" selected>Escolha o curso...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="ano-container" style="display: none;">
+                        <label for="id_ano" class="form-label">Selecione o Ano</label>
+                        <select id="id_ano" name="id_ano" class="form-select">
+                            <option value="" selected>Escolha o ano...</option>
+                            <option value="1">1º Ano</option>
+                            <option value="2">2º Ano</option>
+                            <option value="3">3º Ano</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="uc-container" style="display: none;">
+                        <h5>Unidades Curriculares</h5>
+                        <div id="semestres-container"></div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Realizar Matrícula</button>
+                    <button type="button" class="btn btn-danger" onclick="limparFormulario()">Apagar Dados</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const cursoSelect = document.getElementById("id_curso");
+        const anoContainer = document.getElementById("ano-container");
+        const anoSelect = document.getElementById("id_ano");
+        const ucContainer = document.getElementById("uc-container");
+        const semestresContainer = document.getElementById("semestres-container");
+
+
+        // Fetch cursos from the backend
+        fetch("/get_cursos/")
+            .then((response) => response.json())
+            .then((data) => {
+                cursoSelect.innerHTML = '<option value="" selected>Escolha o curso...</option>';
+                data.forEach((curso) => {
+                    const option = document.createElement("option");
+                    option.value = curso.id;
+                    option.textContent = curso.nome;
+                    cursoSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error("Erro ao carregar cursos:", error);
+                cursoSelect.innerHTML = '<option value="" selected>Erro ao carregar cursos</option>';
+            });
+
+        // Show the year dropdown only after a course is selected
+        cursoSelect.addEventListener("change", function () {
+            if (cursoSelect.value) {
+                anoContainer.style.display = "block"; // Show year dropdown
+            } else {
+                anoContainer.style.display = "none"; // Hide year dropdown
+                ucContainer.style.display = "none"; // Reset UC container
+            }
+        });
+
+        // Fetch UCs when a year is selected
+        anoSelect.addEventListener("change", function () {
+            const anoId = this.value;
+            const cursoId = cursoSelect.value;
+            semestresContainer.innerHTML = ""; // Reset semestres
+
+            if (cursoId && anoId) {
+                fetch(`/get_ucs/${cursoId}/${anoId}/`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.length > 0) {
+                            ucContainer.style.display = "block";
+                            const semestres = {};
+
+                            // Agrupa UCs por semestre
+                            data.forEach((uc) => {
+                                if (!semestres[uc.id_semestre]) {
+                                    semestres[uc.id_semestre] = [];
+                                }
+                                semestres[uc.id_semestre].push(uc);
+                            });
+
+                            // Adiciona tabelas para cada semestre
+                            for (const [semestre, ucs] of Object.entries(semestres)) {
+                                const title = document.createElement("h5");
+                                title.textContent = `Semestre ${semestre}`;
+                                semestresContainer.appendChild(title);
+
+                                const table = document.createElement("table");
+                                table.classList.add("table", "table-bordered", "mt-3");
+
+                                const thead = document.createElement("thead");
+                                thead.innerHTML = `
+                                    <tr>
+                                        <th>Selecionar</th>
+                                        <th>UC</th>
+                                        <th>Turno</th>
+                                    </tr>
+                                `;
+                                table.appendChild(thead);
+
+                                const tbody = document.createElement("tbody");
+                                ucs.forEach((uc) => {
+                                    const row = document.createElement("tr");
+                                    row.innerHTML = `
+                                        <td>
+                                            <input type="checkbox" name="ucs[]" value="${uc.id_uc}" class="uc-checkbox">
+                                        </td>
+                                        <td>${uc.nome}</td>
+                                        <td>
+                                            <select name="turno_${uc.id_uc}" class="form-select turno-select" disabled>
+                                                <option value="" selected>Escolha o turno...</option>
+                                            </select>
+                                        </td>
+                                    `;
+                                    tbody.appendChild(row);
+
+                                    // Habilitar ou desabilitar o turno baseado no checkbox
+                                    const checkbox = row.querySelector(".uc-checkbox");
+                                    const turnoSelect = row.querySelector(".turno-select");
+
+                                    checkbox.addEventListener("change", function () {
+                                        turnoSelect.disabled = !checkbox.checked;
+                                        if (checkbox.checked) {
+                                            // Fetch turnos when UC is selected
+                                            fetch(`/get_turnos/${uc.id_uc}/`)
+                                                .then((response) => response.json())
+                                                .then((turnos) => {
+                                                    turnoSelect.innerHTML = `<option value="" selected>Escolha o turno...</option>`;
+                                                    turnos.forEach((turno) => {
+                                                        const option = document.createElement("option");
+                                                        option.value = turno.id_turno;
+                                                        option.textContent = `${turno.turno_nome} (${turno.vagas_totais} vagas)`;
+                                                        turnoSelect.appendChild(option);
+                                                    });
+                                                })
+                                                .catch((error) => {
+                                                    console.error(`Erro ao carregar turnos para a UC ${uc.id_uc}:`, error);
+                                                    turnoSelect.innerHTML = `<option value="" selected>Erro ao carregar turnos</option>`;
+                                                });
+                                        } else {
+                                            turnoSelect.innerHTML = `<option value="" selected>Escolha o turno...</option>`;
+                                        }
+                                    });
+                                });
+                                table.appendChild(tbody);
+
+                                semestresContainer.appendChild(table);
+                            }
+                        } else {
+                            ucContainer.style.display = "none";
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("Erro ao carregar UCs:", error);
+                        ucContainer.style.display = "none";
+                    });
+            } else {
+                ucContainer.style.display = "none";
+            }
+        });
+
+
+    });
+
+    function limparFormulario() {
+        document.getElementById("formMatricula").reset(); // Reseta todos os campos do formulário
+        document.getElementById("ano-container").style.display = "none";
+        document.getElementById("uc-container").style.display = "none";
+    }
+</script>

@@ -46,7 +46,15 @@ urlpatterns = [
     path('funcionario/pagamentos/', views.funcionario_listar_pagamentos, name='pagamentos_funcionario'),
 
     path('aluno/matricula/', views.matricula_aluno, name='matricula_aluno'),
-    path('funcionario/matricula/', views.matricula_funcionario, name='matricula_funcionario'),
+    path('get_cursos/', views.get_cursos, name='get_cursos'),
+    path('get_ucs/<int:curso_id>/<int:ano_id>/', views.get_ucs, name='get_ucs'),
+    path('get_turnos/<int:uc_id>/', views.get_turnos, name='get_turnos'),
+    path('funcionario/matricula/', views.listar_matriculas, name='matricula_funcionario'),
+    #path('matricula_detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
+    path('funcionario/matricula/detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
+    path('funcionario/matricula/remover/<int:id_matricula>/', views.funcionario_delete_matricula, name='funcionario_delete_matricula'),
+
+
 
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
     path('funcionario/unidades_curriculares/', views.unidades_curriculares_funcionario, name='unidades_curriculares_funcionario'),
