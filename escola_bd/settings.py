@@ -44,6 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app_escola',
 ]
+
+INSTALLED_APPS += ['livereload']
+
 # settings.py
 STATIC_URL = '/static/'
 
@@ -60,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+MIDDLEWARE += ['livereload.middleware.LiveReloadScript']
 
 ROOT_URLCONF = 'escola_bd.urls'
 
@@ -93,8 +97,9 @@ DATABASES = {
         'PASSWORD': 'QTo4GFgBk0YwcPvZfeswHjgPe0uroNPG',    # Senha do banco
         'HOST': 'dpg-cub92i52ng1s73anb5vg-a.frankfurt-postgres.render.com',  # Host do banco
         'PORT': '5432',             # Porta do banco
+    }
 }
-}
+
 
 
 # Password validation

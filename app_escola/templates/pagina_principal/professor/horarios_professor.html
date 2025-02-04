@@ -1,135 +1,113 @@
-<div class="container py-4">
-    <!-- Tabela de Horários -->
-    <div class="card shadow">
-        <div class="card-header bg-light">
-            <h3 class="h5 mb-0">Horário das Aulas</h3>
-        </div>
-        <div class="card-body">
-            <p>Consulte o horário das aulas relacionadas aos cursos, unidades curriculares e turnos que leciona.</p>
+<!DOCTYPE html>
+<html lang="en">
 
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Hora</th>
-                            <th>Segunda-feira</th>
-                            <th>Terça-feira</th>
-                            <th>Quarta-feira</th>
-                            <th>Quinta-feira</th>
-                            <th>Sexta-feira</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>08:00 09:00</td>
-                            <td>Programação (Turno A)</td>
-                            <td></td>
-                            <td></td>
-                            <td>Redes de Computadores (Turno B)</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>09:00 10:00</td>
-                            <td></td>
-                            <td>Redes de Computadores (Turno A)</td>
-                            <td>Sistemas Operativos (Turno A)</td>
-                            <td></td>
-                            <td>Engenharia de Software (Turno A)</td>
-                        </tr>
-                        <tr>
-                            <td>10:00 11:00</td>
-                            <td>Sistemas Operativos (Turno B)</td>
-                            <td></td>
-                            <td></td>
-                            <td>Programação (Turno B)</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>11:00 12:00</td>
-                            <td></td>
-                            <td>Engenharia de Software (Turno A)</td>
-                            <td></td>
-                            <td>Sistemas Operativos (Turno A)</td>
-                            <td>Redes de Computadores (Turno B)</td>
-                        </tr>
-                        <tr>
-                            <td>13:00 14:00</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>14:00 15:00</td>
-                            <td></td>
-                            <td>Sistemas Operativos (Turno A)</td>
-                            <td></td>
-                            <td>Engenharia de Software (Turno B)</td>
-                            <td>Programação (Turno A)</td>
-                        </tr>
-                        <tr>
-                            <td>15:00 16:00</td>
-                            <td>Redes de Computadores (Turno A)</td>
-                            <td></td>
-                            <td>Engenharia de Software (Turno A)</td>
-                            <td></td>
-                            <td>Sistemas Operativos (Turno A)</td>
-                        </tr>
-                        <tr>
-                            <td>16:00 17:00</td>
-                            <td></td>
-                            <td>Programação (Turno B)</td>
-                            <td></td>
-                            <td>Redes de Computadores (Turno A)</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>17:00 18:00</td>
-                            <td>Sistemas Operativos (Turno B)</td>
-                            <td></td>
-                            <td></td>
-                            <td>Engenharia de Software (Turno A)</td>
-                            <td>Programação (Turno A)</td>
-                        </tr>
-                        <!-- Adicione mais períodos conforme necessário -->
-                    </tbody>
-                </table>
+
+<body onload="carregarHorarios()">
+    <div class="container py-4">
+        <!-- Tabela de Horários -->
+        <div class="card shadow">
+            <div class="card-header bg-light">
+                <h3 class="h5 mb-0">Horário das Aulas</h3>
+            </div>
+            <div class="card-body">
+                <p>Consulte o horário das aulas relacionadas aos cursos, unidades curriculares e turnos que leciona.</p>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Hora</th>
+                                <th>Segunda-feira</th>
+                                <th>Terça-feira</th>
+                                <th>Quarta-feira</th>
+                                <th>Quinta-feira</th>
+                                <th>Sexta-feira</th>
+                            </tr>
+                        </thead>
+                        <tbody id="horariosTableBody">
+                            <!-- Horários serão preenchidos dinamicamente -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Horário de Atendimento -->
-    <div class="card shadow mt-4">
-        <div class="card-header bg-light">
-            <h3 class="h5 mb-0">Horário de Atendimento</h3>
-        </div>
-        <div class="card-body">
-            <p>Horários disponíveis para atendimento:</p>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Dia</th>
-                            <th>Horário</th>
-                            <th>Local</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Segunda-feira</td>
-                            <td>10:00 - 12:00</td>
-                            <td>Sala 101</td>
-                        </tr>
-                        <tr>
-                            <td>Quarta-feira</td>
-                            <td>14:00 - 16:00</td>
-                            <td>Sala 203</td>
-                        </tr>
-                        <!-- Adicione mais linhas conforme necessário -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        function carregarHorarios() {
+            let tableBody = document.getElementById('horariosTableBody');
+            tableBody.innerHTML = '<tr><td colspan="6">Carregando...</td></tr>';
+
+            fetch('/carregar_horario_professor/')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro HTTP: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Dados recebidos:', data);
+                    tableBody.innerHTML = ''; // Limpa a tabela
+
+                    // Definir intervalo de horários em blocos de 30 minutos
+                    let startTime = new Date('1970-01-01T08:00:00');
+                    let endTime = new Date('1970-01-01T18:00:00');
+                    let currentTime = new Date(startTime);
+
+                    // Função para formatar hora
+                    function formatTime(date) {
+                        return date.toTimeString().split(':').slice(0, 2).join(':');
+                    }
+
+                    // Preencher a tabela com blocos de 30 minutos
+                    while (currentTime < endTime) {
+                        let nextTime = new Date(currentTime);
+                        nextTime.setMinutes(currentTime.getMinutes() + 30); // Avança 30 minutos
+
+                        let row = `<tr><td>${formatTime(currentTime)} - ${formatTime(nextTime)}</td>`;
+
+                        // Iterar sobre os dias da semana
+                        ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira'].forEach(dia => {
+                            let horarioOcupado = data.find(horario => {
+                                let horarioInicio = new Date(`1970-01-01T${horario.hora_inicio}`);
+                                let horarioFim = new Date(`1970-01-01T${horario.hora_fim}`);
+                                return horario.dia_semana === dia &&
+                                    currentTime >= horarioInicio &&
+                                    currentTime < horarioFim;
+                            });
+
+                            if (horarioOcupado) {
+                                let horarioInicio = new Date(`1970-01-01T${horarioOcupado.hora_inicio}`);
+                                let horarioFim = new Date(`1970-01-01T${horarioOcupado.hora_fim}`);
+                                let rowspan = (horarioFim - horarioInicio) / (30 * 60 * 1000); // Número de blocos de 30 min
+
+                                // Apenas insere se estiver no início do intervalo
+                                if (currentTime.getTime() === horarioInicio.getTime()) {
+                                    row += `<td rowspan="${rowspan}" style="background-color: #007bff; color: white; text-align: center; vertical-align: middle;">
+                                Turno: ${horarioOcupado.turno_nome}<br>
+                                ${horarioOcupado.nome_uc}<br>
+                                ${horarioOcupado.nome_semestre}<br>
+                                ${horarioOcupado.nome_ano}<br>
+                                Sala ${horarioOcupado.espaco}
+                            </td>`;
+                                }
+                            } else {
+                                row += `<td></td>`; // Célula vazia
+                            }
+                        });
+
+                        row += `</tr>`;
+                        tableBody.innerHTML += row;
+                        currentTime = nextTime; // Avança para o próximo intervalo
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar horários:', error);
+                    tableBody.innerHTML = '<tr><td colspan="6">Erro ao carregar horários. Tente novamente mais tarde.</td></tr>';
+                });
+        }
+
+    </script>
+</body>
+
+</html>
