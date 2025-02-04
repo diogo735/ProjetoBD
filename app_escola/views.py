@@ -1079,6 +1079,25 @@ def professores_funcionario(request):
         'status': status,
     })
 
+@funcionario_required
+def professores_nao_atribuidos(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM diogo_f_listar_professores_nao_atribuidos();")
+        
+        colunas = [desc[0] for desc in cursor.description]
+        professores = [dict(zip(colunas, row)) for row in cursor.fetchall()]
+
+    return JsonResponse(professores, safe=False)
+
+@funcionario_required
+def professores_atribuidos(request):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM diogo_f_listar_professores_atribuidos();")
+        colunas = [desc[0] for desc in cursor.description]
+        professores = [dict(zip(colunas, row)) for row in cursor.fetchall()]
+
+    return JsonResponse(professores, safe=False)
+
 
 @funcionario_required
 def atribuir_uc_professor(request, id_professor):
@@ -1138,6 +1157,88 @@ def atribuir_uc_professor(request, id_professor):
         'turnos': turnos,
         'professores': professores
     })
+
+def listar_unidades_curriculares(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM diogo_f_listar_unidades_curriculares()")
+            unidades = cursor.fetchall()
+
+        unidades_list = [{"id_uc": row[0], "nome": row[1]} for row in unidades]
+
+        return JsonResponse(unidades_list, safe=False)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+def listar_turnos_por_uc(request, id_uc):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM diogo_f_listar_turnos_por_uc(%s)", [id_uc])
+            turnos = cursor.fetchall()
+
+        turnos_list = [{"id_turno": row[0], "turno_nome": row[1]} for row in turnos]
+
+        print(f"Turnos para UC {id_uc}: {turnos_list}")  # 🔹 Debug no terminal
+
+        return JsonResponse(turnos_list, safe=False)
+    except Exception as e:
+        print(f"Erro na view: {e}")
+        return JsonResponse({"error": str(e)}, status=500)
+    
+@csrf_exempt
+def registrar_professor_turno(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)  # Recebendo dados no formato JSON
+            id_professor = data.get("id_professor")
+            unidades_curriculares = data.get("unidades_curriculares", [])  # Lista de UCs
+            turnos = data.get("turnos", [])  # Lista de Turnos
+
+            # Verifica se há pelo menos uma UC e um turno correspondente
+            if not id_professor or not unidades_curriculares or not turnos:
+                return JsonResponse({"success": False, "error": "Dados incompletos"})
+
+            if len(unidades_curriculares) != len(turnos):
+                return JsonResponse({"success": False, "error": "Cada UC deve ter um turno correspondente"})
+
+            # Executar a procedure para cada UC-Turno
+            with connection.cursor() as cursor:
+                for id_uc, id_turno in zip(unidades_curriculares, turnos):
+                    cursor.execute(
+                        "CALL p_atribuir_uc_professor(%s, %s, %s);",
+                        [id_professor, id_uc, id_turno]
+                    )
+
+            return JsonResponse({"success": True})
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"success": False, "error": "Erro ao processar JSON"})
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)})
+
+    return JsonResponse({"success": False, "error": "Método inválido"})
+
+
+def remover_atribuicao_uc_professor(request):
+    if request.method == "POST":
+        id_professor = request.POST.get("id_professor")
+        nome_uc = request.POST.get("nome_uc")
+
+        if not id_professor or not nome_uc:
+            return JsonResponse({"error": "Parâmetros inválidos"}, status=400)
+
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT diogo_f_remover_atribuicao_uc_professor(%s, %s);", [id_professor, nome_uc])
+
+            return JsonResponse({"success": f"Atribuição da UC '{nome_uc}' removida com sucesso para o professor {id_professor}!"})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Método não permitido"}, status=405)
+
+
 
 
 @funcionario_required
@@ -1797,18 +1898,132 @@ def avaliacoes_aluno(request):
         }
     })
 
+def carregar_horario_aluno(request):
+    # Verifica se o usuário está logado e é aluno
+    user_id = request.session.get('user_id')
+
+    try:
+        # Consulta os horários do aluno usando uma função SQL equivalente
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM diogo_f_obter_horarios_completo_aluno(%s)
+            """, [user_id])
+
+            horarios = cursor.fetchall()
+
+        # Converte os resultados para um formato JSON
+        horarios_data = [
+            {
+                'id_turno': horario[0],
+                'turno_nome': horario[1],
+                'nome_uc': horario[2],
+                'nome_semestre': horario[3],
+                'nome_ano': horario[4],
+                'espaco': horario[5],
+                'dia_semana': horario[6],
+                'hora_inicio': str(horario[7]),
+                'hora_fim': str(horario[8])
+            }
+            for horario in horarios
+        ]
+
+        return JsonResponse(horarios_data, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 @aluno_required
 def dashboard_aluno(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_aluno'})
+    user_id = request.session.get('user_id')  # Obtém o ID do aluno logado
+
+    try:
+        with connection.cursor() as cursor:
+            # Buscar resumo acadêmico do aluno
+            cursor.execute("SELECT * FROM diogo_f_resumo_academico_aluno(%s);", [user_id])
+            resultado = cursor.fetchone()
+
+        with connection.cursor() as cursor:
+            # Buscar avaliações recentes do aluno
+            cursor.execute("SELECT * FROM diogo_f_obter_avaliacoes_recentes_aluno(%s);", [user_id])
+            avaliacoes = cursor.fetchall()
+
+        # Definir valores padrão quando o aluno não está matriculado ou não tem dados
+        contexto = {
+            'curso_nome': resultado[0] if resultado and resultado[0] else "Não Matriculado",
+            'unidades_curriculares': resultado[1] if resultado and resultado[1] else "Sem turnos inscritos",
+            'propinas_pendentes': resultado[2] if resultado and resultado[2] > 0 else "Sem propinas pendentes",
+            'avaliacoes': [
+                {
+                    'nome_uc': av[0],
+                    'nome_metodo': av[1],
+                    'data_avaliacao': av[2],
+                    'nota': av[3]
+                }
+                for av in avaliacoes
+            ] if avaliacoes else [],
+            'default_content': 'dashboard_aluno'  # Define o conteúdo padrão da página
+        }
+
+    except Exception as e:
+        contexto = {
+            'curso_nome': "Erro ao carregar curso",
+            'unidades_curriculares': "Erro ao carregar UC",
+            'propinas_pendentes': "Erro",
+            'avaliacoes': [],
+            'default_content': 'dashboard_aluno'
+        }
+
+    return render(request, 'pagina_principal/main.html', contexto)
+
 
 @professor_required
 def dashboard_professor(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_professor'})
+    user_id = request.session.get('user_id')  # Obtém o ID do professor logado
+
+    try:
+        with connection.cursor() as cursor:
+            # Buscar os dados acadêmicos do professor
+            cursor.execute("SELECT * FROM diogo_f_resumo_academico_professor(%s);", [user_id])
+            resultado = cursor.fetchone()
+
+        if resultado:
+            contexto = {
+                'curso_nome': resultado[0] if resultado[0] else "Não leciona cursos",
+                'unidades_curriculares': resultado[1] if resultado[1] else "Não leciona unidades curriculares",
+                'default_content': 'dashboard_professor'
+            }
+        else:
+            contexto = {
+                'curso_nome': "Não leciona cursos",
+                'unidades_curriculares': "Não leciona unidades curriculares",
+                'default_content': 'dashboard_professor'
+            }
+
+    except Exception as e:
+        contexto = {
+            'curso_nome': "Erro ao carregar curso",
+            'unidades_curriculares': "Erro ao carregar UC",
+            'default_content': 'dashboard_professor'
+        }
+
+    return render(request, 'pagina_principal/main.html', contexto)
 
 @funcionario_required
 def dashboard_funcionario(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'dashboard_funcionario'})
+    # Conectar ao PostgreSQL e executar a função
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM diogo_f_resumo_administrativo_funcionario();")
+        resultado = cursor.fetchone()
+
+    # Mapear os dados para o contexto
+    contexto = {
+        'default_content': 'dashboard_funcionario',
+        'total_cursos': resultado[0] if resultado else 0,
+        'total_turnos': resultado[1] if resultado else 0,
+        'total_matriculas': resultado[2] if resultado else 0
+    }
+
+    return render(request, 'pagina_principal/main.html', contexto)
 
 @aluno_required
 def horarios_aluno(request):
