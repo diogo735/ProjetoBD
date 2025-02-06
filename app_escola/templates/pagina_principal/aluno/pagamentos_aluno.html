@@ -8,6 +8,12 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="aguardar-tab" data-bs-toggle="tab" data-bs-target="#aguardar" type="button"
+                role="tab" aria-controls="aguardar" aria-selected="false">
+                Aguardar Confirmação
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="historico-tab" data-bs-toggle="tab" data-bs-target="#historico" type="button"
                 role="tab" aria-controls="historico" aria-selected="false">
                 Histórico de Pagamentos
@@ -49,7 +55,7 @@
                                     <td>{{ pagamento.descricao }}</td>
                                     <td>{{ pagamento.valor }}</td>
                                     <td>{{ pagamento.multa }}</td>
-                                    <td>{{ pagamento.data_vencimento }}</td>
+                                    <td class="data-vencimento">{{ pagamento.data_vencimento }}</td>
                                     <td>{{ pagamento.estado }}</td>
                                     <td>
                                         <!-- Botão Pagar -->
@@ -68,8 +74,9 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title"
-                                                            id="pagarModalLabel-{{ pagamento.id_pagamento }}">Confirmar
-                                                            Pagamento</h5>
+                                                            id="pagarModalLabel-{{ pagamento.id_pagamento }}">
+                                                            Confirmar Pagamento
+                                                        </h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
@@ -77,14 +84,25 @@
                                                         <p>Tem certeza de que deseja realizar o pagamento?</p>
                                                         <p><strong>Descrição:</strong> {{ pagamento.descricao }}</p>
                                                         <p><strong>Valor:</strong> €{{ pagamento.valor }}</p>
-                                                        <p><strong>Multa:</strong> €{{ pagamento.multa }}</p>
-                                                        <p><strong>Total:</strong> €<span
-                                                                id="modal-total-{{ pagamento.id_pagamento }}"></span>
+                                                        <p><strong>Multa:</strong> <span
+                                                                id="modal-multa-{{ pagamento.id_pagamento }}">€0.00</span>
+                                                        </p>
+                                                        <p><strong>Total:</strong> <span
+                                                                id="modal-total-{{ pagamento.id_pagamento }}">€0.00</span>
+                                                        </p>
                                                         </p>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">Cancelar</button>
+                                                        <!-- Formulário de confirmação -->
+                                                        <form method="POST"
+                                                            action="{% url 'aluno_alterar_status_pagamento' pagamento.id_pagamento %}">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-primary">
+                                                                Confirmar Pagamento
+                                                            </button>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>
@@ -145,24 +163,121 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- Tab Histórico de Pagamentos -->
+        <div class="tab-pane fade" id="historico" role="tabpanel" aria-labelledby="historico-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Histórico de Pagamentos</h2>
+                </div>
+                <div class="card-body">
+                    <p>Veja os pagamentos realizados ao longo do tempo.</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Valor (€)</th>
+                                    <th>Multa (€)</th>
+                                    <th>Data de Vencimento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if historico_pagamentos %}
+                                {% for pagamento in historico_pagamentos %}
+                                <tr>
+                                    <td>{{ pagamento.descricao }}</td>
+                                    <td>{{ pagamento.valor }}</td>
+                                    <td>{{ pagamento.multa }}</td>
+                                    <td>{{ pagamento.data_vencimento }}</td>
+                                    <td>{{ pagamento.estado }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Nenhum histórico encontrado.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nova Tab Aguardar Confirmação -->
+        <div class="tab-pane fade" id="aguardar" role="tabpanel" aria-labelledby="aguardar-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Pagamentos Aguardando Confirmação</h2>
+                </div>
+                <div class="card-body">
+                    <p>Veja os pagamentos que estão aguardando confirmação.</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Valor (€)</th>
+                                    <th>Multa (€)</th>
+                                    <th>Data de Vencimento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if pagamentos_aguardando_confirmacao %}
+                                {% for pagamento in pagamentos_aguardando_confirmacao %}
+                                <tr>
+                                    <td>{{ pagamento.descricao }}</td>
+                                    <td>{{ pagamento.valor }}</td>
+                                    <td>{{ pagamento.multa }}</td>
+                                    <td>{{ pagamento.data_vencimento }}</td>
+                                    <td>{{ pagamento.estado }}</td>
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Nenhum pagamento aguardando confirmação.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Script para inicializar modais e calcular o total -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const modals = document.querySelectorAll(".modal");
+
         modals.forEach(modal => {
             modal.addEventListener("show.bs.modal", function (event) {
                 const button = event.relatedTarget;
                 const descricao = button.getAttribute("data-descricao");
                 const valor = parseFloat(button.getAttribute("data-valor"));
-                const multa = parseFloat(button.getAttribute("data-multa"));
+                const dataVencimento = button.closest("tr").querySelector(".data-vencimento").textContent.trim();
 
-                const total = (valor + multa).toFixed(2);
+                let multaCalculada = 0;
+                const hoje = new Date();
+                const dataVenc = new Date(dataVencimento);
 
+                // Se a data de vencimento já passou, aplica a multa de 10%
+                if (dataVenc < hoje) {
+                    multaCalculada = (valor * 0.10).toFixed(2);
+                }
+
+                // Calcula o total com a multa aplicada
+                const total = (valor + parseFloat(multaCalculada)).toFixed(2);
+
+                // Atualiza os campos do modal
                 const modalId = modal.getAttribute("id").split("-")[1];
-                document.querySelector(`#modal-total-${modalId}`).textContent = total;
+                document.querySelector(`#modal-multa-${modalId}`).textContent = `€${multaCalculada}`;
+                document.querySelector(`#modal-total-${modalId}`).textContent = `€${total}`;
             });
         });
     });

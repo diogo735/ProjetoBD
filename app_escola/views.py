@@ -106,9 +106,6 @@ def login_view(request):
 
     return render(request, 'pagina_login/home.html', {'db_status': status})
 
-
-
-
 def loading_page(request):
     # return render(request, 'pagina_login/carregamento.html')
 
@@ -162,8 +159,6 @@ def unidades_curriculares_funcionario(request):
         'default_content': 'unidades_curriculares_funcionario',
         'turnos': turnos,
     })
-
-
 
 @funcionario_required
 def obter_horarios_turno(request):
@@ -259,9 +254,6 @@ def obter_ucs(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-
-
-
 @csrf_exempt
 def criar_turno(request):
     if request.method == 'POST':
@@ -293,10 +285,6 @@ def criar_turno(request):
                 return JsonResponse({'success': False, 'error': '❌ Turno já existe com os mesmos parâmetros!'})
             return JsonResponse({'success': False, 'error': '❌ Erro desconhecido: ' + error_message})
     return JsonResponse({'success': False, 'error': 'Método inválido'})
-
-
-
-
 
 def buscar_turnos(request):
     # Obtém os parâmetros da requisição
@@ -545,7 +533,6 @@ def verificar_eliminar_turno(request):
     return JsonResponse({"success": False, "error": "Método inválido."})
 
 
-
 def eliminar_turno(request):
     if request.method == "POST":
         try:
@@ -596,6 +583,7 @@ def obter_turnos_sem_horarios(request):
             return JsonResponse({"success": False, "error": str(e)})
     return JsonResponse({"success": False, "error": "Método inválido"})
 
+
 def espacos_disponiveis(request):
     if request.method == "POST":
         try:
@@ -622,6 +610,7 @@ def espacos_disponiveis(request):
         except Exception as e:
             return JsonResponse({"success": False, "error": str(e)})
     return JsonResponse({"success": False, "error": "Método inválido"})
+
 
 def adicionar_horario(request):
     if request.method == "POST":
@@ -663,6 +652,7 @@ def obter_turnos_nomes(request):
         return JsonResponse({"success": True, "turnos": turnos})
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=500)
+
 
 @funcionario_required
 def pesquisar_horarios_filtrados(request):
@@ -745,6 +735,7 @@ def atualizar_horario(request, id_horario):
     else:
         return JsonResponse({'success': False, 'error': 'Método não permitido.'}, status=405)
 
+
 def remover_horario(request, id_horario):
     if request.method == 'DELETE':
         try:
@@ -813,6 +804,7 @@ def pesquisar_horarios(request):
             return JsonResponse({"success": False, "error": str(e)}, status=500)
 
     return JsonResponse({"success": False, "error": "Método inválido."}, status=405)
+
 
 def obter_horarios_e_ucs(request, turno_id, curso_id, ano, semestre):
     if request.method == "GET":
@@ -883,7 +875,6 @@ def editar_horario(request, id_horario):
         return JsonResponse({'success': False, 'error': 'Método não permitido.'}, status=405)
 
 
-
 def carregar_professor_horario(request):
     # Verifica se o usuário está logado e é professor
     user_id = request.session.get('user_id')
@@ -917,17 +908,6 @@ def carregar_professor_horario(request):
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-
-
-
-
-
-
-
-
-
-
 
 
 @funcionario_required
@@ -979,6 +959,7 @@ def alunos_funcionario(request):
         'status': status,
     })
 
+
 @funcionario_required
 def aluno_delete(request, id_aluno):
     mensagem = None
@@ -995,6 +976,7 @@ def aluno_delete(request, id_aluno):
         status = "error"
 
     return redirect('alunos_funcionario')  
+
 
 @funcionario_required
 def aluno_editar(request, id_aluno):
@@ -1236,33 +1218,38 @@ def professores_aluno(request):
         'professores': professores,
     })
 
+
 #Pagamentos
 #Listar os pagamentos em falta do aluno logado na aplicação
 def pagamentos_em_falta_alunos(request):
     mensagem_pendentes = None
     mensagem_historico = None
+    mensagem_aguardar = None  
     status_pendentes = None
     status_historico = None
+    status_aguardar = None 
     pagamentos_pendentes = []
     historico_pagamentos = []
+    pagamentos_aguardando_confirmacao = [] 
     pagamentos = []
 
     try:
-        # Verifica se o usuário está logado
+        # Verifica se o utilizador está logado
         user_id = request.session.get('user_id')
        
-        # Buscar os pagamentos pendentes do usuário logado
+        # Buscar os pagamentos pendentes do utilizador logado
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT * FROM public.f_pagamentos_em_falta_alunos(%s)
             """, [user_id])
             pagamentos_pendentes = [
                 {
-                    'descricao': pagamento[0],
-                    'valor': pagamento[1],
-                    'multa': pagamento[4],
-                    'data_vencimento': pagamento[2],
-                    'estado': pagamento[3]
+                    'id_pagamento' : pagamento[0],
+                    'descricao': pagamento[1],
+                    'valor': pagamento[2],
+                    'multa': pagamento[5],
+                    'data_vencimento': pagamento[3],
+                    'estado': pagamento[4]
                 }
                 for pagamento in cursor.fetchall()
             ]
@@ -1271,18 +1258,19 @@ def pagamentos_em_falta_alunos(request):
         for pagamento in pagamentos:
             pagamento['total'] = round(float(pagamento['valor']) + float(pagamento['multa']), 2)
 
-        # Buscar o histórico de pagamentos do usuário logado
+        # Buscar o histórico de pagamentos do utilizador logado
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT * FROM public.f_pagamentos_historico_pagamentos_alunos(%s)
             """, [user_id])
             historico_pagamentos = [
                 {
-                    'descricao': pagamento[0],
-                    'valor': pagamento[1],
-                    'multa': pagamento[4],
-                    'data_vencimento': pagamento[2],
-                    'estado': pagamento[3]
+                    'id_pagamento' : pagamento[0],
+                    'descricao': pagamento[1],
+                    'valor': pagamento[2],
+                    'multa': pagamento[5],
+                    'data_vencimento': pagamento[3],
+                    'estado': pagamento[4]
                 }
                 for pagamento in cursor.fetchall()
             ]
@@ -1291,6 +1279,24 @@ def pagamentos_em_falta_alunos(request):
         status_pendentes = "success"
         mensagem_historico = "Histórico de pagamentos carregado com sucesso."
         status_historico = "success"
+
+        # Buscar os pagamentos aguardando confirmação
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT * FROM public.f_pagamentos_aguarda_confirmacao_alunos(%s)
+            """, [user_id])
+            pagamentos_aguardando_confirmacao = [
+                {
+                    'id_pagamento': pagamento[0],
+                    'descricao': pagamento[1],
+                    'valor': pagamento[2],
+                    'multa': pagamento[5],
+                    'data_vencimento': pagamento[3],
+                    'estado': pagamento[4]
+                }
+                for pagamento in cursor.fetchall()
+            ]
+
 
     except Exception as e:
         # Mensagens de erro
@@ -1308,9 +1314,45 @@ def pagamentos_em_falta_alunos(request):
         'status_pendentes': status_pendentes,
         'mensagem_historico': mensagem_historico,
         'status_historico': status_historico,
+        'mensagem_aguardar': mensagem_aguardar,
+        'status_aguardar' : status_aguardar,
+        'pagamentos_aguardando_confirmacao' : pagamentos_aguardando_confirmacao,
         'pagamentos': pagamentos,
     })
 
+# Alterar o estado do pagamento quando o aluno vai realizar um pagamento
+def aluno_alterar_status_pagamento(request, id_pagamento):
+    if request.method == 'POST':
+        try:
+            # Atualiza o estado para "Pendente" ou o estado inicial que deve acionar o trigger
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE pagamentos SET estado = 'Pendente' WHERE id_pagamento = %s",
+                    [id_pagamento]
+                )
+            messages.success(request, "Status do pagamento atualizado com sucesso!")
+        except Exception as e:
+            messages.error(request, f"Erro ao atualizar o status: {str(e)}")
+
+    # Redireciona para a lista de pagamentos ou onde for necessário
+    return redirect('pagamentos_aluno')
+
+
+def funcionario_alterar_status_pagamento(request, id_pagamento):
+    if request.method == 'POST':
+        try:
+            # Atualiza o estado para "Pendente" ou o estado inicial que deve acionar o trigger
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "UPDATE pagamentos SET estado = 'Pago' WHERE id_pagamento = %s",
+                    [id_pagamento]
+                )
+            messages.success(request, "Status do pagamento atualizado com sucesso!")
+        except Exception as e:
+            messages.error(request, f"Erro ao atualizar o status: {str(e)}")
+
+    # Redireciona para a lista de pagamentos ou onde for necessário
+    return redirect('pagamentos_funcionario')
 
 def funcionario_listar_pagamentos(request):
     mensagem_todos_pagamentos = None

@@ -3,7 +3,9 @@
     <!-- Tabs para Lista de Pagamentos -->
     <ul class="nav nav-tabs" id="pagamentosTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pagamentos-lista-tab" data-bs-toggle="tab" data-bs-target="#pagamentos-lista" type="button" role="tab" aria-controls="pagamentos-lista" aria-selected="true">
+            <button class="nav-link active" id="pagamentos-lista-tab" data-bs-toggle="tab"
+                data-bs-target="#pagamentos-lista" type="button" role="tab" aria-controls="pagamentos-lista"
+                aria-selected="true">
                 Lista de Pagamentos
             </button>
         </li>
@@ -11,7 +13,8 @@
 
     <div class="tab-content mt-4" id="pagamentosTabContent">
         <!-- Tab Lista de Pagamentos -->
-        <div class="tab-pane fade show active" id="pagamentos-lista" role="tabpanel" aria-labelledby="pagamentos-lista-tab">
+        <div class="tab-pane fade show active" id="pagamentos-lista" role="tabpanel"
+            aria-labelledby="pagamentos-lista-tab">
             <div class="card shadow">
                 <div class="card-header bg-light">
                     <h2 class="h5 mb-0">Pagamentos dos Alunos</h2>
@@ -24,7 +27,6 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>ID Pagamento</th>
                                     <th>Nome do Aluno</th>
                                     <th>Descrição</th>
                                     <th>Valor (€)</th>
@@ -36,102 +38,71 @@
                             </thead>
                             <tbody>
                                 {% if todos_pagamentos %}
-                                    {% for pagamento in todos_pagamentos %}
-                                    <tr>
-                                        <td>{{ pagamento.id_pagamento }}</td>
-                                        <td>{{ pagamento.nome_aluno }}</td>
-                                        <td>{{ pagamento.descricao }}</td>
-                                        <td>{{ pagamento.valor }}</td>
-                                        <td>{{ pagamento.data_vencimento }}</td>
-                                        <td>{{ pagamento.estado }}</td>
-                                        <td>{{ pagamento.multa }}</td>
-                                        <td>
-                                            <!-- Botão Editar -->
-                                            <button type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#editarModal-{{ pagamento.id_pagamento }}">
-                                                Editar
-                                            </button>
-
-                                            <!-- Modal Editar -->
-                                            <div class="modal fade" id="editarModal-{{ pagamento.id_pagamento }}" tabindex="-1" aria-labelledby="editarModalLabel-{{ pagamento.id_pagamento }}" aria-hidden="true">
-                                                <div class="modal-dialog">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h5 class="modal-title" id="editarModalLabel-{{ pagamento.id_pagamento }}">Editar Pagamento</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <form method="POST" action="{% url 'funcionario_update_pagamentos' pagamento.id_pagamento %}">
-                                                                {% csrf_token %}
-                                                                <div class="mb-3">
-                                                                    <label for="descricao-{{ pagamento.id_pagamento }}" class="form-label">Descrição</label>
-                                                                    <input type="text" name="descricao" id="descricao-{{ pagamento.id_pagamento }}" 
-                                                                           class="form-control" value="{{ pagamento.descricao }}" required>
-                                                                </div>
-
-                                                                <div class="mb-3">
-                                                                    <label for="valor-{{ pagamento.id_pagamento }}" class="form-label">Valor (€)</label>
-                                                                    <input type="number" step="0.01" name="valor" id="valor-{{ pagamento.id_pagamento }}" 
-                                                                           class="form-control" value="{{ pagamento.valor }}" required>
-                                                                </div>
-
-                                                                <div class="mb-3">
-                                                                    <label for="data-vencimento-{{ pagamento.id_pagamento }}" class="form-label">Data de Vencimento</label>
-                                                                    <input type="date" name="data_vencimento" id="data-vencimento-{{ pagamento.id_pagamento }}" 
-                                                                           class="form-control" value="{{ pagamento.data_vencimento|date:'Y-m-d' }}" required>
-                                                                </div>
-                                                                
-
-                                                                <div class="mb-3">
-                                                                    <label for="estado-{{ pagamento.id_pagamento }}" class="form-label">Estado</label>
-                                                                    <select name="estado" id="estado-{{ pagamento.id_pagamento }}" class="form-select" required>
-                                                                        <option value="Pendente" {% if pagamento.estado == "Pendente" %}selected{% endif %}>Pendente</option>
-                                                                        <option value="Pago" {% if pagamento.estado == "Pago" %}selected{% endif %}>Pago</option>
-                                                                    </select>
-                                                                </div>
-
-                                                                <div class="d-flex justify-content-end gap-2">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                {% for pagamento in todos_pagamentos %}
+                                <tr>
+                                    <td>{{ pagamento.nome_aluno }}</td>
+                                    <td>{{ pagamento.descricao }}</td>
+                                    <td>{{ pagamento.valor }}</td>
+                                    <td>{{ pagamento.data_vencimento }}</td>
+                                    <td>{{ pagamento.estado }}</td>
+                                    <td>{{ pagamento.multa }}</td>
+                                    <td>
+                                        <!-- Container Flexível para alinhar os botões -->
+                                        <div class="d-flex gap-2">
+                                            <!-- Botão Confirmar se o estado for 'Aguardar Confirmação' -->
+                                            {% if pagamento.estado == 'Aguardar confirmação' %}
+                                            <form method="POST"
+                                                action="{% url 'funcionario_alterar_status_pagamento' pagamento.id_pagamento %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-success">Confirmar</button>
+                                            </form>
+                                            {% endif %}
 
                                             <!-- Botão Remover -->
-                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removerModal-{{ pagamento.id_pagamento }}">
+                                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                                data-bs-target="#removerModal-{{ pagamento.id_pagamento }}">
                                                 Remover
                                             </button>
 
                                             <!-- Modal Remover -->
-                                            <div class="modal fade" id="removerModal-{{ pagamento.id_pagamento }}" tabindex="-1" aria-labelledby="removerModalLabel-{{ pagamento.id_pagamento }}" aria-hidden="true">
+                                            <div class="modal fade" id="removerModal-{{ pagamento.id_pagamento }}"
+                                                tabindex="-1"
+                                                aria-labelledby="removerModalLabel-{{ pagamento.id_pagamento }}"
+                                                aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
-                                                            <h5 class="modal-title" id="removerModalLabel-{{ pagamento.id_pagamento }}">Confirmar Remoção</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            <h5 class="modal-title"
+                                                                id="removerModalLabel-{{ pagamento.id_pagamento }}">
+                                                                Confirmar Remoção</h5>
+                                                            <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <p>Tem certeza que deseja remover o pagamento de <strong>{{ pagamento.nome_aluno }}</strong>?</p>
+                                                            <p>Tem certeza que deseja remover o pagamento de <strong>{{
+                                                                    pagamento.nome_aluno }}</strong>?</p>
                                                         </div>
                                                         <div class="modal-footer d-flex justify-content-end gap-2">
-                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                            <form method="POST" action="{% url 'funcionario_delete_pagamentos' pagamento.id_pagamento %}">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Cancelar</button>
+                                                            <form method="POST"
+                                                                action="{% url 'funcionario_delete_pagamentos' pagamento.id_pagamento %}">
                                                                 {% csrf_token %}
-                                                                <button type="submit" class="btn btn-danger">Remover</button>
+                                                                <button type="submit"
+                                                                    class="btn btn-danger">Remover</button>
                                                             </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
+                                        </div> <!-- Fim do d-flex -->
+                                    </td>
+                                </tr>
+                                {% endfor %}
                                 {% else %}
-                                    <tr>
-                                        <td colspan="8" class="text-center">Nenhum pagamento encontrado.</td>
-                                    </tr>
+                                <tr>
+                                    <td colspan="8" class="text-center">Nenhum pagamento encontrado.</td>
+                                </tr>
                                 {% endif %}
                             </tbody>
                         </table>

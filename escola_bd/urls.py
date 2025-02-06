@@ -58,7 +58,9 @@ urlpatterns = [
     #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
 
     path('aluno/pagamentos/', views.pagamentos_em_falta_alunos, name='pagamentos_aluno'),
+    path('aluno_alterar_status_pagamento/<int:id_pagamento>/', views.aluno_alterar_status_pagamento, name='aluno_alterar_status_pagamento'),
     path('funcionario/pagamentos/', views.funcionario_listar_pagamentos, name='pagamentos_funcionario'),
+    path('funcionario_alterar_status_pagamento/<int:id_pagamento>/', views.funcionario_alterar_status_pagamento, name='funcionario_alterar_status_pagamento'),
 
     path('aluno/matricula/', views.matricula_aluno, name='matricula_aluno'),
     path('get_cursos/', views.get_cursos, name='get_cursos'),
