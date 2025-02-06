@@ -1,3 +1,4 @@
+{% block content %}
 <div class="container py-4">
     <!-- Resumo Académico -->
     <div class="card mb-4 shadow">
@@ -7,48 +8,41 @@
         <div class="card-body">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                    <strong>Curso Inscrito:</strong> Engenharia Informática
+                    <strong>Curso Inscrito:</strong> {{ curso_nome }}
                 </li>
                 <li class="list-group-item">
-                    <strong>Unidades Curriculares Inscritas:</strong> 
-                    Programação, Redes de Computadores, Sistemas Operativos
+                    <strong>Unidades Curriculares Inscritas:</strong> {{ unidades_curriculares }}
                 </li>
                 <li class="list-group-item">
-                    <strong>Propinas Pendentes:</strong> Nenhuma
+                    <strong>Propinas Pendentes:</strong> {{ propinas_pendentes }}
                 </li>
             </ul>
         </div>
     </div>
 
-    <!-- Avaliações Recentes -->
-    <div class="card mb-4 shadow">
-        <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Avaliações Lançadas Recentemente</h2>
-        </div>
-        <div class="card-body">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">Análise Matemática - <strong>Nota:</strong> 18</li>
-                <li class="list-group-item">Programação - <strong>Nota:</strong> 16</li>
-            </ul>
-            <small class="text-muted d-block mt-2">
-                (Apenas as avaliações lançadas nos últimos 7 dias aparecem aqui.)
-            </small>
-        </div>
+  <!-- Avaliações Recentes -->
+<div class="card mb-4 shadow">
+    <div class="card-header bg-light">
+        <h2 class="h5 mb-0">Avaliações Lançadas Recentemente</h2>
     </div>
+    <div class="card-body">
+        <ul class="list-group list-group-flush">
+            {% for av in avaliacoes %}
+            <li class="list-group-item">
+                <strong>{{ av.nome_uc }}</strong> ({{ av.nome_metodo }}) - <strong>Nota:</strong> {{ av.nota }}
+            </li>
+            {% empty %}
+            <li class="list-group-item text-muted">Nenhuma avaliação recente.</li>
+            {% endfor %}
+        </ul>
+        <small class="text-muted d-block mt-2">
+            (Apenas as avaliações lançadas nos últimos 7 dias aparecem aqui.)
+        </small>
+    </div>
+    
+</div>
 
-    <!-- Ajuda e Suporte -->
-    <div class="card mb-4 shadow">
-        <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Ajuda e Suporte</h2>
-        </div>
-        <div class="card-body">
-            <p>
-                Caso tenha alguma dúvida, pode contactar a secretaria através do seguinte e-mail:
-                <a href="mailto:suporte@universidademachado.com" class="text-decoration-none">suporte@universidademachado.com</a>
-                ou visitar o serviço de apoio ao aluno no prédio principal.
-            </p>
-        </div>
-    </div>
+    
 
     <!-- Acesso Rápido -->
     <div class="card shadow">
@@ -73,3 +67,17 @@
         </div>
     </div>
 </div>
+<!-- Ajuda e Suporte -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-light">
+            <h2 class="h5 mb-0">Ajuda e Suporte</h2>
+        </div>
+        <div class="card-body">
+            <p>
+                Caso tenha alguma dúvida, pode contactar a secretaria através do seguinte e-mail:
+                <a href="mailto:suporte@universidademachado.com" class="text-decoration-none">suporte@universidademachado.com</a>
+                ou visitar o serviço de apoio ao aluno no prédio principal.
+            </p>
+        </div>
+    </div>
+{% endblock %}

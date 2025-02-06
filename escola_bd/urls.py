@@ -41,6 +41,7 @@ urlpatterns = [
     path('editar_horario/<int:id_horario>/', views.atualizar_horario, name='atualizar_horario'),
     path('remover_horario/<int:id_horario>/', views.remover_horario, name='remover_horario'),
     path('carregar_horario_professor/', views.carregar_professor_horario, name='carregar_horario_professor'),
+    path('carregar_horario_aluno/', views.carregar_horario_aluno, name='carregar_horario_aluno'),
 
     path('aluno/horarios/', views.horarios_aluno, name='horarios_aluno'),
     path('professor/horarios/', views.horarios_professor, name='horarios_professor'),
@@ -50,12 +51,23 @@ urlpatterns = [
     path('funcionarios/professores/remover/<int:id_professor>/', views.professor_delete, name='professor_delete'),
     path('funcionario/professores/editar/<int:id_professor>/', views.professor_editar, name='professor_editar'),
     path('funcionario/professores/atribuirUC/<int:id_professor>/', views.atribuir_uc_professor, name='atribuir_uc_professor'),
+    path('funcionario/listar_turnos/<int:id_uc>/', views.listar_turnos_por_uc, name='listar_turnos_por_uc'),
+    path("funcionario/registrar_professor_turno/", views.registrar_professor_turno, name="registrar_professor_turno"),
+    path('funcionario/remover_uc_professor/', views.remover_atribuicao_uc_professor, name='remover_uc_professor'),
+  
+
+
+
+
 
     path('aluno/avaliacoes/', views.avaliacoes_aluno, name='avaliacoes_aluno'),
     path('professor/avaliacoes/', views.avaliacoes_professor, name='avaliacoes_professor'),
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
     path('avaliacoes/aprovar/<int:id_avaliacao>/', views.aprovar_avaliacao, name='aprovar_avaliacao'),
     #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
+    path('funcionario/professores_nao_atribuidos/', views.professores_nao_atribuidos, name='professores_nao_atribuidos'),
+    path('funcionario/professores_atribuidos/', views.professores_atribuidos, name='professores_atribuidos'),
+    path('funcionario/listar_unidades_curriculares/', views.listar_unidades_curriculares, name='listar_unidades_curriculares'),
 
     path('aluno/pagamentos/', views.pagamentos_em_falta_alunos, name='pagamentos_aluno'),
     path('aluno_alterar_status_pagamento/<int:id_pagamento>/', views.aluno_alterar_status_pagamento, name='aluno_alterar_status_pagamento'),

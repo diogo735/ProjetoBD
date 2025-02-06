@@ -7,30 +7,30 @@
         <div class="card-body">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                    <strong>Cursos abertos:</strong> 10
+                    <strong>Cursos abertos:</strong> {{ total_cursos|default:"0" }}<br>
                 </li>
                 <li class="list-group-item">
-                    <strong>Turnos ativos:</strong> 25
+                    <strong>Turnos ativos:</strong> {{ total_turnos|default:"0" }}<br>
                 </li>
                 <li class="list-group-item">
-                    <strong>Alunos matriculados:</strong> 230
+                    <strong>Alunos matriculados:</strong> {{ total_matriculas|default:"0" }}
                 </li>
             </ul>
         </div>
     </div>
 
-    <!-- Tarefas Recentes -->
+    <!-- grafico django -->
     <div class="card mb-4 shadow">
         <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Tarefas Recentes</h2>
+            <h2 class="h5 mb-0">Grafico de Avaliação i guess</h2>
         </div>
         <div class="card-body">
             <ul class="list-group list-group-flush">
-                <li class="list-group-item">Aluno <strong>João Silva</strong> matriculado no curso de Engenharia Informática</li>
-                <li class="list-group-item">Propina de <strong>50€</strong> paga por Pedro Santos</li>
+                <li class="list-group-item">falta a implementação da tabela do mongodb <strong>MONGO DB</strong></li>
+                
             </ul>
             <small class="text-muted d-block mt-2">
-                (As informações mais recentes estão listadas acima.)
+                (uma descirção do grafico)
             </small>
         </div>
     </div>
