@@ -1737,6 +1737,39 @@ def listar_matriculas(request):
         'status_todas_matriculas': status_todas_matriculas,
     })
 
+# Carregar os detalhes para atualizar a matricula do aluno
+def matricula_atualizar_detalhes(request, id_matricula):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM public.f_funcionario_listar_atualizar_matricula_detalhes(%s)", [id_matricula])
+        rows = cursor.fetchall()
+
+    if not rows:
+        return JsonResponse({'error': 'Nenhuma matrícula encontrada'}, status=404)
+
+    primeira_linha = rows[0]
+
+    dados = {
+        'id_matricula': primeira_linha[0],
+        'nome_aluno': primeira_linha[1],
+        'curso_id': primeira_linha[2],  
+        'nome_curso': primeira_linha[3] if primeira_linha[3] else "Curso não encontrado",
+        'ano_letivo': primeira_linha[4],
+        'id_ano': primeira_linha[7],  
+        'data_matricula': str(primeira_linha[5]),  
+        'ucs': [
+            {
+                'id_uc': row[6],  
+                'unidade_curricular': row[8],  
+                'id_turno': row[9],  
+                'turno': row[10],
+                'id_semestre': row[11]  # Adicionamos a informação do semestre
+            }
+            for row in rows if row[6] is not None
+        ]
+    }
+
+    return JsonResponse(dados)
+
 # Carregar os detalhes da matricula ao pressionar o botão Ver Detalhes
 def matricula_detalhes(request, id_matricula):
     with connection.cursor() as cursor:
@@ -1753,6 +1786,7 @@ def matricula_detalhes(request, id_matricula):
     }
 
     return JsonResponse(dados)
+
 
 # Eliminação da matricula pelo funcionario 
 def funcionario_delete_matricula(request, id_matricula):
@@ -1776,6 +1810,37 @@ def funcionario_delete_matricula(request, id_matricula):
 
     # Redirecionar de volta para a página de matrículas
     return redirect('matricula_funcionario')
+
+# Atualizar matricula através do funcionário
+def funcionario_atualizar_matricula(request, id_matricula):
+    if request.method == 'POST':
+        data_matricula = request.POST.get('data_matricula')
+        ucs = request.POST.getlist('ucs')
+
+        with connection.cursor() as cursor:
+            # Atualiza a data da matrícula
+            cursor.execute(
+                "UPDATE matriculas SET data_matricula = %s WHERE id_matricula = %s",
+                [data_matricula, id_matricula]
+            )
+
+            # Remove UCs antigas
+            cursor.execute(
+                "DELETE FROM matricula_ucs WHERE id_matricula = %s",
+                [id_matricula]
+            )
+
+            # Adiciona as novas UCs
+            for uc in ucs:
+                turno = request.POST.get(f"turno_{uc}")
+                cursor.execute(
+                    "INSERT INTO matricula_ucs (id_matricula, unidade_curricular, turno) VALUES (%s, %s, %s)",
+                    [id_matricula, uc, turno]
+                )
+
+        return redirect('pagina_matriculas')  # Redireciona de volta para a página de matrículas
+
+    return JsonResponse({'error': 'Método inválido'}, status=400)
 
 
 @funcionario_required

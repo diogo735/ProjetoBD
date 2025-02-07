@@ -56,10 +56,6 @@ urlpatterns = [
     path('funcionario/remover_uc_professor/', views.remover_atribuicao_uc_professor, name='remover_uc_professor'),
   
 
-
-
-
-
     path('aluno/avaliacoes/', views.avaliacoes_aluno, name='avaliacoes_aluno'),
     path('professor/avaliacoes/', views.avaliacoes_professor, name='avaliacoes_professor'),
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
@@ -81,6 +77,11 @@ urlpatterns = [
     path('funcionario/matricula/', views.listar_matriculas, name='matricula_funcionario'),
     #path('matricula_detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
     path('funcionario/matricula/detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
+    path('funcionario/matricula/update_detalhes/<int:id_matricula>/', views.matricula_atualizar_detalhes, name='matricula_detalhes'),
+
+    path('funcionario/ucs/<int:curso_id>/<int:ano_id>/', views.get_ucs, name='get_ucs'),
+    path('funcionario/turnos/<int:uc_id>/', views.get_turnos, name='get_turnos'),
+    path('funcionario/matricula/atualizar/<int:id_matricula>/', views.funcionario_atualizar_matricula, name='funcionario_atualizar_matricula'),
     path('funcionario/matricula/remover/<int:id_matricula>/', views.funcionario_delete_matricula, name='funcionario_delete_matricula'),
 
     path('professor/unidades_curriculares/', views.unidades_curriculares_professor, name='unidades_curriculares_professor'),
