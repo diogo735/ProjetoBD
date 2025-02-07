@@ -97,6 +97,13 @@ DATABASES = {
         'PASSWORD': 'QTo4GFgBk0YwcPvZfeswHjgPe0uroNPG',    # Senha do banco
         'HOST': 'dpg-cub92i52ng1s73anb5vg-a.frankfurt-postgres.render.com',  # Host do banco
         'PORT': '5432',             # Porta do banco
+    },
+    'mongo': {
+        'ENGINE': 'djongo',
+        'NAME': 'Escola_bd',  
+        'CLIENT': {
+            'host': 'mongodb://localhost:27017/',
+        }
     }
 }
 

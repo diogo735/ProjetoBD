@@ -22,16 +22,10 @@
     <!-- grafico django -->
     <div class="card mb-4 shadow">
         <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Grafico de Avaliação i guess</h2>
+            <h2 class="h5 mb-0">Gráfico de Avaliação por Curso</h2>
         </div>
         <div class="card-body">
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">falta a implementação da tabela do mongodb <strong>MONGO DB</strong></li>
-                
-            </ul>
-            <small class="text-muted d-block mt-2">
-                (uma descirção do grafico)
-            </small>
+            <canvas id="graficoAvaliacoes"></canvas>
         </div>
     </div>
 
@@ -58,3 +52,64 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dadosCursos = JSON.parse('{{ dados_grafico|safe }}');
+
+        // Definir cores personalizadas para cada curso
+        const coresCursos = {
+            "Engenharia Informatica": "rgba(255, 165, 0, 0.6)",  // Laranja
+            "Engenharia Turismo": "rgba(0, 128, 0, 0.6)",        // Verde
+            "Engenharia Multimedia": "rgba(255, 105, 180, 0.6)"  // Rosa
+        };
+
+        const coresBordas = {
+            "Engenharia Informatica": "rgba(255, 165, 0, 1)",  // Laranja
+            "Engenharia Turismo": "rgba(0, 128, 0, 1)",        // Verde
+            "Engenharia Multimedia": "rgba(255, 105, 180, 1)"  // Rosa
+        };
+
+        const labels = Array.from({length: 21}, (_, i) => i); // Notas de 0 a 20
+        const datasets = [];
+
+        Object.keys(dadosCursos).forEach((curso) => {
+            const valores = labels.map(nota => dadosCursos[curso][nota] || 0);
+
+            datasets.push({
+                label: curso,
+                data: valores,
+                backgroundColor: coresCursos[curso] || "rgba(100, 100, 100, 0.6)", // Cor padrão se não encontrado
+                borderColor: coresBordas[curso] || "rgba(100, 100, 100, 1)",
+                borderWidth: 1
+            });
+        });
+
+        const ctx = document.getElementById("graficoAvaliacoes").getContext("2d");
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Quantidade de Alunos"
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: "Notas (0-20)"
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>

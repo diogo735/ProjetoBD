@@ -11,21 +11,82 @@ from .utils import aluno_required, professor_required, funcionario_required
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
+import time
+import threading
+
+from pymongo import MongoClient
+
+def sync_postgres_to_mongo():
+    """
+    Função que executa a cada 5 minutos para sincronizar as avaliações do PostgreSQL para o MongoDB,
+    incluindo o nome do curso.
+    """
+    while True:
+        try:
+            print("🔄 Sincronizando dados de PostgreSQL para MongoDB...")
+
+            # Conectar ao PostgreSQL e buscar os dados
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM diogo_f_sincrunizar_com_mongodb();")
+                rows = cursor.fetchall()
+
+            # Conectar ao MongoDB
+            mongo_client = MongoClient("mongodb://127.0.0.1:27017/")
+            db = mongo_client["Escola_bd"]
+            collection = db["avaliacoes_mongo"]
+
+            # Inserir os dados no MongoDB
+            for row in rows:
+                id_avaliacao, id_aluno, nota, curso = row
+                collection.update_one(
+                    {"id_avaliacao": id_avaliacao},  
+                    {"$set": {
+                        "id_avaliacao": id_avaliacao,
+                        "id_aluno": id_aluno,
+                        "nota": float(nota),
+                        "curso": curso  
+                    }},
+                    upsert=True  
+                )
+
+
+            print("✅ Dados sincronizados com sucesso!")
+
+        except Exception as e:
+            print(f"❌ Erro ao sincronizar dados: {e}")
+
+        time.sleep(300)  # Espera 5 minutos antes de rodar de novo
+
+# Iniciar sincronização automaticamente quando o Django for iniciado
+sync_thread = threading.Thread(target=sync_postgres_to_mongo, daemon=True)
+sync_thread.start()
 
 def home(request):
+    # Verificar conexão com PostgreSQL
     try:
-        # Tenta fazer uma consulta simples ao banco de dados
         with connection.cursor() as cursor:
-            cursor.execute("SELECT 1")  # Consulta simples para verificar a conexão
-        status = "OK"
+            cursor.execute("SELECT 1")  
+        db_status = "OK"
     except Exception as e:
-        # Se houver qualquer erro na conexão, define como "Not OK"
-        status = "Not OK"
+        db_status = f"Not OK - {e}"
+        print(f"❌ ERRO PostgreSQL: {e}")  # Mostra erro no terminal
 
-    # Renderiza o template home.html com o status da conexão
-    return render(request, 'pagina_login/home.html', {'db_status': status})
+    # Verificar conexão com MongoDB
+    try:
+        mongo_client = MongoClient("mongodb://127.0.0.1:27017/")
+        mongo_client.admin.command("ping")  
+        mongo_status = "OK"
+    except Exception as e:
+        mongo_status = f"Not OK - {e}"
+        print(f"❌ ERRO MongoDB: {e}")  # Mostra erro no terminal
 
+    # Debug: Exibir valores antes de renderizar
+    print(f"🔍 DEBUG - db_status: {db_status}, mongo_status: {mongo_status}")
 
+    return render(request, 'pagina_login/home.html', {
+        'db_status': db_status,
+        'mongo_status': mongo_status
+    })
 
 def obter_nome_id_user(email, user_type):
     with connection.cursor() as cursor:
@@ -2129,6 +2190,31 @@ def dashboard_funcionario(request):
         'total_turnos': resultado[1] if resultado else 0,
         'total_matriculas': resultado[2] if resultado else 0
     }
+
+    # Conectar ao MongoDB
+    client = MongoClient("mongodb://127.0.0.1:27017/")
+    db = client["Escola_bd"]
+    collection = db["avaliacoes_mongo"]
+
+    # Buscar todas as avaliações
+    avaliacoes = list(collection.find({}, {"_id": 0, "id_aluno": 1, "nota": 1, "curso": 1}))
+
+    
+    dados_cursos = {}
+    for avaliacao in avaliacoes:
+        curso = avaliacao["curso"]
+        nota = round(avaliacao["nota"])  
+
+        if curso not in dados_cursos:
+            dados_cursos[curso] = {}
+
+        if nota not in dados_cursos[curso]:
+            dados_cursos[curso][nota] = 0
+        
+        dados_cursos[curso][nota] += 1
+
+    
+    contexto['dados_grafico'] = json.dumps(dados_cursos)
 
     return render(request, 'pagina_principal/main.html', contexto)
 
