@@ -194,9 +194,9 @@
                 <p><strong>Data da Matrícula:</strong> <span id="detalhesData"></span></p>
 
                 <h5 class="mt-3">Unidades Curriculares</h5>
-                <div id="tabelaUCs">
-                    <!-- UCs serão agrupadas por semestre e carregadas dinamicamente -->
-                </div>
+                <ul class="list-group" id="detalhesUCs">
+                    <!-- As UCs e turnos serão carregados dinamicamente aqui -->
+                </ul>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
                 </div>
@@ -270,6 +270,7 @@
             fetch(`/funcionario/matricula/detalhes/${idMatricula}/`)
                 .then(response => response.json())
                 .then(data => {
+                    console.log("Dados recebidos para detalhes da matrícula:", data); // Debug
                     document.getElementById("detalhesCurso").textContent = data.nome_curso;
                     document.getElementById("detalhesAno").textContent = data.ano_letivo;
                     document.getElementById("detalhesData").textContent = data.data_matricula;
