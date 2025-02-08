@@ -1917,35 +1917,39 @@ def funcionario_delete_matricula(request, id_matricula):
     return redirect('matricula_funcionario')
 
 # Atualizar matricula através do funcionário
-def funcionario_atualizar_matricula(request, id_matricula):
+def funcionario_atualizar_matricula(request):
     if request.method == 'POST':
-        data_matricula = request.POST.get('data_matricula')
-        ucs = request.POST.getlist('ucs')
+        try:
+            id_matricula = request.POST.get('id_matricula')  # ID correto da matrícula
+            id_curso = request.POST.get('curso')
+            id_ano = request.POST.get('ano_curso')  # Ano do curso correto
+            data_matricula = request.POST.get('data_matricula')
+            ano_letivo = request.POST.get('ano_letivo')  # Ano letivo correto
+            ucs_selecionadas = request.POST.getlist('ucs[]')  # Lista das UCs selecionadas
+            turnos_selecionados = {key.split('_')[1]: value for key, value in request.POST.items() if key.startswith("turno_")}
 
-        with connection.cursor() as cursor:
-            # Atualiza a data da matrícula
-            cursor.execute(
-                "UPDATE matriculas SET data_matricula = %s WHERE id_matricula = %s",
-                [data_matricula, id_matricula]
-            )
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE matriculas
+                    SET id_curso = %s, ano_letivo = %s, data_matricula = %s
+                    WHERE id_matricula = %s
+                """, [id_curso, ano_letivo, data_matricula, id_matricula])
 
-            # Remove UCs antigas
-            cursor.execute(
-                "DELETE FROM matricula_ucs WHERE id_matricula = %s",
-                [id_matricula]
-            )
+                cursor.execute("""
+                    DELETE FROM matriculas_turno WHERE id_matricula = %s
+                """, [id_matricula])
 
-            # Adiciona as novas UCs
-            for uc in ucs:
-                turno = request.POST.get(f"turno_{uc}")
-                cursor.execute(
-                    "INSERT INTO matricula_ucs (id_matricula, unidade_curricular, turno) VALUES (%s, %s, %s)",
-                    [id_matricula, uc, turno]
-                )
+                for id_uc in ucs_selecionadas:
+                    id_turno = turnos_selecionados.get(id_uc, None)
+                    if id_turno:
+                        cursor.execute("""
+                            INSERT INTO matriculas_turno (id_matricula, id_turno)
+                            VALUES (%s, %s)
+                        """, [id_matricula, id_turno])
 
-        return redirect('pagina_matriculas')  # Redireciona de volta para a página de matrículas
-
-    return JsonResponse({'error': 'Método inválido'}, status=400)
+            return JsonResponse({'success': True, 'message': 'Matrícula atualizada com sucesso!'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'message': str(e)}, status=500)
 
 
 @funcionario_required

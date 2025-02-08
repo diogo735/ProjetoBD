@@ -80,6 +80,7 @@ urlpatterns = [
 
     path('funcionario/matricula/detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
     path('funcionario/matricula/update_detalhes/<int:id_matricula>/', views.matricula_atualizar_detalhes, name='matricula_detalhes'),
+    path('funcionario/matricula/atualizar/', views.funcionario_atualizar_matricula, name='funcionario_atualizar_matricula'),
 
     path("funcionario/cursos/", views.get_cursos, name="funcionario_get_cursos"),
     path('funcionario/anos/', views.get_anos, name='get_anos'),

@@ -134,7 +134,7 @@
                                                                 <label for="ano_letivo" class="form-label">Ano
                                                                     Letivo</label>
                                                                 <input type="text" class="form-control" id="ano_letivo"
-                                                                    name="ano_letivo" readonly>
+                                                                    name="ano_letivo">
                                                             </div>
 
                                                             <div class="mb-3">
@@ -243,6 +243,44 @@
     </div>
 
     <script>
+        document.getElementById("formAtualizarMatricula").addEventListener("submit", function (event) {
+            event.preventDefault(); // Previne o comportamento padrão do formulário
+
+            let formData = new FormData(this);
+            let idMatricula = document.getElementById("idMatricula").value;
+
+            // Captura os checkboxes das UCs selecionadas
+            let ucsSelecionadas = [];
+            document.querySelectorAll('input[name="ucs"]:checked').forEach(checkbox => {
+                ucsSelecionadas.push(checkbox.value);
+            });
+
+            // Adiciona as UCs ao formData
+            ucsSelecionadas.forEach(uc => formData.append("ucs[]", uc));
+
+            // Captura os turnos selecionados
+            document.querySelectorAll('.turno-select').forEach(select => {
+                let idUc = select.getAttribute("data-uc");
+                let turnoSelecionado = select.value;
+                formData.append(`turno_${idUc}`, turnoSelecionado);
+            });
+
+            fetch("/funcionario/matricula/atualizar/", {
+                method: "POST",
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Matrícula atualizada com sucesso!");
+                        location.reload(); // Recarrega a página para exibir os dados atualizados
+                    } else {
+                        alert("Erro ao atualizar matrícula: " + data.message);
+                    }
+                })
+                .catch(error => console.error("Erro na requisição:", error));
+        });
+
 
         // Função para carregar o nome do aluno ao eliminar a matricula
         function preencherNomeRemocao(idMatricula, nomeAluno) {
