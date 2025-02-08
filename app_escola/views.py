@@ -1759,6 +1759,50 @@ def get_turnos(request, uc_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+# Fetch dos anos
+def get_anos(request):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT id_ano, nome_ano
+                FROM ano ORDER BY id_ano
+            """)
+            anos = cursor.fetchall()
+
+        return JsonResponse([
+            {'id_ano': ano[0], 'nome_ano': ano[1]} for ano in anos
+        ], safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+
+def get_ucs_matriculadas(request, id_matricula):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT t.id_uc, mt.id_turno
+            FROM matriculas_turno mt
+            INNER JOIN turnos t ON mt.id_turno = t.id_turno
+            WHERE mt.id_matricula = %s
+        """, [id_matricula])
+        rows = cursor.fetchall()
+
+    return JsonResponse([{'id_uc': row[0], 'id_turno': row[1]} for row in rows], safe=False)
+
+def get_anos_curso(request, curso_id):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT DISTINCT id_ano
+                FROM unidades_curriculares
+                WHERE id_curso = %s
+                ORDER BY id_ano
+            """, [curso_id])
+            anos = cursor.fetchall()
+
+        return JsonResponse([{'id': ano[0]} for ano in anos], safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
 # Listar todas as matriculas através do funcionário
 def listar_matriculas(request):
     mensagem_todas_matriculas = None

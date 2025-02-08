@@ -52,6 +52,7 @@
                                             Ver Detalhes
                                         </button>
 
+                                        <!-- Botão Atualizar -->
                                         <button type="button" class="btn btn-sm btn-warning"
                                             onclick="carregarDadosAtualizar('{{ matricula.id_matricula }}')"
                                             data-bs-toggle="modal" data-bs-target="#atualizarModal">
@@ -60,7 +61,8 @@
 
                                         <!-- Botão Remover -->
                                         <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
-                                            data-bs-target="#removerModal-{{ matricula.id_matricula }}">
+                                            data-bs-target="#removerModal-{{ matricula.id_matricula }}"
+                                            onclick="preencherNomeRemocao('{{ matricula.id_matricula }}', '{{ matricula.nome_aluno }}')">
                                             Remover
                                         </button>
 
@@ -79,8 +81,9 @@
                                                             aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <p>Tem certeza que deseja remover a matrícula de <strong>{{
-                                                                matricula.nome_aluno }}</strong>?</p>
+                                                        <p>Tem certeza que deseja remover a matrícula de <strong
+                                                                id="nomeAluno-{{ matricula.id_matricula }}"></strong>?
+                                                        </p>
                                                     </div>
                                                     <div class="modal-footer d-flex justify-content-end gap-2">
                                                         <button type="button" class="btn btn-secondary"
@@ -96,6 +99,7 @@
                                             </div>
                                         </div>
 
+                                        <!-- Modal Atualizar Matricula -->
                                         <div class="modal fade" id="atualizarModal" tabindex="-1"
                                             aria-labelledby="atualizarModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-lg">
@@ -113,8 +117,17 @@
 
                                                             <div class="mb-3">
                                                                 <label for="curso" class="form-label">Curso</label>
-                                                                <input type="text" class="form-control" id="curso"
-                                                                    name="curso" readonly>
+                                                                <select class="form-select" id="curso"
+                                                                    name="curso"></select>
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="ano_curso" class="form-label">Ano do
+                                                                    Curso</label>
+                                                                <select class="form-select" id="ano_curso"
+                                                                    name="ano_curso">
+                                                                    <option value="">Selecione o ano</option>
+                                                                </select>
                                                             </div>
 
                                                             <div class="mb-3">
@@ -140,7 +153,6 @@
                                                                             <th>Unidade Curricular</th>
                                                                             <th>Semestre</th>
                                                                             <th>Turno</th>
-
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody id="tabelaUCs">
@@ -161,8 +173,34 @@
                                             </div>
                                         </div>
 
+                                        <!-- Modal Detalhes da Matrícula -->
+                                        <div class="modal fade" id="detalhesModal" tabindex="-1"
+                                            aria-labelledby="detalhesModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-lg">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="detalhesModalLabel">Detalhes da
+                                                            Matrícula</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p><strong>Curso:</strong> <span id="detalhesCurso"></span></p>
+                                                        <p><strong>Ano Letivo:</strong> <span id="detalhesAno"></span>
+                                                        </p>
+                                                        <p><strong>Data da Matrícula:</strong> <span
+                                                                id="detalhesData"></span></p>
 
-
+                                                        <h5 class="mt-3">Unidades Curriculares e Turnos</h5>
+                                                        <ul class="list-group" id="detalhesUCs">
+                                                            <!-- As UCs e turnos serão carregados dinamicamente aqui -->
+                                                        </ul>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Fechar</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -205,32 +243,121 @@
     </div>
 
     <script>
+
+        // Função para carregar o nome do aluno ao eliminar a matricula
+        function preencherNomeRemocao(idMatricula, nomeAluno) {
+            document.getElementById(`nomeAluno-${idMatricula}`).textContent = nomeAluno;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            carregarCursos();
+
+            document.getElementById("curso").addEventListener("change", () => atualizarUCs(document.getElementById("idMatricula").value));
+            document.getElementById("ano_curso").addEventListener("change", () => atualizarUCs(document.getElementById("idMatricula").value));
+        });
+
+        // Função para carregar os cursos 
+        function carregarCursos() {
+            fetch("/funcionario/cursos/")
+                .then(response => response.json())
+                .then(data => {
+                    let cursoSelect = document.getElementById("curso");
+                    cursoSelect.innerHTML = `<option value="">Selecione um curso</option>`;
+
+                    data.forEach(curso => {
+                        let option = document.createElement("option");
+                        option.value = curso.id;
+                        option.textContent = curso.nome;
+                        cursoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Erro ao carregar cursos:", error));
+        }
+
+        // Função para carregar os dados da matricula para atualizar
         function carregarDadosAtualizar(idMatricula) {
             fetch(`/funcionario/matricula/update_detalhes/${idMatricula}/`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById("idMatricula").value = data.id_matricula;
-                    document.getElementById("curso").value = data.nome_curso;
-                    document.getElementById("ano_letivo").value = data.ano_letivo;
                     document.getElementById("data_matricula").value = data.data_matricula;
+                    document.getElementById("ano_letivo").value = data.ano_letivo;
 
-                    let tabelaUCs = document.getElementById("tabelaUCs");
-                    tabelaUCs.innerHTML = "";
-
-                    // Buscar todas as UCs disponíveis para o curso e ano letivo
-                    fetch(`/funcionario/ucs/${data.curso_id}/${data.id_ano}/`)
+                    fetch("/funcionario/cursos/")
                         .then(response => response.json())
-                        .then(ucsData => {
-                            console.log("Lista de UCs disponíveis:", ucsData);
-                            console.log("Lista de UCs matriculadas:", data.ucs);
+                        .then(cursos => {
+                            let cursoSelect = document.getElementById("curso");
+                            cursoSelect.innerHTML = `<option value="">Selecione um curso</option>`;
+                            cursos.forEach(curso => {
+                                let option = document.createElement("option");
+                                option.value = curso.id;
+                                option.textContent = curso.nome;
+                                if (curso.id == data.curso_id) {
+                                    option.selected = true;
+                                }
+                                cursoSelect.appendChild(option);
+                            });
 
-                            ucsData.forEach(uc => {
-                                let ucInscrita = data.ucs.find(matriculada => Number(matriculada.id_uc) === Number(uc.id_uc));
-                                let isChecked = ucInscrita !== undefined;
-                                let turnoSelecionado = ucInscrita ? ucInscrita.id_turno : '';
+                            carregarAnosCurso(data.curso_id, data.id_ano, idMatricula);
+                        })
+                        .catch(error => console.error("Erro ao carregar cursos:", error));
+                })
+                .catch(error => console.error("Erro ao carregar os detalhes da matrícula:", error));
+        }
 
-                                let row = document.createElement("tr");
-                                row.innerHTML = `
+        // Função para carregar o ano de cada curso
+        function carregarAnosCurso(cursoId, anoSelecionado, idMatricula) {
+            fetch(`/funcionario/anos/`)
+                .then(response => response.json())
+                .then(anos => {
+                    let anoSelect = document.getElementById("ano_curso");
+                    anoSelect.innerHTML = `<option value="">Selecione o ano</option>`;
+
+                    anos.forEach(ano => {
+                        let option = document.createElement("option");
+                        option.value = ano.id_ano;
+                        option.textContent = ano.nome_ano;
+                        if (ano.id_ano == anoSelecionado) {
+                            option.selected = true;
+                        }
+                        anoSelect.appendChild(option);
+                    });
+
+                    atualizarUCs(idMatricula);
+                })
+                .catch(error => console.error("Erro ao carregar anos do curso:", error));
+        }
+
+        // Função para atualizar as UCs de acordo com o curso escolhido
+        function atualizarUCs(idMatricula) {
+            let cursoId = document.getElementById("curso").value;
+            let anoCurso = document.getElementById("ano_curso").value;
+
+            if (cursoId && anoCurso) {
+                fetch(`/funcionario/ucs/${cursoId}/${anoCurso}/`)
+                    .then(response => response.json())
+                    .then(ucsData => {
+                        let tabelaUCs = document.getElementById("tabelaUCs");
+                        tabelaUCs.innerHTML = "";
+
+                        // 🔹 Verifica se idMatricula é um número válido
+                        idMatricula = Number(idMatricula);
+                        if (!idMatricula) {
+                            console.error("Erro: idMatricula inválido!", idMatricula);
+                            return;
+                        }
+
+                        fetch(`/funcionario/matricula/ucs_matriculadas/${idMatricula}/`)
+                            .then(response => response.json())
+                            .then(ucsMatriculadas => {
+                                console.log("🔍 UCs Matriculadas:", ucsMatriculadas); // Debug no console
+                                ucsData.forEach(uc => {
+                                    let ucInscrita = ucsMatriculadas.find(matriculada => Number(matriculada.id_uc) === Number(uc.id_uc));
+                                    let isChecked = ucInscrita !== undefined;
+                                    let turnoSelecionado = ucInscrita ? ucInscrita.id_turno : '';
+
+                                    let row = document.createElement("tr");
+                                    row.innerHTML = `
                                 <td><input type="checkbox" name="ucs" value="${uc.id_uc}" ${isChecked ? 'checked' : ''}></td>
                                 <td>${uc.nome}</td>
                                 <td><span class="badge bg-secondary">S${uc.id_semestre}</span></td>
@@ -240,50 +367,55 @@
                                     </select>
                                 </td>
                             `;
-                                tabelaUCs.appendChild(row);
+                                    tabelaUCs.appendChild(row);
 
-                                // Buscar os turnos disponíveis para esta UC
-                                fetch(`/funcionario/turnos/${uc.id_uc}/`)
-                                    .then(response => response.json())
-                                    .then(turnosData => {
-                                        let select = tabelaUCs.querySelector(`select[name="turno_${uc.id_uc}"]`);
-                                        select.innerHTML = "";
-                                        turnosData.forEach(turno => {
-                                            let option = document.createElement("option");
-                                            option.value = turno.id_turno;
-                                            option.textContent = `${turno.turno_nome} (Vagas: ${turno.vagas_totais})`;
-                                            if (parseInt(turno.id_turno) === parseInt(turnoSelecionado)) {
-                                                option.selected = true;
-                                            }
-                                            select.appendChild(option);
-                                        });
-                                    })
-                                    .catch(error => console.error(`Erro ao carregar turnos para UC ${uc.id_uc}:`, error));
-                            });
-                        })
-                        .catch(error => console.error("Erro ao carregar as UCs:", error));
-                })
-                .catch(error => console.error("Erro ao carregar os detalhes da matrícula:", error));
+                                    fetch(`/funcionario/turnos/${uc.id_uc}/`)
+                                        .then(response => response.json())
+                                        .then(turnosData => {
+                                            let select = tabelaUCs.querySelector(`select[name="turno_${uc.id_uc}"]`);
+                                            select.innerHTML = "";
+                                            turnosData.forEach(turno => {
+                                                let option = document.createElement("option");
+                                                option.value = turno.id_turno;
+                                                option.textContent = `${turno.turno_nome} (Vagas: ${turno.vagas_totais})`;
+                                                if (parseInt(turno.id_turno) === parseInt(turnoSelecionado)) {
+                                                    option.selected = true;
+                                                }
+                                                select.appendChild(option);
+                                            });
+                                        })
+                                        .catch(error => console.error(`Erro ao carregar turnos para UC ${uc.id_uc}:`, error));
+                                });
+                            })
+                            .catch(error => console.error("Erro ao carregar UCs matriculadas:", error));
+                    })
+                    .catch(error => console.error("Erro ao carregar UCs:", error));
+            }
         }
 
+        // Função para carregar os detalhes d amatricula
         function carregarDetalhes(idMatricula) {
             fetch(`/funcionario/matricula/detalhes/${idMatricula}/`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log("Dados recebidos para detalhes da matrícula:", data); // Debug
+                    document.getElementById("detalhesCurso").textContent = data.curso;
                     document.getElementById("detalhesCurso").textContent = data.nome_curso;
                     document.getElementById("detalhesAno").textContent = data.ano_letivo;
                     document.getElementById("detalhesData").textContent = data.data_matricula;
+
                     let ucList = document.getElementById("detalhesUCs");
                     ucList.innerHTML = "";
-                    data.ucs.forEach(uc => {
-                        let li = document.createElement("li");
-                        li.className = "list-group-item";
-                        li.innerHTML = `<strong>${uc.unidade_curricular}</strong> - Turno: ${uc.turno}`;
-                        ucList.appendChild(li);
-                    });
+                    if (data.ucs && data.ucs.length > 0) {
+                        data.ucs.forEach(uc => {
+                            let li = document.createElement("li");
+                            li.className = "list-group-item";
+                            li.innerHTML = `<strong>${uc.unidade_curricular}</strong> - Turno: ${uc.turno}`;
+                            ucList.appendChild(li);
+                        });
+                    } else {
+                        ucList.innerHTML = "<li class='list-group-item'>Nenhuma unidade curricular encontrada.</li>";
+                    }
                 })
                 .catch(error => console.error("Erro ao carregar os detalhes da matrícula:", error));
         }
-
     </script>
