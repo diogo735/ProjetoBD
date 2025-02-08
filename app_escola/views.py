@@ -1142,7 +1142,7 @@ def professores_atribuidos(request):
     return JsonResponse(professores, safe=False)
 
 
-@funcionario_required #Não está a funcionar
+@funcionario_required 
 def atribuir_uc_professor(request, id_professor):
     print("Entrou na view atribuir_uc_professor")  
 
@@ -2114,7 +2114,6 @@ def avaliacoes_professor(request):
                         nota
                     ])
 
-                # return JsonResponse({'success': True, 'message': 'Avaliações registadas com sucesso.'})
                 messages.success(request, "Avaliação registrada com sucesso!")
                 return redirect(f"{reverse('avaliacoes_professor')}?tab=historico-avaliacoes") 
 
@@ -2425,10 +2424,6 @@ def matricula_funcionario(request):
 @aluno_required
 def gestao_escola_aluno(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_aluno'})
-
-@professor_required
-def unidades_curriculares_professor(request):
-    return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_professor'})
 
 @professor_required
 def gestao_escola_professor(request):

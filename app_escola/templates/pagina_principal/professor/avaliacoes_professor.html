@@ -99,12 +99,9 @@
                                                         </b>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label for="metodo_avaliacao" class="form-label">Método de
-                                                            Avaliação</label>
-                                                        <select id="id_metodo" name="id_metodo" class="form-select"
-                                                            required>
-                                                            <option value="" selected>Escolha o método de avaliação...
-                                                            </option>
+                                                        <label for="metodo_avaliacao" class="form-label">Método de Avaliação</label>
+                                                        <select id="id_metodo" name="id_metodo"  class="form-select" required>
+                                                            <option value="" selected>Escolha o método de avaliação... </option>
                                                             <option value="1">Frequência</option>
                                                             <option value="2">Exame</option>
                                                             <option value="3">Trabalho Prático</option>
@@ -112,20 +109,18 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="epoca_avaliacao" class="form-label">Época</label>
-                                                        <input class="form-control" id="id_epoca" name="id_epoca"
-                                                            required>
-
-                                                        <!-- <input id="id_epoca" name="id_epoca" class="form-select" required>
-                                                                <option value="" selected>Escolha a época de avaliação...</option>
-                                                                <option value="1">Normal</option>
-                                                                <option value="2">Recurso</option>
-                                                            </select> -->
+                                                        <select id="id_epoca" name="id_epoca" class="form-select" required>
+                                                            <option value="" selected>Escolha a época de avaliação...</option>
+                                                            <option value="Normal">Normal</option>
+                                                            <option value="Recurso">Recurso</option>
+                                                            <option value="Especial">Especial</option>
+                                                        </select>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label for="nota" class="form-label">Nota</label>
-                                                        <input type="nota" class="form-control" id="nota" name="nota"
-                                                            required>
+                                                        <input type="number" class="form-control" id="nota" name="nota"  value="{{ avaliacao.nota }}" step="0.01" required>
                                                     </div>
+
                                                     <div class="d-flex justify-content-end gap-2">
                                                         <button type="button" class="btn btn-danger"
                                                             data-bs-dismiss="modal">Cancelar</button>
@@ -228,8 +223,12 @@
 
                                                 <div class="mb-3">
                                                     <label class="form-label">Época</label>
-                                                    <input type="text" class="form-control" name="epoca"
-                                                        value="{{ avaliacao.epoca }}" required>
+                                                    <select type="text" class="form-select" name="epoca" value="{{ avaliacao.epoca }}" required>
+                                                        <option value="" selected>Escolha a época de avaliação...</option>
+                                                        <option value="Normal">Normal</option>
+                                                        <option value="Recurso">Recurso</option>
+                                                        <option value="Especial">Especial</option>
+                                                    </select>
                                                 </div>
 
                                                 <div class="modal-footer">
@@ -295,3 +294,28 @@
             });
         });
     </script>
+
+    <script>
+        document.getElementById("id_metodo").addEventListener("change", function() {
+            var metodo = this.value;
+            var epocaSelect = document.getElementById("id_epoca");
+            var epocaOptions = epocaSelect.getElementsByTagName("option");
+
+            // Habilita todas as opções primeiro
+            for (var i = 0; i < epocaOptions.length; i++) {
+                epocaOptions[i].disabled = false;
+            }
+
+            if (metodo === "1") { // Se "Frequência" for escolhido
+                for (var i = 0; i < epocaOptions.length; i++) {
+                    if (epocaOptions[i].value === "Recurso" || epocaOptions[i].value === "Especial") {
+                        epocaOptions[i].disabled = true;
+                    }
+                }
+                epocaSelect.value = "Normal"; // Define "Normal" como padrão
+            }
+        });
+    </script>
+
+
+    
