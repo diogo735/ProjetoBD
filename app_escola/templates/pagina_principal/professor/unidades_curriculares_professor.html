@@ -1,5 +1,4 @@
 <div class="container py-4">
-    <h2 class="mb-4">Unidades Curriculares do Professor</h2>
 
     <!-- Filtros -->
     <div class="card shadow mb-4">
@@ -52,29 +51,25 @@
     <!-- Tabela de Resultados -->
     <div class="card shadow">
         <div class="card-header bg-light">
-            <h5 class="mb-0">Resultados</h5>
+            <h5 class="mb-0">As suas Unidades Curriculares</h5>
         </div>
         <div class="card-body">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Turno</th>
                         <th>Ano</th>
                         <th>Semestre</th>
                         <th>Nome</th>
-                        <th>ECTS</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for uc in unidades_curriculares %}
                     <tr>
-                        <td>{{ uc.id_uc }}</td>
                         <td>{{ uc.turno_nome }}</td>
                         <td>{{ uc.id_ano }}</td>
                         <td>{{ uc.id_semestre }}</td>
                         <td>{{ uc.unidade_curricular }}</td>
-                        <td>{{ uc.ects }}</td>
                     </tr>
                     {% empty %}
                     <tr><td colspan="6" class="text-center">Nenhuma unidade encontrada.</td></tr>

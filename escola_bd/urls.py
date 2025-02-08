@@ -61,6 +61,8 @@ urlpatterns = [
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
     path('avaliacoes/aprovar/<int:id_avaliacao>/', views.aprovar_avaliacao, name='aprovar_avaliacao'),
     #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
+    path('professor/editar_avaliacao/', views.editar_avaliacao, name='editar_avaliacao'),
+
     path('funcionario/professores_nao_atribuidos/', views.professores_nao_atribuidos, name='professores_nao_atribuidos'),
     path('funcionario/professores_atribuidos/', views.professores_atribuidos, name='professores_atribuidos'),
     path('funcionario/listar_unidades_curriculares/', views.listar_unidades_curriculares, name='listar_unidades_curriculares'),
