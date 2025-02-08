@@ -40,6 +40,8 @@ urlpatterns = [
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
     path('avaliacoes/aprovar/<int:id_avaliacao>/', views.aprovar_avaliacao, name='aprovar_avaliacao'),
     #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
+    path('professor/editar_avaliacao/', views.editar_avaliacao, name='editar_avaliacao'),
+
 
 
     path('aluno/pagamentos/', views.pagamentos_em_falta_alunos, name='pagamentos_aluno'),

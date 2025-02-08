@@ -2,12 +2,16 @@
     <!-- Tabs para Gerir Avaliações e Histórico Avaliações -->
     <ul class="nav nav-tabs" id="avaliacoesTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="gerir-avaliacoes-tab" data-bs-toggle="tab" data-bs-target="#gerir-avaliacoes" type="button" role="tab" aria-controls="gerir-avaliacoes" aria-selected="true">
+            <button class="nav-link active" id="gerir-avaliacoes-tab" data-bs-toggle="tab"
+                data-bs-target="#gerir-avaliacoes" type="button" role="tab" aria-controls="gerir-avaliacoes"
+                aria-selected="true">
                 Gerir Avaliações
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="historico-avaliacoes-tab" data-bs-toggle="tab" data-bs-target="#historico-avaliacoes" type="button" role="tab" aria-controls="historico-avaliacoes" aria-selected="false">
+            <button class="nav-link" id="historico-avaliacoes-tab" data-bs-toggle="tab"
+                data-bs-target="#historico-avaliacoes" type="button" role="tab" aria-controls="historico-avaliacoes"
+                aria-selected="false">
                 Histórico Avaliações
             </button>
         </li>
@@ -15,10 +19,12 @@
 
     <div class="tab-content mt-4" id="avaliacoesTabContent">
         <!-- Tab Gerir Avaliações -->
-        <div class="tab-pane fade show active" id="gerir-avaliacoes" role="tabpanel" aria-labelledby="gerir-avaliacoes-tab">
+        <div class="tab-pane fade show active" id="gerir-avaliacoes" role="tabpanel"
+            aria-labelledby="gerir-avaliacoes-tab">
+
             <div class="card shadow">
                 <div class="card-header bg-light">
-                    <h2 class="h5 mb-0">Atribuir ou Editar Avaliações</h2>
+                    <h2 class="h5 mb-0">Atribuir Avaliações</h2>
                 </div>
                 <div class="card-body">
                     <p>Selecione uma unidade curricular para listar os alunos associados e atribuir avaliações.</p>
@@ -28,8 +34,9 @@
                         <label for="filtro-uc" class="form-label">Unidade Curricular</label>
                         <select id="filtro-uc" class="form-select">
                             <option value="">Escolha a Unidade Curricular...</option>
-                            {% for id, nome in ucs %}
-                                <option value="{{ id }}">{{ nome }}</option>
+                            {% for uc in ucs %}
+                            <option value="{{ uc.id }}" {% if filtros.uc_id == uc.id %}selected{% endif %}>{{ uc.nome }}
+                            </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -42,87 +49,249 @@
                                     <th>Nº Mecanográfico</th>
                                     <th>Nome do Aluno</th>
                                     <th>Unidade Curricular</th>
+                                    <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="alunos-tbody">
-                                {% for n_meca, nome, UC in alunos %}
-                                    <tr data-uc="{{ UC }}">
-                                        <td>{{ n_meca }}</td>
-                                        <td>{{ nome }}</td>
-                                        <td>{{ UC }}</td>
-                                    </tr>
+                                {% for aluno in alunos %}
+                                <tr data-uc="{{ aluno.uc_nome }}">
+                                    <td>{{ aluno.n_meca }}</td>
+                                    <td>{{ aluno.nome }}</td>
+                                    <td>{{ aluno.uc_nome }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-secondary"
-                                                data-bs-toggle="modal" data-bs-target="#editarModal-{{ aluno.0 }}">
-                                            Avaliação
+                                        <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#editarModal-{{ aluno.n_meca }}">
+                                            Lançar Avaliação
                                         </button>
+                                    </td>
+                                </tr>
 
-                                        <div class="modal fade" id="editarModal-{{ aluno.0 }}" tabindex="-1" aria-labelledby="editarModalLabel-{{ aluno.0 }}" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="editarModalLabel-{{ aluno.0 }}">Editar Aluno</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                <!-- Modal para editar aluno -->
+                                <div class="modal fade" id="editarModal-{{ aluno.n_meca }}" tabindex="-1"
+                                    aria-labelledby="editarModalLabel-{{ aluno.n_meca }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editarModalLabel-{{ aluno.n_meca }}">Lançar
+                                                    Avaliação</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form method="POST" action="{% url 'avaliacoes_professor' %}">
+                                                    {% csrf_token %}
+                                                    <div class="mb-3">
+                                                        <b>
+                                                            <label id="aluno_nome" class="form-label">Nº
+                                                                Mecanográfico</label>
+                                                            <input type="id_aluno" class="form-control"
+                                                                value="{{aluno.n_meca}}" id="id_aluno" name="id_aluno"
+                                                                readonly>
+                                                        </b>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        <form method="POST" action="">
-                                                            {% csrf_token %}
-                                                            <div class="mb-3">
-                                                                <label for="p-nome-{{ aluno.0 }}" class="form-label">Primeiro Nome</label>
-                                                                <input type="text" name="p_nome" id="p-nome-{{ aluno.0 }}" 
-                                                                        class="form-control" value="{{ aluno.2 }}" required>
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="u-nome-{{ aluno.0 }}" class="form-label">Último Nome</label>
-                                                                <input type="text" name="u_nome" id="u-nome-{{ aluno.0 }}" 
-                                                                        class="form-control" value="{{ aluno.3 }}" required>
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="email-{{ aluno.0 }}" class="form-label">Email</label>
-                                                                <input type="email" name="email" id="email-{{ aluno.0 }}" 
-                                                                        class="form-control" value="{{ aluno.4 }}" required>
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="telefone-{{ aluno.0 }}" class="form-label">Telefone</label>
-                                                                <input type="text" name="telefone" id="telefone-{{ aluno.0 }}" 
-                                                                        class="form-control" value="{{ aluno.6 }}">
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <label for="localidade-{{ aluno.0 }}" class="form-label">Localidade</label>
-                                                                <input type="text" name="localidade" id="localidade-{{ aluno.0 }}" 
-                                                                        class="form-control" value="{{ aluno.7 }}">
-                                                            </div>
-
-                                                            <div class="d-flex justify-content-end gap-2">
-                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                                                            </div>
-                                                        </form>
+                                                    <div class="mb-3">
+                                                        <b>
+                                                            <label id="uc_nome" class="form-label">Unidade
+                                                                Curricular</label>
+                                                            <input type="id_uc_modal" class="form-control"
+                                                                value="{{aluno.uc_nome}}" id="id_uc_modal"
+                                                                name="id_uc_modal" readonly>
+                                                        </b>
                                                     </div>
-                                                </div>
+                                                    <div class="mb-3">
+                                                        <label for="metodo_avaliacao" class="form-label">Método de
+                                                            Avaliação</label>
+                                                        <select id="id_metodo" name="id_metodo" class="form-select"
+                                                            required>
+                                                            <option value="" selected>Escolha o método de avaliação...
+                                                            </option>
+                                                            <option value="1">Frequência</option>
+                                                            <option value="2">Exame</option>
+                                                            <option value="3">Trabalho Prático</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="epoca_avaliacao" class="form-label">Época</label>
+                                                        <input class="form-control" id="id_epoca" name="id_epoca"
+                                                            required>
+
+                                                        <!-- <input id="id_epoca" name="id_epoca" class="form-select" required>
+                                                                <option value="" selected>Escolha a época de avaliação...</option>
+                                                                <option value="1">Normal</option>
+                                                                <option value="2">Recurso</option>
+                                                            </select> -->
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="nota" class="form-label">Nota</label>
+                                                        <input type="nota" class="form-control" id="nota" name="nota"
+                                                            required>
+                                                    </div>
+                                                    <div class="d-flex justify-content-end gap-2">
+                                                        <button type="button" class="btn btn-danger"
+                                                            data-bs-dismiss="modal">Cancelar</button>
+                                                        <button type="submit" class="btn btn-success">Guardar
+                                                            Alterações</button>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
 
-                                     
-
-                                    </td>
                                 {% endfor %}
-                            </tbody>                                                       
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- Tab Histórico Avaliações -->
-        <div class="tab-pane fade" id="historico-avaliacoes" role="tabpanel" aria-labelledby="historico-avaliacoes-tab">
-            <p>Histórico de avaliações lançadas pelos professores.</p>
+    <!-- Tab Histórico Avaliações -->
+    <div class="tab-pane fade" id="historico-avaliacoes" role="tabpanel" aria-labelledby="historico-avaliacoes-tab">
+
+
+        <div class="card shadow">
+            <div class="card-header bg-light">
+                <h2 class="h5 mb-0">Histórico de Avaliações</h2>
+            </div>
+            <div class="card-body">
+                <p>Histórico de avaliações lançadas.</p>
+
+                <!-- Tabela de Histórico de Avaliações -->
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nº Mecanográfico</th>
+                                <th>Nome do Aluno</th>
+                                <th>Unidade Curricular</th>
+                                <th>Método de Avaliação</th>
+                                <th>Data</th>
+                                <th>Época</th>
+                                <th>Nota</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for avaliacao in avaliacoes %}
+                            <tr>
+                                <td>{{ avaliacao.n_meca }}</td>
+                                <td>{{ avaliacao.nome }}</td>
+                                <td>{{ avaliacao.nome_uc }}</td>
+                                <td>{{ avaliacao.nome_metodo }}</td>
+                                <td>{{ avaliacao.data_avaliacao }}</td>
+                                <td>{{ avaliacao.epoca }}</td>
+                                <td>{{ avaliacao.nota }}</td>
+                                <td>{{ avaliacao.estado }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#editarAvaliacaoModal-{{ avaliacao.id_avaliacao }}">
+                                        Editar Avaliação
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <!-- Modal de Edição -->
+                            <div class="modal fade" id="editarAvaliacaoModal-{{ avaliacao.id_avaliacao }}" tabindex="-1"
+                                aria-labelledby="editarAvaliacaoLabel-{{ avaliacao.id_avaliacao }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"
+                                                id="editarAvaliacaoLabel-{{ avaliacao.id_avaliacao }}">
+                                                Editar Avaliação
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST" action="{% url 'editar_avaliacao' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="id_avaliacao"
+                                                    value="{{ avaliacao.id_avaliacao }}">
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Método de Avaliação</label>
+                                                    <select name="id_metodo" class="form-select" required>
+                                                        <option value="1" {% if avaliacao.nome_metodo == 'Frequencia' %}selected{% endif %}>Frequencia</option>
+                                                        <option value="2" {% if avaliacao.nome_metodo == 'Exame' %}selected{% endif %}>Exame</option>
+                                                        <option value="3" {% if avaliacao.nome_metodo == 'Trabalho Pratico' %}selected{% endif %}>Trabalho Pratico</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Nota</label>
+                                                    <input type="number" class="form-control" name="nota"
+                                                        value="{{ avaliacao.nota }}" step="0.01" required>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Época</label>
+                                                    <input type="text" class="form-control" name="epoca"
+                                                        value="{{ avaliacao.epoca }}" required>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="btn btn-success">Salvar
+                                                        Alterações</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">Nenhuma avaliação registrada.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("filtro-uc").addEventListener("change", function () {
+                let ucId = this.value;
+                if (ucId !== "") {
+                    let newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set("uc_id", ucId);
+                    window.location.href = newUrl.toString();
+                }
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tabs = document.querySelectorAll('[data-bs-toggle="tab"]');
 
+            // Verifica se há um parâmetro "tab" na URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeTab = urlParams.get("tab");
 
+            // Se houver um parâmetro, ativa a tab correspondente
+            if (activeTab) {
+                const targetTab = document.querySelector(`[data-bs-target="#${activeTab}"]`);
+                if (targetTab) {
+                    new bootstrap.Tab(targetTab).show();
+                }
+            }
+
+            // Atualiza a URL ao mudar de tab
+            tabs.forEach(tab => {
+                tab.addEventListener("click", function (event) {
+                    let tabId = event.target.getAttribute("data-bs-target").substring(1); // Remove o #
+                    let newUrl = new URL(window.location.href);
+                    newUrl.searchParams.set("tab", tabId);
+                    window.history.pushState({}, "", newUrl); // Atualiza a URL sem recarregar a página
+                });
+            });
+        });
+    </script>
