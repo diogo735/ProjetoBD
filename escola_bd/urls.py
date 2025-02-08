@@ -75,10 +75,16 @@ urlpatterns = [
     path('get_ucs/<int:curso_id>/<int:ano_id>/', views.get_ucs, name='get_ucs'),
     path('get_turnos/<int:uc_id>/', views.get_turnos, name='get_turnos'),
     path('funcionario/matricula/', views.listar_matriculas, name='matricula_funcionario'),
+    
     #path('matricula_detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
+
     path('funcionario/matricula/detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
     path('funcionario/matricula/update_detalhes/<int:id_matricula>/', views.matricula_atualizar_detalhes, name='matricula_detalhes'),
 
+    path("funcionario/cursos/", views.get_cursos, name="funcionario_get_cursos"),
+    path('funcionario/anos/', views.get_anos, name='get_anos'),
+    path('funcionario/matricula/ucs_matriculadas/<int:id_matricula>/', views.get_ucs_matriculadas, name="get_ucs_matriculadas"),
+    path("funcionario/anos_curso/<int:curso_id>/", views.get_anos_curso, name="funcionario_get_anos_curso"),
     path('funcionario/ucs/<int:curso_id>/<int:ano_id>/', views.get_ucs, name='get_ucs'),
     path('funcionario/turnos/<int:uc_id>/', views.get_turnos, name='get_turnos'),
     path('funcionario/matricula/atualizar/<int:id_matricula>/', views.funcionario_atualizar_matricula, name='funcionario_atualizar_matricula'),
@@ -89,16 +95,12 @@ urlpatterns = [
     
     path('funcionario/obter_horarios/', views.obter_horarios_turno, name='obter_horarios_turno'),
 
-
-
     path('funcionarios/alunos/', views.alunos_funcionario, name='alunos_funcionario'),
     path('funcionarios/delete/<int:id_aluno>/', views.aluno_delete, name='aluno_delete'),
     path('funcionarios/editar/<int:id_aluno>/', views.aluno_editar, name='aluno_editar'),
 
     path('funcionarios/pagamentos/delete/<int:id_pagamento>/', views.funcionario_delete_pagamentos, name='funcionario_delete_pagamentos'),
     path('funcionarios/pagamentos/update/<int:id_pagamento>/', views.funcionario_update_pagamentos, name='funcionario_update_pagamentos'),
-
-
 
     path('aluno/gestao_escola/', views.gestao_escola_aluno, name='gestao_escola_aluno'),
     path('professor/gestao_escola/', views.gestao_escola_professor, name='gestao_escola_professor'),
