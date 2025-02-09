@@ -2284,7 +2284,7 @@ def dashboard_aluno(request):
 
         with connection.cursor() as cursor:
             # Buscar avaliações recentes do aluno
-            cursor.execute("SELECT * FROM diogo_f_obter_avaliacoes_recentes_aluno(%s);", [user_id])
+            cursor.execute("SELECT * FROM diogo_f_obter_avaliacoes_recentes_aluno(%s) LIMIT 7;", [user_id])
             avaliacoes = cursor.fetchall()
 
         # Definir valores padrão quando o aluno não está matriculado ou não tem dados
