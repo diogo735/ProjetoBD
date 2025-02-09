@@ -17,25 +17,22 @@ import threading
 from pymongo import MongoClient
 
 def sync_postgres_to_mongo():
-    """
-    Função que executa a cada 5 minutos para sincronizar as avaliações do PostgreSQL para o MongoDB,
-    incluindo o nome do curso.
-    """
+    
     while True:
         try:
-            print("🔄 Sincronizando dados de PostgreSQL para MongoDB...")
+            print("🔄 Sincroniza dados de PostgreSQL para MongoDB...")
 
-            # Conectar ao PostgreSQL e buscar os dados
+         
             with connection.cursor() as cursor:
                 cursor.execute("SELECT * FROM diogo_f_sincrunizar_com_mongodb();")
                 rows = cursor.fetchall()
 
-            # Conectar ao MongoDB
+          
             mongo_client = MongoClient("mongodb://127.0.0.1:27017/")
             db = mongo_client["Escola_bd"]
             collection = db["avaliacoes_mongo"]
 
-            # Inserir os dados no MongoDB
+           
             for row in rows:
                 id_avaliacao, id_aluno, nota, curso = row
                 collection.update_one(
@@ -90,7 +87,7 @@ def home(request):
 
 def obter_nome_id_user(email, user_type):
     with connection.cursor() as cursor:
-        # Chamar a função SQL do banco de dados que você criou
+       
         cursor.execute("SELECT * FROM get_user_info(%s, %s)", [email, user_type])
         result = cursor.fetchone()
 
@@ -130,7 +127,7 @@ def login_view(request):
 
 
         with connection.cursor() as cursor:
-            # Primeiro, verifica se o email existe na tabela correta
+           
             cursor.execute(f"SELECT email FROM public.{table_name} WHERE email = %s", [email])
 
             email_check = cursor.fetchone()
@@ -142,7 +139,7 @@ def login_view(request):
                 user = cursor.fetchone()
 
                 if user:  # Email e senha estão corretos
-                    # Extrai os dados retornados pela função SQL
+                   
                     user_id, first_name, last_name, user_email = user
 
                     # Armazena as informações na sessão
@@ -150,7 +147,7 @@ def login_view(request):
                     request.session['user_name'] = f"{first_name} {last_name}"
                     request.session['user_type'] = user_type
 
-                    # Define o avatar baseado no tipo de utilizador e no último caractere do nome
+                   
                     if user_type.lower() == 'aluno':
                         request.session['user_avatar'] = 'images/aluno.png' if first_name[-1].lower() != 'a' else 'images/aluna.png'
                     elif user_type.lower() == 'professor':
@@ -168,11 +165,10 @@ def login_view(request):
     return render(request, 'pagina_login/home.html', {'db_status': status})
 
 def loading_page(request):
-    # return render(request, 'pagina_login/carregamento.html')
+   
 
     user_type = request.session.get('user_type', None)
 
-    # Redireciona para o dashboard correto com base no tipo de utilizador
     if user_type == 'Aluno':
         return redirect('dashboard_aluno')  # URL para o dashboard do aluno
     elif user_type == 'Professor':
@@ -188,22 +184,19 @@ def loading_page(request):
 #     user_type = request.session.get('user_type', None)
 #     return render(request, 'pagina_principal/base_main.html', {'user_type': user_type})
 
-#@funcionario_required
-#def unidades_curriculares_funcionario(request):
- #   return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
- 
+
 @funcionario_required
 def unidades_curriculares_funcionario(request):
-    # Obter o mês atual
+   
     mes_atual = datetime.now().month
     
-    # Determinar semestre atual
-    if 9 <= mes_atual or mes_atual <= 2:  # Setembro a Fevereiro
+  
+    if 9 <= mes_atual or mes_atual <= 2:  
         semestre_atual = '1ºSemestre'
     else:  # Março a Agosto
         semestre_atual = '2ºSemestre'
     
-    # Consulta SQL para buscar turnos filtrados pelo semestre atual
+    
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT semestre, ano, curso, nome_turno, vagas_totais 
@@ -215,7 +208,7 @@ def unidades_curriculares_funcionario(request):
         colunas = [desc[0] for desc in cursor.description]
         turnos = [dict(zip(colunas, row)) for row in cursor.fetchall()]
     
-    # Renderizar o template com os dados do banco
+    
     return render(request, 'pagina_principal/main.html', {
         'default_content': 'unidades_curriculares_funcionario',
         'turnos': turnos,
@@ -252,18 +245,16 @@ def obter_horarios_turno(request):
 @funcionario_required
 def obter_cursos(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM diogo_f_listar_cursos()")  # Supondo que `listar_cursos` é a função do banco
+        cursor.execute("SELECT * FROM diogo_f_listar_cursos()")  
         cursos = cursor.fetchall()
-        colunas = [desc[0] for desc in cursor.description]  # Pega os nomes das colunas
-    cursos_formatados = [dict(zip(colunas, curso)) for curso in cursos]  # Formata os dados
+        colunas = [desc[0] for desc in cursor.description]  
+    cursos_formatados = [dict(zip(colunas, curso)) for curso in cursos]  
     print("Cursos carregados com sucesso:", cursos_formatados)
-    return JsonResponse(cursos_formatados, safe=False)  # Retorna como JSON
+    return JsonResponse(cursos_formatados, safe=False)  
 
 @funcionario_required
 def obter_anos(request):
-    """
-    View para obter os anos disponíveis usando a função SQL diogo_f_listar_anos()
-    """
+   
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM diogo_f_listar_anos();")
         columns = [col[0] for col in cursor.description]
@@ -274,9 +265,7 @@ def obter_anos(request):
 
 @funcionario_required
 def obter_semestres(request):
-    """
-    View para obter os semestres disponíveis usando a função SQL diogo_f_listar_semestres()
-    """
+   
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM diogo_f_listar_semestres();")
         columns = [col[0] for col in cursor.description]
@@ -293,12 +282,12 @@ def obter_nomes_turnos(request):
 
 @funcionario_required
 def obter_ucs(request):
-    # Obter valores diretamente da requisição
+    
     curso = request.GET.get('curso', '').strip()
     ano = request.GET.get('ano', '').strip()
     semestre = request.GET.get('semestre', '').strip()
 
-    # Validar se todos os parâmetros foram fornecidos
+    
     if not curso or not ano or not semestre:
         return JsonResponse({'error': 'Parâmetros inválidos'}, status=400)
 
