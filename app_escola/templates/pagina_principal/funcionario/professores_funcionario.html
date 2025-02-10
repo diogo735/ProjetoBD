@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
-
 <div class="container py-4">
+
     <!-- Tabs para Detalhes e Criar Novos -->
     <ul class="nav nav-tabs" id="professoresTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -25,6 +25,7 @@
     </ul>
 
     <div class="tab-content mt-4" id="professoresTabContent">
+
         <!-- Tab Detalhes -->
         <div class="tab-pane fade show active" id="detalhes" role="tabpanel" aria-labelledby="detalhes-tab">
             <div class="card shadow">
@@ -41,7 +42,6 @@
                         <input type="text" id="nome-professor" class="form-control"
                             placeholder="Digite o nome do professor">
                     </div>
-
 
                     <div class="container py-4">
 
@@ -155,7 +155,6 @@
                                                             </div>
                                                         </div>
                                                     </div>
-
 
                                                     <!-- Botão Remover -->
                                                     <button type="button" class="btn btn-sm btn-danger"
@@ -362,7 +361,7 @@
 
         // Evento de entrada no campo de pesquisa
         searchInput.addEventListener("input", function () {
-            const searchValue = searchInput.value.toLowerCase(); // Valor digitado pelo usuário
+            const searchValue = searchInput.value.toLowerCase(); // Valor digitado pelo utilizador
             const rows = tableBody.querySelectorAll("tr"); // Todas as linhas da tabela
 
             // Iterar sobre as linhas e verificar se o valor da pesquisa está presente
@@ -384,8 +383,6 @@
         });
     });
 </script>
-
-
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -409,7 +406,7 @@
                     tabela.innerHTML = "";
                     modalContainer.innerHTML = "";
                     if (data.length === 0) {
-                        // ✅ Exibir mensagem caso não haja professores não atribuídos
+                        // Exibir mensagem caso não haja professores não atribuídos
                         tabela.innerHTML = `
                     <tr>
                         <td colspan="7" class="text-center text-muted">
@@ -626,9 +623,6 @@
 
 </script>
 
-
-
-
 <script>
     function carregarProfessoresAtribuidos() {
         fetch("/funcionario/professores_atribuidos/")
@@ -637,15 +631,15 @@
                 let tabela = document.getElementById("tabelaProfessoresNaoAtribuidos");
                 tabela.innerHTML = ""; // Limpa a tabela atual
                 if (data.length === 0) {
-                // ✅ Exibir mensagem caso não haja professores atribuídos
-                tabela.innerHTML = `
+                    // Exibir mensagem caso não haja professores atribuídos
+                    tabela.innerHTML = `
                     <tr>
                         <td colspan="7" class="text-center text-muted">
                             <strong>Nenhum professor atribuído</strong>
                         </td>
                     </tr>`;
-                return;
-            }
+                    return;
+                }
                 data.forEach(professor => {
                     let row = `<tr>
                         <td>${professor.p_nome} ${professor.u_nome}</td>
@@ -745,21 +739,21 @@
             .catch(error => console.error("Erro ao remover UC:", error));
     }
 
-    // 🔥 Nova função para resetar o modal
+    //Função para dar reset o modal
     function resetarModalRemocao() {
         let modal = document.getElementById("confirmarRemocaoUCModal");
 
-        // Resetar a cor do modal
+        //Reset a cor do modal
         let modalContent = modal.querySelector(".modal-content");
         modalContent.classList.remove("bg-success", "text-white");
         modalContent.classList.add("bg-danger");
 
-        // Resetar o ícone do modal
+        //Reset o ícone do modal
         let iconModal = document.getElementById("icon-modal");
         iconModal.classList.remove("bi-check-circle-fill", "text-white");
         iconModal.classList.add("bi-exclamation-circle-fill", "text-warning");
 
-        // Resetar a mensagem original
+        //Reset a mensagem original
         let mensagemModal = document.getElementById("mensagem-modal");
         mensagemModal.innerHTML = `Tem certeza que deseja remover esta Unidade Curricular do professor?`;
 
@@ -768,7 +762,6 @@
         botaoConfirmar.style.display = "block";
     }
 
-
 </script>
-<!-- Adicione este container ao final do body -->
+
 <div id="modaisDinamicos"></div>

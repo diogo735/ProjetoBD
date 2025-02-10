@@ -12,6 +12,7 @@
     </ul>
 
     <div class="tab-content mt-4" id="pagamentosTabContent">
+
         <!-- Tab Lista de Pagamentos -->
         <div class="tab-pane fade show active" id="pagamentos-lista" role="tabpanel"
             aria-labelledby="pagamentos-lista-tab">
@@ -47,7 +48,6 @@
                                     <td>{{ pagamento.estado }}</td>
                                     <td>{{ pagamento.multa }}</td>
                                     <td>
-                                        <!-- Container Flexível para alinhar os botões -->
                                         <div class="d-flex gap-2">
                                             <!-- Botão Confirmar se o estado for 'Aguardar Confirmação' -->
                                             {% if pagamento.estado == 'Aguardar confirmação' %}
@@ -95,7 +95,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div> <!-- Fim do d-flex -->
+                                        </div>
                                     </td>
                                 </tr>
                                 {% endfor %}

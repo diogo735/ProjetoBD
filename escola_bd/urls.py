@@ -7,7 +7,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),  
     path('login/', views.login_view, name='login'),
-    #path('pagina_principal/', views.pagina_principal, name='pagina_principal'),
     path('loading/', views.loading_page, name='loading_page'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/login/'), name='logout'),
     #opções da nav bar
@@ -60,25 +59,19 @@ urlpatterns = [
     path('professor/avaliacoes/', views.avaliacoes_professor, name='avaliacoes_professor'),
     path('funcionario/avaliacoes/', views.avaliacoes_funcionario, name='avaliacoes_funcionario'),
     path('avaliacoes/aprovar/<int:id_avaliacao>/', views.aprovar_avaliacao, name='aprovar_avaliacao'),
-    #path('avaliacoes/inserir/', views.inserir_avaliacoes_professor, name='inserir_avaliacoes_professor'),
     path('professor/editar_avaliacao/', views.editar_avaliacao, name='editar_avaliacao'),
-
     path('funcionario/professores_nao_atribuidos/', views.professores_nao_atribuidos, name='professores_nao_atribuidos'),
     path('funcionario/professores_atribuidos/', views.professores_atribuidos, name='professores_atribuidos'),
     path('funcionario/listar_unidades_curriculares/', views.listar_unidades_curriculares, name='listar_unidades_curriculares'),
-
     path('aluno/pagamentos/', views.pagamentos_em_falta_alunos, name='pagamentos_aluno'),
     path('aluno_alterar_status_pagamento/<int:id_pagamento>/', views.aluno_alterar_status_pagamento, name='aluno_alterar_status_pagamento'),
     path('funcionario/pagamentos/', views.funcionario_listar_pagamentos, name='pagamentos_funcionario'),
     path('funcionario_alterar_status_pagamento/<int:id_pagamento>/', views.funcionario_alterar_status_pagamento, name='funcionario_alterar_status_pagamento'),
-
     path('aluno/matricula/', views.matricula_aluno, name='matricula_aluno'),
     path('get_cursos/', views.get_cursos, name='get_cursos'),
     path('get_ucs/<int:curso_id>/<int:ano_id>/', views.get_ucs, name='get_ucs'),
     path('get_turnos/<int:uc_id>/', views.get_turnos, name='get_turnos'),
     path('funcionario/matricula/', views.listar_matriculas, name='matricula_funcionario'),
-    
-    #path('matricula_detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
 
     path('funcionario/matricula/detalhes/<int:id_matricula>/', views.matricula_detalhes, name='matricula_detalhes'),
     path('funcionario/matricula/update_detalhes/<int:id_matricula>/', views.matricula_atualizar_detalhes, name='matricula_detalhes'),

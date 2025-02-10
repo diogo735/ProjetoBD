@@ -244,7 +244,7 @@
 
     <script>
         document.getElementById("formAtualizarMatricula").addEventListener("submit", function (event) {
-            event.preventDefault(); // Previne o comportamento padrão do formulário
+            event.preventDefault();
 
             let formData = new FormData(this);
             let idMatricula = document.getElementById("idMatricula").value;
@@ -273,7 +273,7 @@
                 .then(data => {
                     if (data.success) {
                         alert("Matrícula atualizada com sucesso!");
-                        location.reload(); // Recarrega a página para exibir os dados atualizados
+                        location.reload(); //Recarrega a página
                     } else {
                         alert("Erro ao atualizar matrícula: " + data.message);
                     }
@@ -378,7 +378,6 @@
                         let tabelaUCs = document.getElementById("tabelaUCs");
                         tabelaUCs.innerHTML = "";
 
-                        // 🔹 Verifica se idMatricula é um número válido
                         idMatricula = Number(idMatricula);
                         if (!idMatricula) {
                             console.error("Erro: idMatricula inválido!", idMatricula);
@@ -388,7 +387,6 @@
                         fetch(`/funcionario/matricula/ucs_matriculadas/${idMatricula}/`)
                             .then(response => response.json())
                             .then(ucsMatriculadas => {
-                                console.log("🔍 UCs Matriculadas:", ucsMatriculadas); // Debug no console
                                 ucsData.forEach(uc => {
                                     let ucInscrita = ucsMatriculadas.find(matriculada => Number(matriculada.id_uc) === Number(uc.id_uc));
                                     let isChecked = ucInscrita !== undefined;
@@ -431,7 +429,7 @@
             }
         }
 
-        // Função para carregar os detalhes d amatricula
+        // Função para carregar os detalhes da matricula
         function carregarDetalhes(idMatricula) {
             fetch(`/funcionario/matricula/detalhes/${idMatricula}/`)
                 .then(response => response.json())

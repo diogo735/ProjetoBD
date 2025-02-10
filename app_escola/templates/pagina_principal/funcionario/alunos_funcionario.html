@@ -3,12 +3,14 @@
     <!-- Tabs para Detalhes e Criar Novos -->
     <ul class="nav nav-tabs" id="alunosTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="detalhes-tab" data-bs-toggle="tab" data-bs-target="#detalhes" type="button" role="tab" aria-controls="detalhes" aria-selected="true">
+            <button class="nav-link active" id="detalhes-tab" data-bs-toggle="tab" data-bs-target="#detalhes"
+                type="button" role="tab" aria-controls="detalhes" aria-selected="true">
                 Detalhes
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="criar-novos-tab" data-bs-toggle="tab" data-bs-target="#criar-novos" type="button" role="tab" aria-controls="criar-novos" aria-selected="false">
+            <button class="nav-link" id="criar-novos-tab" data-bs-toggle="tab" data-bs-target="#criar-novos"
+                type="button" role="tab" aria-controls="criar-novos" aria-selected="false">
                 Criar novos
             </button>
         </li>
@@ -22,12 +24,14 @@
                     <h2 class="h5 mb-0">Lista dos Alunos</h2>
                 </div>
                 <div class="card-body">
-                    <p>Consulte abaixo a lista de alunos por curso, edite ou remova informações, e realize a pesquisa por número mecanográfico ou nome.</p>
+                    <p>Consulte abaixo a lista de alunos por curso, edite ou remova informações, e realize a pesquisa
+                        por número mecanográfico ou nome.</p>
 
                     <!-- Nome do Aluno -->
                     <div class="mb-3 col-md-6">
                         <label for="nome-aluno" class="form-label">Nº Mecanográfico ou Nome</label>
-                        <input type="text" id="nome-aluno" class="form-control" placeholder="Digite o nº mecanográfico ou nome">
+                        <input type="text" id="nome-aluno" class="form-control"
+                            placeholder="Digite o nº mecanográfico ou nome">
                     </div>
 
                     <div class="container py-4">
@@ -48,103 +52,134 @@
                                     </thead>
                                     <tbody>
                                         {% if alunos %}
-                                            {% for aluno in alunos %}
-                                            <tr>
-                                                <td>{{ aluno.1 }}</td>
-                                                <td>{{ aluno.2 }} {{ aluno.3 }}</td>                                           
-                                                <td>{{ aluno.4 }}</td>
-                                                <td>{{ aluno.5 }}</td>
-                                                <td>{{ aluno.6 }}</td> 
-                                                <td>{{ aluno.7 }}</td>
-                                                <td>
-                                                    <!-- Botão Editar -->
-                                                    <button type="button" class="btn btn-sm btn-secondary"
-                                                            data-bs-toggle="modal" data-bs-target="#editarModal-{{ aluno.0 }}">
-                                                        Editar
-                                                    </button>
+                                        {% for aluno in alunos %}
+                                        <tr>
+                                            <td>{{ aluno.1 }}</td>
+                                            <td>{{ aluno.2 }} {{ aluno.3 }}</td>
+                                            <td>{{ aluno.4 }}</td>
+                                            <td>{{ aluno.5 }}</td>
+                                            <td>{{ aluno.6 }}</td>
+                                            <td>{{ aluno.7 }}</td>
+                                            <td>
+                                                <!-- Botão Editar -->
+                                                <button type="button" class="btn btn-sm btn-secondary"
+                                                    data-bs-toggle="modal" data-bs-target="#editarModal-{{ aluno.0 }}">
+                                                    Editar
+                                                </button>
 
-                                                    <div class="modal fade" id="editarModal-{{ aluno.0 }}" tabindex="-1" aria-labelledby="editarModalLabel-{{ aluno.0 }}" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="editarModalLabel-{{ aluno.0 }}">Editar Aluno</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <form method="POST" action="{% url 'aluno_editar' aluno.0 %}">
-                                                                        {% csrf_token %}
-                                                                        <div class="mb-3">
-                                                                            <label for="p-nome-{{ aluno.0 }}" class="form-label">Primeiro Nome</label>
-                                                                            <input type="text" name="p_nome" id="p-nome-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.2 }}" required>
-                                                                        </div>
+                                                <div class="modal fade" id="editarModal-{{ aluno.0 }}" tabindex="-1"
+                                                    aria-labelledby="editarModalLabel-{{ aluno.0 }}" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="editarModalLabel-{{ aluno.0 }}">Editar Aluno
+                                                                </h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form method="POST"
+                                                                    action="{% url 'aluno_editar' aluno.0 %}">
+                                                                    {% csrf_token %}
+                                                                    <div class="mb-3">
+                                                                        <label for="p-nome-{{ aluno.0 }}"
+                                                                            class="form-label">Primeiro Nome</label>
+                                                                        <input type="text" name="p_nome"
+                                                                            id="p-nome-{{ aluno.0 }}"
+                                                                            class="form-control" value="{{ aluno.2 }}"
+                                                                            required>
+                                                                    </div>
 
-                                                                        <div class="mb-3">
-                                                                            <label for="u-nome-{{ aluno.0 }}" class="form-label">Último Nome</label>
-                                                                            <input type="text" name="u_nome" id="u-nome-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.3 }}" required>
-                                                                        </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="u-nome-{{ aluno.0 }}"
+                                                                            class="form-label">Último Nome</label>
+                                                                        <input type="text" name="u_nome"
+                                                                            id="u-nome-{{ aluno.0 }}"
+                                                                            class="form-control" value="{{ aluno.3 }}"
+                                                                            required>
+                                                                    </div>
 
-                                                                        <div class="mb-3">
-                                                                            <label for="email-{{ aluno.0 }}" class="form-label">Email</label>
-                                                                            <input type="email" name="email" id="email-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.4 }}" required>
-                                                                        </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="email-{{ aluno.0 }}"
+                                                                            class="form-label">Email</label>
+                                                                        <input type="email" name="email"
+                                                                            id="email-{{ aluno.0 }}"
+                                                                            class="form-control" value="{{ aluno.4 }}"
+                                                                            required>
+                                                                    </div>
 
-                                                                        <div class="mb-3">
-                                                                            <label for="telefone-{{ aluno.0 }}" class="form-label">Telefone</label>
-                                                                            <input type="text" name="telefone" id="telefone-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.6 }}">
-                                                                        </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="telefone-{{ aluno.0 }}"
+                                                                            class="form-label">Telefone</label>
+                                                                        <input type="text" name="telefone"
+                                                                            id="telefone-{{ aluno.0 }}"
+                                                                            class="form-control" value="{{ aluno.6 }}">
+                                                                    </div>
 
-                                                                        <div class="mb-3">
-                                                                            <label for="localidade-{{ aluno.0 }}" class="form-label">Localidade</label>
-                                                                            <input type="text" name="localidade" id="localidade-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.7 }}">
-                                                                        </div>
+                                                                    <div class="mb-3">
+                                                                        <label for="localidade-{{ aluno.0 }}"
+                                                                            class="form-label">Localidade</label>
+                                                                        <input type="text" name="localidade"
+                                                                            id="localidade-{{ aluno.0 }}"
+                                                                            class="form-control" value="{{ aluno.7 }}">
+                                                                    </div>
 
-                                                                        <div class="d-flex justify-content-end gap-2">
-                                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
-                                                                        </div>
-                                                                    </form>
-                                                                </div>
+                                                                    <div class="d-flex justify-content-end gap-2">
+                                                                        <button type="button" class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">Cancelar</button>
+                                                                        <button type="submit"
+                                                                            class="btn btn-primary">Salvar
+                                                                            Alterações</button>
+                                                                    </div>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>
+                                                </div>
 
-                                                    <!-- Botão Remover -->
-                                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#removerModal-{{ aluno.0 }}">
-                                                        Remover
-                                                    </button>
+                                                <!-- Botão Remover -->
+                                                <button type="button" class="btn btn-sm btn-danger"
+                                                    data-bs-toggle="modal" data-bs-target="#removerModal-{{ aluno.0 }}">
+                                                    Remover
+                                                </button>
 
-                                                    <div class="modal fade" id="removerModal-{{ aluno.0 }}" tabindex="-1" aria-labelledby="removerModalLabel-{{ aluno.0 }}" aria-hidden="true">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                                <div class="modal-header">
-                                                                    <h5 class="modal-title" id="removerModalLabel-{{ aluno.0 }}">Confirmar Remoção</h5>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                                </div>
-                                                                <div class="modal-body">
-                                                                    <p>Tem certeza que deseja remover o aluno <strong>{{ aluno.2 }} {{ aluno.3 }}</strong>?</p>
-                                                                </div>
-                                                                <div class="modal-footer d-flex justify-content-end gap-2">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                                                    <form method="POST" action="{% url 'aluno_delete' aluno.0 %}">
-                                                                        {% csrf_token %}
-                                                                        <button type="submit" class="btn btn-danger">Remover</button>
-                                                                    </form>
-                                                                </div>
+                                                <div class="modal fade" id="removerModal-{{ aluno.0 }}" tabindex="-1"
+                                                    aria-labelledby="removerModalLabel-{{ aluno.0 }}"
+                                                    aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title"
+                                                                    id="removerModalLabel-{{ aluno.0 }}">Confirmar
+                                                                    Remoção</h5>
+                                                                <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>Tem certeza que deseja remover o aluno <strong>{{
+                                                                        aluno.2 }} {{ aluno.3 }}</strong>?</p>
+                                                            </div>
+                                                            <div class="modal-footer d-flex justify-content-end gap-2">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Cancelar</button>
+                                                                <form method="POST"
+                                                                    action="{% url 'aluno_delete' aluno.0 %}">
+                                                                    {% csrf_token %}
+                                                                    <button type="submit"
+                                                                        class="btn btn-danger">Remover</button>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </td>
-                                            </tr>
-                                            {% endfor %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
                                         {% else %}
-                                            <tr>
-                                                <td colspan="7" class="text-center">Nenhum aluno encontrado.</td>
-                                            </tr>
+                                        <tr>
+                                            <td colspan="7" class="text-center">Nenhum aluno encontrado.</td>
+                                        </tr>
                                         {% endif %}
                                     </tbody>
                                 </table>
@@ -165,42 +200,48 @@
                     <p>Preencha o formulário abaixo para adicionar novos alunos, associando-os a cursos específicos.</p>
                     <form method="POST" action="{% url 'alunos_funcionario' %}">
                         {% csrf_token %}
-                    
+
                         <!-- Nome do Aluno -->
                         <div class="mb-3">
                             <label for="p-nome" class="form-label">Primeiro Nome</label>
-                            <input type="text" id="p-nome" name="p_nome" class="form-control" placeholder="Digite o primeiro nome" required>
+                            <input type="text" id="p-nome" name="p_nome" class="form-control"
+                                placeholder="Digite o primeiro nome" required>
                         </div>
-                    
+
                         <div class="mb-3">
                             <label for="u-nome" class="form-label">Último Nome</label>
-                            <input type="text" id="u-nome" name="u_nome" class="form-control" placeholder="Digite o último nome">
+                            <input type="text" id="u-nome" name="u_nome" class="form-control"
+                                placeholder="Digite o último nome">
                         </div>
-                    
+
                         <!-- Email -->
                         <div class="mb-3">
                             <label for="email-aluno" class="form-label">Email</label>
-                            <input type="email" id="email-aluno" name="email" class="form-control" placeholder="Digite o email do aluno" required>
+                            <input type="email" id="email-aluno" name="email" class="form-control"
+                                placeholder="Digite o email do aluno" required>
                         </div>
-                    
+
                         <!-- Password -->
                         <div class="mb-3">
                             <label for="password-aluno" class="form-label">Password</label>
-                            <input type="password" id="password-aluno" name="password" class="form-control" placeholder="Digite uma senha para o aluno">
+                            <input type="password" id="password-aluno" name="password" class="form-control"
+                                placeholder="Digite uma senha para o aluno">
                         </div>
-                    
+
                         <!-- Telefone -->
                         <div class="mb-3">
                             <label for="telefone-aluno" class="form-label">Telefone</label>
-                            <input type="tel" id="telefone-aluno" name="telefone" class="form-control" placeholder="Digite o telefone do aluno">
+                            <input type="tel" id="telefone-aluno" name="telefone" class="form-control"
+                                placeholder="Digite o telefone do aluno">
                         </div>
-                    
+
                         <!-- Localidade -->
                         <div class="mb-3">
                             <label for="localidade-aluno" class="form-label">Localidade</label>
-                            <input type="text" id="localidade-aluno" name="localidade" class="form-control" placeholder="Digite a localidade do aluno">
+                            <input type="text" id="localidade-aluno" name="localidade" class="form-control"
+                                placeholder="Digite a localidade do aluno">
                         </div>
-                    
+
                         <!-- Botão Criar -->
                         <button type="submit" class="btn btn-primary">Criar Aluno</button>
                     </form>
@@ -217,7 +258,7 @@
         const tableBody = document.querySelector("#alunos-por-curso tbody"); // Corpo da tabela
 
         searchInput.addEventListener("input", function () {
-            const searchValue = searchInput.value.toLowerCase(); // Valor digitado pelo usuário
+            const searchValue = searchInput.value.toLowerCase(); // Valor inserido pelo utilizador
             const rows = tableBody.querySelectorAll("tr"); // Todas as linhas da tabela
 
             rows.forEach((row) => {
@@ -226,7 +267,7 @@
                 const nome = cells[1]?.textContent.toLowerCase(); // Primeiro nome (coluna 1)
                 const sobrenome = cells[2]?.textContent.toLowerCase(); // Último nome (coluna 2)
 
-                // Verificar se o valor digitado está no número mecanográfico, primeiro nome ou último nome
+                // Verificar se o valor inseirdo está no número mecanográfico, primeiro nome ou último nome
                 if (
                     mecanografico.includes(searchValue) ||
                     nome.includes(searchValue) ||

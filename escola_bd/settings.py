@@ -13,10 +13,6 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import os
 
-# settings.py
-#LOGIN_URL = '/login/'  # Atualize para a URL correta da sua página de login
-
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
@@ -31,7 +27,6 @@ SECRET_KEY = '7vzo+1td6wyibas=evzafjb89imy-^3a8bp=s7mq10+j356^c&'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -84,7 +79,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'escola_bd.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases

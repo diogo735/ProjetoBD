@@ -7,15 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login-Escola</title>
     <link rel="icon" type="image/x-icon" href="{% static 'images/icon.png' %}">
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="{% static 'app_escola/pagina_ligin.css' %}">
     <style>
         /* CSS para definir a imagem de fundo */
         body {
-            background-image: url('/static/images/fundo.jpg'); 
+            background-image: url('/static/images/fundo.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -28,36 +28,37 @@
         }
 
         .login-container {
-            background: rgba(255, 255, 255, 0.9); /* Fundo branco com transparência */
+            background: rgba(255, 255, 255, 0.9);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
             width: 350px;
         }
+
         .status-container {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    background: rgba(3, 159, 3, 0.8);
-    padding: 8px 15px;
-    border-radius: 5px;
-    color: white;
-    font-size: 0.9rem;
-    display: inline-block;
-    margin-bottom: 5px;
-    min-width: 250px;
-    text-align: center;
-}
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(3, 159, 3, 0.8);
+            padding: 8px 15px;
+            border-radius: 5px;
+            color: white;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-bottom: 5px;
+            min-width: 250px;
+            text-align: center;
+        }
 
-/* Ajustando a posição do MongoDB */
-.status-container.mongo {
-    
-    top: auto;
-    left: 10px;
-    bottom: 50px;
-}
+        /* Ajustando a posição do MongoDB */
+        .status-container.mongo {
 
-      
+            top: auto;
+            left: 10px;
+            bottom: 50px;
+        }
+
+
         .logo {
             background-color: transparent;
             text-align: center;
@@ -73,21 +74,24 @@
 <body>
     <div class="login-container">
         <div class="logo">
-            <img src="{% static 'images/grande.png' %}" alt="Universidade Machado" class="img-fluid" style="width: 150px;">
+            <img src="{% static 'images/grande.png' %}" alt="Universidade Machado" class="img-fluid"
+                style="width: 150px;">
         </div>
-        
+
         <div class="login-form">
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
-                
+
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="text" id="email" name="email" class="form-control" placeholder="Enter your email" required>
+                    <input type="text" id="email" name="email" class="form-control" placeholder="Enter your email"
+                        required>
                 </div>
 
                 <div class="mb-3">
                     <label for="password" class="form-label">Senha</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="Enter your password" required>
+                    <input type="password" id="password" name="password" class="form-control"
+                        placeholder="Enter your password" required>
                 </div>
 
                 <div class="mb-3">
@@ -116,22 +120,22 @@
     </div>
 
     <!-- Status do PostgreSQL -->
-<div class="status-container">
-    {% if db_status == "OK" %}
-    <span>Status da conexão com o PostgreSQL: <strong style="color: lightgreen;">{{ db_status }}</strong></span>
-    {% else %}
-    <span>Status da conexão com o PostgreSQL: <strong style="color: red;">{{ db_status }}</strong></span>
-    {% endif %}
-</div>
+    <div class="status-container">
+        {% if db_status == "OK" %}
+        <span>Status da conexão com o PostgreSQL: <strong style="color: lightgreen;">{{ db_status }}</strong></span>
+        {% else %}
+        <span>Status da conexão com o PostgreSQL: <strong style="color: red;">{{ db_status }}</strong></span>
+        {% endif %}
+    </div>
 
-<!-- Status do MongoDB -->
-<div class="status-container mongo">
-    {% if mongo_status == "OK" %}
-    <span>Status da conexão com o MongoDB: <strong style="color: lightgreen;">{{ mongo_status }}</strong></span>
-    {% else %}
-    <span>Status da conexão com o MongoDB: <strong style="color: red;">{{ mongo_status }}</strong></span>
-    {% endif %}
-</div>
+    <!-- Status do MongoDB -->
+    <div class="status-container mongo">
+        {% if mongo_status == "OK" %}
+        <span>Status da conexão com o MongoDB: <strong style="color: lightgreen;">{{ mongo_status }}</strong></span>
+        {% else %}
+        <span>Status da conexão com o MongoDB: <strong style="color: red;">{{ mongo_status }}</strong></span>
+        {% endif %}
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -139,5 +143,3 @@
 
 
 </html>
-
-

@@ -13,8 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
 import time
 import threading
-
 from pymongo import MongoClient
+
 
 def sync_postgres_to_mongo():
     """
@@ -55,11 +55,12 @@ def sync_postgres_to_mongo():
         except Exception as e:
             print(f"❌ Erro ao sincronizar dados: {e}")
 
-        time.sleep(300)  # Espera 5 minutos antes de rodar de novo
+        time.sleep(300)  # Espera 5 minutos antes de sincronizar de novo
 
 # Iniciar sincronização automaticamente quando o Django for iniciado
 sync_thread = threading.Thread(target=sync_postgres_to_mongo, daemon=True)
 sync_thread.start()
+
 
 def home(request):
     # Verificar conexão com PostgreSQL
@@ -69,7 +70,7 @@ def home(request):
         db_status = "OK"
     except Exception as e:
         db_status = f"Not OK - {e}"
-        print(f"❌ ERRO PostgreSQL: {e}")  # Mostra erro no terminal
+        print(f"❌ ERRO PostgreSQL: {e}")
 
     # Verificar conexão com MongoDB
     try:
@@ -78,7 +79,7 @@ def home(request):
         mongo_status = "OK"
     except Exception as e:
         mongo_status = f"Not OK - {e}"
-        print(f"❌ ERRO MongoDB: {e}")  # Mostra erro no terminal
+        print(f"❌ ERRO MongoDB: {e}")
 
     # Debug: Exibir valores antes de renderizar
     print(f"🔍 DEBUG - db_status: {db_status}, mongo_status: {mongo_status}")
@@ -88,9 +89,9 @@ def home(request):
         'mongo_status': mongo_status
     })
 
+
 def obter_nome_id_user(email, user_type):
     with connection.cursor() as cursor:
-        # Chamar a função SQL do banco de dados que você criou
         cursor.execute("SELECT * FROM get_user_info(%s, %s)", [email, user_type])
         result = cursor.fetchone()
 
@@ -142,7 +143,7 @@ def login_view(request):
                 user = cursor.fetchone()
 
                 if user:  # Email e senha estão corretos
-                    # Extrai os dados retornados pela função SQL
+                    # Extrai os dados retornados pela função
                     user_id, first_name, last_name, user_email = user
 
                     # Armazena as informações na sessão
@@ -167,6 +168,7 @@ def login_view(request):
 
     return render(request, 'pagina_login/home.html', {'db_status': status})
 
+
 def loading_page(request):
     # return render(request, 'pagina_login/carregamento.html')
 
@@ -184,14 +186,7 @@ def loading_page(request):
         messages.error(request, 'Sessão inválida. Por favor, faça login novamente.')
         return redirect('login')
 
-# def pagina_principal(request):
-#     user_type = request.session.get('user_type', None)
-#     return render(request, 'pagina_principal/base_main.html', {'user_type': user_type})
 
-#@funcionario_required
-#def unidades_curriculares_funcionario(request):
- #   return render(request, 'pagina_principal/main.html', {'default_content': 'unidades_curriculares_funcionario'})
- 
 @funcionario_required
 def unidades_curriculares_funcionario(request):
     # Obter o mês atual
@@ -215,12 +210,14 @@ def unidades_curriculares_funcionario(request):
         colunas = [desc[0] for desc in cursor.description]
         turnos = [dict(zip(colunas, row)) for row in cursor.fetchall()]
     
-    # Renderizar o template com os dados do banco
+    # Renderizar o template com os dados da base de dados
     return render(request, 'pagina_principal/main.html', {
         'default_content': 'unidades_curriculares_funcionario',
         'turnos': turnos,
     })
 
+
+# Função para obter os turnos dos horários
 @funcionario_required
 def obter_horarios_turno(request):
     turno_nome = request.GET.get('turno_nome')
@@ -249,16 +246,19 @@ def obter_horarios_turno(request):
         return JsonResponse({'error': str(e)}, status=500)
 
 
+# Função para obter os cursos da base de dados
 @funcionario_required
 def obter_cursos(request):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM diogo_f_listar_cursos()")  # Supondo que `listar_cursos` é a função do banco
+        cursor.execute("SELECT * FROM diogo_f_listar_cursos()")
         cursos = cursor.fetchall()
         colunas = [desc[0] for desc in cursor.description]  # Pega os nomes das colunas
     cursos_formatados = [dict(zip(colunas, curso)) for curso in cursos]  # Formata os dados
     print("Cursos carregados com sucesso:", cursos_formatados)
     return JsonResponse(cursos_formatados, safe=False)  # Retorna como JSON
 
+
+# Função para obter os anos disponíveis
 @funcionario_required
 def obter_anos(request):
     """
@@ -272,6 +272,7 @@ def obter_anos(request):
     return JsonResponse(anos, safe=False)
 
 
+#Função para obter os semestres da base de dados
 @funcionario_required
 def obter_semestres(request):
     """
@@ -284,6 +285,7 @@ def obter_semestres(request):
     print("Semestres carregados com sucesso:", semestres)
     return JsonResponse(semestres, safe=False)
 
+
 @funcionario_required
 def obter_nomes_turnos(request):
     with connection.cursor() as cursor:
@@ -291,6 +293,8 @@ def obter_nomes_turnos(request):
         turnos = [row[0] for row in cursor.fetchall()]
     return JsonResponse(turnos, safe=False)
 
+
+# Função para obter as UCs da base de dados
 @funcionario_required
 def obter_ucs(request):
     # Obter valores diretamente da requisição
@@ -315,6 +319,8 @@ def obter_ucs(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
+# Função para criar um turno
 @csrf_exempt
 def criar_turno(request):
     if request.method == 'POST':
@@ -339,14 +345,16 @@ def criar_turno(request):
                         int(data['vagas_turno'])
                     ]
                 )
-            return JsonResponse({'success': True, 'message': '✅ Turno criado com sucesso!'})
+            return JsonResponse({'success': True, 'message': 'Turno criado com sucesso!'})
         except Exception as e:
             error_message = str(e)
             if 'Turno já existe' in error_message:
-                return JsonResponse({'success': False, 'error': '❌ Turno já existe com os mesmos parâmetros!'})
-            return JsonResponse({'success': False, 'error': '❌ Erro desconhecido: ' + error_message})
+                return JsonResponse({'success': False, 'error': 'Turno já existe com os mesmos parâmetros!'})
+            return JsonResponse({'success': False, 'error': 'Erro desconhecido: ' + error_message})
     return JsonResponse({'success': False, 'error': 'Método inválido'})
 
+
+# Função para listar os turnos
 def buscar_turnos(request):
     # Obtém os parâmetros da requisição
     curso_id = request.GET.get('curso')
@@ -361,7 +369,6 @@ def buscar_turnos(request):
         print("Parâmetros incompletos")
         return JsonResponse({"error": "Parâmetros incompletos"}, status=400)
 
-    # Consulta SQL usando a função do banco de dados
     query = """
         SELECT id_turno, turno_nome, vagas_totais, vagas_restantes, nome_uc 
         FROM diogo_f_obter_turnos_filtrados(%s, %s, %s)
@@ -388,7 +395,6 @@ def buscar_turnos(request):
                 "nome_uc": row[4]
             })
 
-
         # Retorna os dados como JSON
         print(f"Dados enviados: {dados}")
         return JsonResponse(dados, safe=False)
@@ -397,6 +403,8 @@ def buscar_turnos(request):
         print(f"Erro ao executar a consulta: {str(e)}")
         return JsonResponse({"error": str(e)}, status=500)
 
+
+# Função para atualizar um turno
 def atualizar_turno_view(request):
     if request.method == "POST":
         try:
@@ -410,7 +418,7 @@ def atualizar_turno_view(request):
             if not all([turno_id, nome_turno, vagas_totais]):
                 return JsonResponse({"success": False, "error": "Todos os campos são obrigatórios."}, status=400)
 
-            # Chamar o procedimento armazenado no PostgreSQL
+            # Procedimento armazenado para atualizar o turno
             with connection.cursor() as cursor:
                 cursor.execute("""
                     CALL p_turno_update(%s, %s, %s)
@@ -424,6 +432,8 @@ def atualizar_turno_view(request):
 
     return JsonResponse({"success": False, "error": "Método inválido"}, status=405)
 
+
+# Função para obter os detalhes de um turno em específico
 def obter_detalhes_turno(request, turno_id):
     # Verificar se a solicitação é do tipo GET
     if request.method == 'GET':
@@ -460,6 +470,8 @@ def obter_detalhes_turno(request, turno_id):
     # Se não for um método GET, retornamos um erro
     return JsonResponse({'error': 'Método não permitido'}, status=405)
 
+
+# Função para obter alunos inscritos num turno
 def obter_alunos_turno(request, id_turno):
     """
     Retorna uma lista de alunos inscritos em um turno específico.
@@ -486,6 +498,7 @@ def obter_alunos_turno(request, id_turno):
         return JsonResponse({"success": False, "error": str(e)}, status=500)
 
 
+# Função para remover alunos de um turno
 def remover_alunos_turno(request):
     if request.method == "POST":
         try:
@@ -511,6 +524,7 @@ def remover_alunos_turno(request):
             return JsonResponse({"success": False, "error": str(e)})
 
     return JsonResponse({"success": False, "error": "Método inválido"})
+
 
 def adicionar_aluno_turno(request):
     if request.method == 'POST':
@@ -556,6 +570,7 @@ def adicionar_aluno_turno(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
     return JsonResponse({'success': False, 'error': 'Método inválido.'}, status=405)
+
 
 def verificar_eliminar_turno(request):
     if request.method == "POST":
@@ -688,7 +703,7 @@ def adicionar_horario(request):
             if not turno_id or not dia_semana or not hora_inicio or not hora_fim or not espaco_id:
                 return JsonResponse({"success": False, "error": "Todos os campos são obrigatórios."})
 
-            # Chamar o procedimento armazenado no banco de dados
+            # Chamar o procedimento armazenado na base de dados
             with connection.cursor() as cursor:
                 cursor.execute("""
                     CALL p_horario_insert(%s, %s, %s, %s, %s);
@@ -708,7 +723,7 @@ def obter_turnos_nomes(request):
                 SELECT DISTINCT turno_nome
                 FROM turnos
                 ORDER BY turno_nome
-            """)  # Ajuste conforme sua tabela
+            """)
             turnos = [row[0] for row in cursor.fetchall()]
         return JsonResponse({"success": True, "turnos": turnos})
     except Exception as e:
@@ -751,11 +766,11 @@ def pesquisar_horarios_filtrados(request):
 def obter_horario_detalhes(request, horario_id):
     try:
         with connection.cursor() as cursor:
-            # Chamar a função do banco de dados
+            # Chamar a função presente na base de dados
             cursor.execute("SELECT * FROM diogo_obter_dados_horario_especifico(%s)", [horario_id])
             result = cursor.fetchone()
 
-            # Verifica se o horário foi encontrado
+            # Verificar se o horário foi encontrado
             if result:
                 colunas = [desc[0] for desc in cursor.description]
                 horario = dict(zip(colunas, result))
@@ -783,7 +798,7 @@ def atualizar_horario(request, id_horario):
             # Log dos parâmetros para depuração
             print(f"Atualizando horário: id_horario={id_horario}, dia_semana={dia_semana}, hora_inicio={hora_inicio}, hora_fim={hora_fim}")
 
-            # Chama o PROCEDIMENTO SQL para verificar e atualizar o horário
+            # Chama o procedimento armazenado SQL para verificar e atualizar o horário
             with connection.cursor() as cursor:
                 cursor.execute("""
                     CALL diogo_verificar_e_atualizar_horario(%s, %s, %s, %s)
@@ -800,7 +815,7 @@ def atualizar_horario(request, id_horario):
 def remover_horario(request, id_horario):
     if request.method == 'DELETE':
         try:
-            # Chama o procedimento no banco de dados
+            # Chama o procedimento armazenado da base de dados
             with connection.cursor() as cursor:
                 cursor.execute("CALL p_horario_delete(%s)", [int(id_horario)])
 
@@ -833,6 +848,7 @@ def obter_id_curso(request, nome_curso):
 
     return JsonResponse({"success": False, "error": "Método inválido."}, status=405)
 
+
 def pesquisar_horarios(request):
     if request.method == "GET":
         curso_id = request.GET.get('curso_id')  # Obtém o ID do curso
@@ -844,7 +860,7 @@ def pesquisar_horarios(request):
             return JsonResponse({"success": False, "error": "Parâmetros inválidos."}, status=400)
 
         try:
-            # Executa a função do banco de dados
+            # Executa a função da base de dados
             with connection.cursor() as cursor:
                 query = """
                     SELECT * 
@@ -871,14 +887,12 @@ def obter_horarios_e_ucs(request, turno_id, curso_id, ano, semestre):
     if request.method == "GET":
         try:
             with connection.cursor() as cursor:
-                # Chama a função listar_horarios_completo_turno
                 cursor.execute("""
                     SELECT * FROM listar_horarios_completo_turno(%s)
                 """, [turno_id])
                 horarios = cursor.fetchall()
                 colunas_horarios = [desc[0] for desc in cursor.description]  # Salva após o primeiro fetch
                 
-                # Chama a função listar_ucs_por_curso_ano_semestre
                 cursor.execute("""
                     SELECT * FROM listar_ucs_por_curso_ano_semestre(%s, %s, %s)
                 """, [curso_id, ano, semestre])
@@ -919,7 +933,6 @@ def editar_horario(request, id_horario):
                 print("Erro: Parâmetros inválidos ou ausentes.")
                 return JsonResponse({'success': False, 'error': 'Parâmetros inválidos ou ausentes.'}, status=400)
 
-            # Chamar a função PostgreSQL `diogo_atualizar_horario`
             with connection.cursor() as cursor:
                 cursor.execute(
                     "SELECT diogo_atualizar_horario(%s, %s, %s, %s)",
@@ -937,11 +950,11 @@ def editar_horario(request, id_horario):
 
 
 def carregar_professor_horario(request):
-    # Verifica se o usuário está logado e é professor
+    # Verifica se o utilizador está logado e é professor
     user_id = request.session.get('user_id')
     
     try:
-        # Consulta os horários do professor logado usando a função do banco de dados
+        # Consulta os horários do professor logado
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT * FROM diogo_f_obter_horarios_completo_professor(%s)
@@ -987,7 +1000,6 @@ def alunos_funcionario(request):
         localidade = request.POST.get('localidade')
 
         try:
-            # Chamar o procedimento armazenado no banco de dados
             with connection.cursor() as cursor:
                 cursor.execute("""
                     CALL p_aluno_insert(%s, %s, %s, %s, %s, %s)
@@ -1009,7 +1021,7 @@ def alunos_funcionario(request):
             status = "error"
 
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * FROM f_listar_alunos()") ##call procedure here
+        cursor.execute("SELECT * FROM f_listar_alunos()")
         alunos = cursor.fetchall()  
 
 
@@ -1083,12 +1095,11 @@ def professores_funcionario(request):
         telefone = request.POST.get('telefone')
         localidade = request.POST.get('localidade')
         
-                 # Debug: Verifique os valores capturados
+        # Debug: Verifique os valores capturados
         print("Dados recebidos do formulário:")
         print(f"Nome: {p_nome}, Sobrenome: {u_nome}, Email: {email}, Telefone: {telefone}, Localidade: {localidade}")
 
         try:
-            # Chamar o procedimento armazenado no banco de dados
             with connection.cursor() as cursor:
                 cursor.execute("""
                     CALL p_professor_insert(%s, %s, %s, %s, %s, %s)
@@ -1101,7 +1112,6 @@ def professores_funcionario(request):
                     localidade
                 ])
 
-
             # Mensagem de sucesso
             mensagem = "Professor criado com sucesso!"
             status = "success"
@@ -1110,7 +1120,7 @@ def professores_funcionario(request):
             mensagem = f"Erro ao criar professor: {str(e)}"
             status = "error"
 
-    # Recuperar lista de professores usando a função f_listar_professores
+    # Recuperar lista de professores 
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM f_listar_professores()")
         professores = cursor.fetchall()
@@ -1122,6 +1132,7 @@ def professores_funcionario(request):
         'status': status,
     })
 
+
 @funcionario_required
 def professores_nao_atribuidos(request):
     with connection.cursor() as cursor:
@@ -1131,6 +1142,7 @@ def professores_nao_atribuidos(request):
         professores = [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
     return JsonResponse(professores, safe=False)
+
 
 @funcionario_required
 def professores_atribuidos(request):
@@ -1161,34 +1173,33 @@ def atribuir_uc_professor(request, id_professor):
             return redirect(reverse('atribuir_uc_professor', args=[id_professor]))
 
         try:
-            # Chamada da procedure no banco
             with connection.cursor() as cursor:
                 cursor.execute("""
                     CALL p_atribuir_uc_professor(%s, %s, %s);
                 """, [id_professor, id_unidade_curricular, id_turno])
-            print("Procedure executada com sucesso!")  # Log 5
+            print("Procedure executada com sucesso!")
 
             messages.success(request, "Unidade Curricular atribuída com sucesso ao professor!")
             return redirect(reverse('atribuir_uc_professor', args=[id_professor]))
 
         except Exception as e:
-            print(f"Erro ao atribuir UC: {e}")  # Log 6
+            print(f"Erro ao atribuir UC: {e}")
             messages.error(request, f"Ocorreu um erro: {e}")
             return redirect(reverse('atribuir_uc_professor', args=[id_professor]))
 
-    print("Entrando na busca de dados para dropdowns")  # Log 7
+    print("Entrando na busca de dados para dropdowns")
     with connection.cursor() as cursor:
         # Buscar Unidades Curriculares
         cursor.execute("SELECT ID_UC, Nome FROM Unidades_Curriculares")
         unidades_curriculares = [{'id': row[0], 'nome': row[1]} for row in cursor.fetchall()]
         # unidades_curriculares = cursor.fetchall()
-        print("Unidades Curriculares:", unidades_curriculares)  # Log 8
+        print("Unidades Curriculares:", unidades_curriculares)
 
         # Buscar Turnos
         cursor.execute("SELECT ID_Turno, Turno_Nome FROM Turnos")
         #turnos = [{'id': row[0], 'nome': row[1]} for row in cursor.fetchall()]
         turnos = cursor.fetchall()
-        print("Turnos:", turnos)  # Log 9
+        print("Turnos:", turnos)
 
         cursor.execute("SELECT * FROM f_listar_professores()")
         professores = cursor.fetchall()
@@ -1200,6 +1211,7 @@ def atribuir_uc_professor(request, id_professor):
         'turnos': turnos,
         'professores': professores
     })
+
 
 def listar_unidades_curriculares(request):
     try:
@@ -1213,6 +1225,7 @@ def listar_unidades_curriculares(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
+
 def listar_turnos_por_uc(request, id_uc):
     try:
         with connection.cursor() as cursor:
@@ -1221,13 +1234,14 @@ def listar_turnos_por_uc(request, id_uc):
 
         turnos_list = [{"id_turno": row[0], "turno_nome": row[1]} for row in turnos]
 
-        print(f"Turnos para UC {id_uc}: {turnos_list}")  # 🔹 Debug no terminal
+        print(f"Turnos para UC {id_uc}: {turnos_list}")
 
         return JsonResponse(turnos_list, safe=False)
     except Exception as e:
         print(f"Erro na view: {e}")
         return JsonResponse({"error": str(e)}, status=500)
     
+
 @csrf_exempt
 def registrar_professor_turno(request):
     if request.method == "POST":
@@ -1244,7 +1258,7 @@ def registrar_professor_turno(request):
             if len(unidades_curriculares) != len(turnos):
                 return JsonResponse({"success": False, "error": "Cada UC deve ter um turno correspondente"})
 
-            # Executar a procedure para cada UC-Turno
+            # Executar o procedimento para cada UC-Turno
             with connection.cursor() as cursor:
                 for id_uc, id_turno in zip(unidades_curriculares, turnos):
                     cursor.execute(
@@ -1280,8 +1294,6 @@ def remover_atribuicao_uc_professor(request):
             return JsonResponse({"error": str(e)}, status=500)
     else:
         return JsonResponse({"error": "Método não permitido"}, status=405)
-
-
 
 
 @funcionario_required
@@ -1330,6 +1342,7 @@ def professor_editar(request, id_professor):
 
     return redirect('professores_funcionario')
 
+
 @aluno_required
 def professores_aluno(request):
     # Obtém o ID do aluno logado
@@ -1365,7 +1378,7 @@ def professores_aluno(request):
             turno_result = cursor_turno.fetchall()
 
         # Extraindo apenas os valores dos turnos (para evitar listas aninhadas)
-        ids_turno = [row[0] for row in turno_result]  # Corrigido
+        ids_turno = [row[0] for row in turno_result]
 
         # Buscar os Professores usando Função SQL
         professores = []
@@ -1398,7 +1411,6 @@ def professores_aluno(request):
     })
 
 
-#Pagamentos
 #Listar os pagamentos em falta do aluno logado na aplicação
 def pagamentos_em_falta_alunos(request):
     mensagem_pendentes = None
@@ -1432,7 +1444,6 @@ def pagamentos_em_falta_alunos(request):
                 }
                 for pagamento in cursor.fetchall()
             ]
-
 
         for pagamento in pagamentos:
             pagamento['total'] = round(float(pagamento['valor']) + float(pagamento['multa']), 2)
@@ -1476,7 +1487,6 @@ def pagamentos_em_falta_alunos(request):
                 for pagamento in cursor.fetchall()
             ]
 
-
     except Exception as e:
         # Mensagens de erro
         mensagem_pendentes = f"Erro ao carregar pagamentos pendentes: {str(e)}"
@@ -1498,6 +1508,7 @@ def pagamentos_em_falta_alunos(request):
         'pagamentos_aguardando_confirmacao' : pagamentos_aguardando_confirmacao,
         'pagamentos': pagamentos,
     })
+
 
 # Alterar o estado do pagamento quando o aluno vai realizar um pagamento
 def aluno_alterar_status_pagamento(request, id_pagamento):
@@ -1532,6 +1543,7 @@ def funcionario_alterar_status_pagamento(request, id_pagamento):
 
     # Redireciona para a lista de pagamentos ou onde for necessário
     return redirect('pagamentos_funcionario')
+
 
 def funcionario_listar_pagamentos(request):
     mensagem_todos_pagamentos = None
@@ -1573,6 +1585,7 @@ def funcionario_listar_pagamentos(request):
         'status_todos_pagamentos': status_todos_pagamentos,
     })
 
+
 def funcionario_update_pagamentos(request, id_pagamento):
 
     if request.method == 'POST':
@@ -1581,7 +1594,7 @@ def funcionario_update_pagamentos(request, id_pagamento):
         valor = request.POST.get('valor')
         data_vencimento = request.POST.get('data_vencimento')
         estado = request.POST.get('estado')
-        multa = request.POST.get('multa', 0.00)  # Valor padrão para multa
+        multa = request.POST.get('multa', 0.00)
 
         try:
             # Atualizar os dados usando o procedimento armazenado
@@ -1596,6 +1609,7 @@ def funcionario_update_pagamentos(request, id_pagamento):
 
     # Redirecionar de volta à página de pagamentos com uma mensagem de sucesso ou erro
     return redirect('pagamentos_funcionario')
+
 
 def funcionario_delete_pagamentos(request, id_pagamento):
     try:
@@ -1622,13 +1636,13 @@ def funcionario_delete_pagamentos(request, id_pagamento):
 
 # Inserção da matricula do aluno
 def matricula_aluno(request):
-    user_id = request.session.get('user_id')  # ID do aluno logado na aplicação
+    user_id = request.session.get('user_id')
     aluno_data = {}
     detalhes_matricula = None
     ucs_matricula = []
 
     try:
-        # Vai obter os dados do aluno que está logado
+        # Obtem os dados do aluno que está logado
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT p_nome, u_nome, email, telefone, localidade
@@ -1740,6 +1754,7 @@ def get_cursos(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+
 # Fetch das UCs de cada curso
 def get_ucs(request, curso_id, ano_id):
     try:
@@ -1755,6 +1770,7 @@ def get_ucs(request, curso_id, ano_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+
 #Fetch turnos
 def get_turnos(request, uc_id):
     try:
@@ -1773,6 +1789,7 @@ def get_turnos(request, uc_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+
 # Fetch dos anos
 def get_anos(request):
     try:
@@ -1799,6 +1816,7 @@ def get_ucs_matriculadas(request, id_matricula):
 
     return JsonResponse([{'id_uc': row[0], 'id_turno': row[1]} for row in rows], safe=False)
 
+
 def get_anos_curso(request, curso_id):
     try:
         with connection.cursor() as cursor:
@@ -1814,6 +1832,7 @@ def get_anos_curso(request, curso_id):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
+
 # Listar todas as matriculas através do funcionário
 def listar_matriculas(request):
     mensagem_todas_matriculas = None
@@ -1853,6 +1872,7 @@ def listar_matriculas(request):
         'status_todas_matriculas': status_todas_matriculas,
     })
 
+
 # Carregar os detalhes para atualizar a matricula do aluno
 def matricula_atualizar_detalhes(request, id_matricula):
     with connection.cursor() as cursor:
@@ -1885,6 +1905,7 @@ def matricula_atualizar_detalhes(request, id_matricula):
     }
 
     return JsonResponse(dados)
+
 
 # Carregar os detalhes da matricula ao pressionar o botão Ver Detalhes
 def matricula_detalhes(request, id_matricula):
@@ -1927,16 +1948,17 @@ def funcionario_delete_matricula(request, id_matricula):
     # Redirecionar de volta para a página de matrículas
     return redirect('matricula_funcionario')
 
+
 # Atualizar matricula através do funcionário
 def funcionario_atualizar_matricula(request):
     if request.method == 'POST':
         try:
-            id_matricula = request.POST.get('id_matricula')  # ID correto da matrícula
+            id_matricula = request.POST.get('id_matricula')
             id_curso = request.POST.get('curso')
-            id_ano = request.POST.get('ano_curso')  # Ano do curso correto
+            id_ano = request.POST.get('ano_curso')
             data_matricula = request.POST.get('data_matricula')
-            ano_letivo = request.POST.get('ano_letivo')  # Ano letivo correto
-            ucs_selecionadas = request.POST.getlist('ucs[]')  # Lista das UCs selecionadas
+            ano_letivo = request.POST.get('ano_letivo')
+            ucs_selecionadas = request.POST.getlist('ucs[]')
             turnos_selecionados = {key.split('_')[1]: value for key, value in request.POST.items() if key.startswith("turno_")}
 
             with connection.cursor() as cursor:
@@ -2035,7 +2057,6 @@ def aprovar_avaliacao(request, id_avaliacao):
     return redirect('avaliacoes_funcionario')
 
 
-
 @professor_required 
 def avaliacoes_professor(request):
     id_professor = request.session.get('user_id')
@@ -2128,6 +2149,7 @@ def avaliacoes_professor(request):
         }
     })
 
+
 @aluno_required
 def avaliacoes_aluno(request):
     id_aluno = request.session.get('user_id')
@@ -2172,6 +2194,7 @@ def avaliacoes_aluno(request):
             'epoca': epoca
         }
     })
+
 
 @professor_required
 def editar_avaliacao(request):
@@ -2250,7 +2273,7 @@ def unidades_curriculares_professor(request):
     
 
 def carregar_horario_aluno(request):
-    # Verifica se o usuário está logado e é aluno
+    # Verifica se o utilizador está logado e é aluno
     user_id = request.session.get('user_id')
 
     try:
@@ -2283,9 +2306,10 @@ def carregar_horario_aluno(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
 @aluno_required
 def dashboard_aluno(request):
-    user_id = request.session.get('user_id')  # Obtém o ID do aluno logado
+    user_id = request.session.get('user_id')
 
     try:
         with connection.cursor() as cursor:
@@ -2329,7 +2353,7 @@ def dashboard_aluno(request):
 
 @professor_required
 def dashboard_professor(request):
-    user_id = request.session.get('user_id')  # Obtém o ID do professor logado
+    user_id = request.session.get('user_id') 
 
     try:
         with connection.cursor() as cursor:
@@ -2359,6 +2383,7 @@ def dashboard_professor(request):
 
     return render(request, 'pagina_principal/main.html', contexto)
 
+
 @funcionario_required
 def dashboard_funcionario(request):
     # Conectar ao PostgreSQL e executar a função
@@ -2382,7 +2407,6 @@ def dashboard_funcionario(request):
     # Buscar todas as avaliações
     avaliacoes = list(collection.find({}, {"_id": 0, "id_aluno": 1, "nota": 1, "curso": 1}))
 
-    
     dados_cursos = {}
     for avaliacao in avaliacoes:
         curso = avaliacao["curso"]
@@ -2401,33 +2425,41 @@ def dashboard_funcionario(request):
 
     return render(request, 'pagina_principal/main.html', contexto)
 
+
 @aluno_required
 def horarios_aluno(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'horarios_aluno'})
+
 
 @professor_required
 def horarios_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'horarios_professor'})
 
+
 @aluno_required
 def pagamentos_aluno(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos_aluno'})
+
 
 @funcionario_required
 def pagamentos_funcionario(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'pagamentos_funcionario'})
 
+
 @funcionario_required
 def matricula_funcionario(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'matricula_funcionario'})
+
 
 @aluno_required
 def gestao_escola_aluno(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_aluno'})
 
+
 @professor_required
 def gestao_escola_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_professor'})
+
 
 @funcionario_required
 def gestao_escola_funcionario(request):

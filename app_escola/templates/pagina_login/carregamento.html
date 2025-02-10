@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     {% load static %}
     <meta charset="UTF-8">
@@ -15,16 +16,18 @@
             align-items: center;
             flex-direction: column;
         }
+
         .loading-gif {
-            margin-bottom: 10px; /* Espaço entre a imagem e o texto */
+            margin-bottom: 10px;
         }
 
         .loading-text {
             font-size: 1.5rem;
-            color: #02327a; /* Cor do texto (azul) */
+            color: #02327a;
         }
     </style>
 </head>
+
 <body>
     <div class="loading-container">
         <img src="{% static 'images/gif.gif' %}" alt="Carregando..." class="loading-gif">
@@ -33,9 +36,10 @@
 
     <script>
         // Redireciona para o dashboard após 2 segundos
-        setTimeout(function() {
+        setTimeout(function () {
             window.location.href = "/dashboard/";
         }, 2000);
     </script>
 </body>
+
 </html>
