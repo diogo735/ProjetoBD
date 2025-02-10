@@ -3,49 +3,47 @@
     <!-- Resumo Académico -->
     <div class="card mb-4 shadow">
         <div class="card-header bg-light">
-            <h2 class="h5 mb-0">Resumo Académico - Aluno</h2>
+            <h2 class="h5 mb-0">Resumo Académico</h2>
         </div>
         <div class="card-body">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">
-                    <strong>Curso Inscrito:</strong> {{ curso_nome }}
+                    <strong>Curso inscrito:</strong> {{ curso_nome }}
                 </li>
                 <li class="list-group-item">
-                    <strong>Unidades Curriculares Inscritas:</strong> {{ unidades_curriculares }}
+                    <strong>Unidades Curriculares inscritas:</strong> {{ unidades_curriculares }}
                 </li>
                 <li class="list-group-item">
-                    <strong>Propinas Pendentes:</strong> {{ propinas_pendentes }}
+                    <strong>Pagamentos pendentes:</strong> {{ propinas_pendentes }}
                 </li>
             </ul>
         </div>
     </div>
 
-  <!-- Avaliações Recentes -->
-<div class="card mb-4 shadow">
-    <div class="card-header bg-light">
-        <h2 class="h5 mb-0">Avaliações Lançadas Recentemente</h2>
+    <!-- Avaliações Recentes -->
+    <div class="card mb-4 shadow">
+        <div class="card-header bg-light">
+            <h2 class="h5 mb-0">Avaliações Lançadas Recentemente</h2>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush">
+                {% for av in avaliacoes %}
+                <li class="list-group-item">
+                    <strong>{{ av.nome_uc }}</strong> ({{ av.nome_metodo }}) - <strong>Nota:</strong> {{ av.nota }}
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">Nenhuma avaliação recente.</li>
+                {% endfor %}
+            </ul>
+            <small class="text-muted d-block mt-2">
+                (Apenas as avaliações lançadas nos últimos 7 dias aparecem aqui.)
+            </small>
+        </div>
     </div>
-    <div class="card-body">
-        <ul class="list-group list-group-flush">
-            {% for av in avaliacoes %}
-            <li class="list-group-item">
-                <strong>{{ av.nome_uc }}</strong> ({{ av.nome_metodo }}) - <strong>Nota:</strong> {{ av.nota }}
-            </li>
-            {% empty %}
-            <li class="list-group-item text-muted">Nenhuma avaliação recente.</li>
-            {% endfor %}
-        </ul>
-        <small class="text-muted d-block mt-2">
-            (Apenas as avaliações lançadas nos últimos 7 dias aparecem aqui.)
-        </small>
-    </div>
-    
-</div>
 
     
-
     <!-- Acesso Rápido -->
-    <div class="card shadow">
+    <div class="card mb-4 shadow">
         <div class="card-header bg-light">
             <h2 class="h5 mb-0">Acesso Rápido</h2>
         </div>
@@ -66,8 +64,9 @@
             </div>
         </div>
     </div>
-</div>
+
 <!-- Ajuda e Suporte -->
+ 
     <div class="card mb-4 shadow">
         <div class="card-header bg-light">
             <h2 class="h5 mb-0">Ajuda e Suporte</h2>
@@ -80,4 +79,7 @@
             </p>
         </div>
     </div>
+
+</div>
+
 {% endblock %}

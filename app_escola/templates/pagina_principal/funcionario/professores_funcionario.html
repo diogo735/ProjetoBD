@@ -130,7 +130,8 @@
                                                                             <input type="text" name="telefone"
                                                                                 id="telefone-{{ professor.0 }}"
                                                                                 class="form-control"
-                                                                                value="{{ professor.5 }}">
+                                                                                value="{{ professor.5 }}"
+                                                                                maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                                                         </div>
 
                                                                         <div class="mb-3">
@@ -260,7 +261,7 @@
                         <div class="mb-3">
                             <label for="telefone-professor" class="form-label">Telefone</label>
                             <input type="tel" id="telefone-professor" name="telefone" class="form-control"
-                                placeholder="Digite o telefone do professor">
+                                placeholder="Digite o telefone do professor" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
 
                         <!-- Localidade -->

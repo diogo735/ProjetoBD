@@ -94,7 +94,7 @@
                                                                         <div class="mb-3">
                                                                             <label for="telefone-{{ aluno.0 }}" class="form-label">Telefone</label>
                                                                             <input type="text" name="telefone" id="telefone-{{ aluno.0 }}" 
-                                                                                    class="form-control" value="{{ aluno.6 }}">
+                                                                                    class="form-control" value="{{ aluno.6 }}" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                                                         </div>
 
                                                                         <div class="mb-3">
@@ -192,7 +192,7 @@
                         <!-- Telefone -->
                         <div class="mb-3">
                             <label for="telefone-aluno" class="form-label">Telefone</label>
-                            <input type="tel" id="telefone-aluno" name="telefone" class="form-control" placeholder="Digite o telefone do aluno">
+                            <input type="tel" id="telefone-aluno" name="telefone" class="form-control" placeholder="Digite o telefone do aluno" maxlength="9" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                     
                         <!-- Localidade -->

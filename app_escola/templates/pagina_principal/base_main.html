@@ -167,14 +167,14 @@
                 <a href="{% url 'pagamentos_aluno' %}" id="pagamentos-a-link" class="nav-link d-flex align-items-center"
                     onclick="setActive(this)">
                     <i class="bi bi-credit-card me-2 fs-4"></i>
-                    <span>Propinas e Pagamentos</span>
+                    <span>Pagamentos</span>
                 </a>
                 {% elif request.session.user_type == "Funcionario" %}
             <li class="nav-item mb-3">
                 <a href="{% url 'pagamentos_funcionario' %}" id="pagamentos-f-link"
                     class="nav-link d-flex align-items-center" onclick="setActive(this)">
                     <i class="bi bi-credit-card me-2 fs-4"></i>
-                    <span>Propinas e Pagamentos</span>
+                    <span>Pagamentos</span>
                 </a>
             </li>
             {% endif %}
