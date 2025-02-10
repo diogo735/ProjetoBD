@@ -6,31 +6,32 @@
         </div>
         <div class="card-body">
             {% if default_content == 'professores_aluno' %}
-        
-                <p>Consulte abaixo a lista de professores responsáveis pelas Unidades Curriculares e suas informações de contacto.</p>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Unidade Curricular</th>
-                                    <th>Email</th>
-                                    <th>Telefone</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for professor in professores %}
-                                    <tr>
-                                        <td>{{ professor.nome }}</td>
-                                        <td>{{ professor.unidade_curricular }}</td>
-                                        <td><a href="mailto:{{ professor.email }}">{{ professor.email }}</a></td>
-                                        <td>{{ professor.telefone }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    
+
+            <p>Consulte abaixo a lista de professores responsáveis pelas Unidades Curriculares e suas informações de
+                contacto.</p>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Unidade Curricular</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for professor in professores %}
+                        <tr>
+                            <td>{{ professor.nome }}</td>
+                            <td>{{ professor.unidade_curricular }}</td>
+                            <td><a href="mailto:{{ professor.email }}">{{ professor.email }}</a></td>
+                            <td>{{ professor.telefone }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
             {% endif %}
 
         </div>

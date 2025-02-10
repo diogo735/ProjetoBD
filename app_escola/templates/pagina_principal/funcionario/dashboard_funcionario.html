@@ -54,7 +54,7 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const dadosCursos = JSON.parse('{{ dados_grafico|safe }}');
 
         // Definir cores personalizadas para cada curso
@@ -70,7 +70,7 @@
             "Engenharia Multimedia": "rgba(255, 105, 180, 1)"  // Rosa
         };
 
-        const labels = Array.from({length: 21}, (_, i) => i); // Notas de 0 a 20
+        const labels = Array.from({ length: 21 }, (_, i) => i); // Notas de 0 a 20
         const datasets = [];
 
         Object.keys(dadosCursos).forEach((curso) => {

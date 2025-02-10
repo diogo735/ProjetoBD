@@ -1,4 +1,5 @@
 <div class="container py-4">
+
     <!-- Tabs para Detalhes e Inscrição -->
     <ul class="nav nav-tabs" id="matriculaTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -16,6 +17,7 @@
     </ul>
 
     <div class="tab-content mt-4" id="matriculaTabContent">
+
         <!-- Tab Detalhes -->
         <div class="tab-pane fade show active" id="detalhes" role="tabpanel" aria-labelledby="detalhes-tab">
             <div class="card shadow">
@@ -26,11 +28,14 @@
                     <p>Confira abaixo os detalhes da sua matrícula atual.</p>
 
                     {% if detalhes_matricula %}
+
                     <!-- Exibir detalhes gerais da matrícula -->
                     <ul class="list-group mb-4">
                         <li class="list-group-item"><strong>Curso:</strong> {{ detalhes_matricula.curso }}</li>
-                        <li class="list-group-item"><strong>Ano Letivo:</strong> {{ detalhes_matricula.ano_letivo }}</li>
-                        <li class="list-group-item"><strong>Data da Matrícula:</strong> {{ detalhes_matricula.data_matricula }}</li>
+                        <li class="list-group-item"><strong>Ano Letivo:</strong> {{ detalhes_matricula.ano_letivo }}
+                        </li>
+                        <li class="list-group-item"><strong>Data da Matrícula:</strong> {{
+                            detalhes_matricula.data_matricula }}</li>
                     </ul>
 
                     <!-- Lista de Unidades Curriculares e Turnos -->
@@ -45,12 +50,12 @@
                             </thead>
                             <tbody>
                                 {% if ucs_matricula %}
-                                    {% for uc in ucs_matricula %}
-                                    <tr>
-                                        <td>{{ uc.unidade_curricular }}</td>
-                                        <td>{{ uc.turno }}</td>
-                                    </tr>
-                                    {% endfor %}
+                                {% for uc in ucs_matricula %}
+                                <tr>
+                                    <td>{{ uc.unidade_curricular }}</td>
+                                    <td>{{ uc.turno }}</td>
+                                </tr>
+                                {% endfor %}
                                 {% else %}
                                 <tr>
                                     <td colspan="2" class="text-center">Nenhuma unidade curricular encontrada.</td>
@@ -67,77 +72,77 @@
             </div>
         </div>
 
-    <!-- Tab Inscrição -->
-    <div class="tab-pane fade" id="inscricao" role="tabpanel" aria-labelledby="inscricao-tab">
-        <div class="card shadow">
-            <div class="card-header bg-light">
-                <h2 class="h5 mb-0">Inscrição</h2>
-            </div>
-            <div class="card-body">
-                <p>Realize a sua matrícula para o ano letivo atual.</p>
+        <!-- Tab Inscrição -->
+        <div class="tab-pane fade" id="inscricao" role="tabpanel" aria-labelledby="inscricao-tab">
+            <div class="card shadow">
+                <div class="card-header bg-light">
+                    <h2 class="h5 mb-0">Inscrição</h2>
+                </div>
+                <div class="card-body">
+                    <p>Realize a sua matrícula para o ano letivo atual.</p>
 
-                <!-- Formulário de Matrícula -->
-                <form id="formMatricula" method="POST" action="{% url 'matricula_aluno' %}">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="primeiro_nome" class="form-label">Primeiro Nome</label>
-                        <input type="text" class="form-control" id="primeiro_nome" name="primeiro_nome"
-                            value="{{ aluno_data.p_nome }}" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="ultimo_nome" class="form-label">Último Nome</label>
-                        <input type="text" class="form-control" id="ultimo_nome" name="ultimo_nome"
-                            value="{{ aluno_data.u_nome }}" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ aluno_data.email }}"
-                            readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="telefone" class="form-label">Telemóvel/Telefone</label>
-                        <input type="text" class="form-control" id="telefone" name="telefone"
-                            value="{{ aluno_data.telefone }}" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="localidade" class="form-label">Localidade</label>
-                        <input type="text" class="form-control" id="localidade" name="localidade"
-                            value="{{ aluno_data.localidade }}" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="ano_letivo" class="form-label">Ano letivo</label>
-                        <input type="text" class="form-control" id="ano_letivo" name="ano_letivo" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="ano_inscricao" class="form-label">Data da Inscrição</label>
-                        <input type="date" class="form-control" id="ano_inscricao" name="ano_inscricao">
-                    </div>
-                    <div class="mb-3">
-                        <label for="id_curso" class="form-label">Selecione o Curso</label>
-                        <select id="id_curso" name="id_curso" class="form-select" required>
-                            <option value="" selected>Escolha o curso...</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="ano-container" style="display: none;">
-                        <label for="id_ano" class="form-label">Selecione o Ano</label>
-                        <select id="id_ano" name="id_ano" class="form-select">
-                            <option value="" selected>Escolha o ano...</option>
-                            <option value="1">1º Ano</option>
-                            <option value="2">2º Ano</option>
-                            <option value="3">3º Ano</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="uc-container" style="display: none;">
-                        <h5>Unidades Curriculares</h5>
-                        <div id="semestres-container"></div>
-                    </div>
-                    <button type="submit" class="btn btn-success">Realizar Matrícula</button>
-                    <button type="button" class="btn btn-danger" onclick="limparFormulario()">Apagar Dados</button>
-                </form>
+                    <!-- Formulário de Matrícula -->
+                    <form id="formMatricula" method="POST" action="{% url 'matricula_aluno' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="primeiro_nome" class="form-label">Primeiro Nome</label>
+                            <input type="text" class="form-control" id="primeiro_nome" name="primeiro_nome"
+                                value="{{ aluno_data.p_nome }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ultimo_nome" class="form-label">Último Nome</label>
+                            <input type="text" class="form-control" id="ultimo_nome" name="ultimo_nome"
+                                value="{{ aluno_data.u_nome }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email"
+                                value="{{ aluno_data.email }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefone" class="form-label">Telemóvel/Telefone</label>
+                            <input type="text" class="form-control" id="telefone" name="telefone"
+                                value="{{ aluno_data.telefone }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="localidade" class="form-label">Localidade</label>
+                            <input type="text" class="form-control" id="localidade" name="localidade"
+                                value="{{ aluno_data.localidade }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ano_letivo" class="form-label">Ano letivo</label>
+                            <input type="text" class="form-control" id="ano_letivo" name="ano_letivo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ano_inscricao" class="form-label">Data da Inscrição</label>
+                            <input type="date" class="form-control" id="ano_inscricao" name="ano_inscricao">
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_curso" class="form-label">Selecione o Curso</label>
+                            <select id="id_curso" name="id_curso" class="form-select" required>
+                                <option value="" selected>Escolha o curso...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="ano-container" style="display: none;">
+                            <label for="id_ano" class="form-label">Selecione o Ano</label>
+                            <select id="id_ano" name="id_ano" class="form-select">
+                                <option value="" selected>Escolha o ano...</option>
+                                <option value="1">1º Ano</option>
+                                <option value="2">2º Ano</option>
+                                <option value="3">3º Ano</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="uc-container" style="display: none;">
+                            <h5>Unidades Curriculares</h5>
+                            <div id="semestres-container"></div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Realizar Matrícula</button>
+                        <button type="button" class="btn btn-danger" onclick="limparFormulario()">Apagar Dados</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <script>
@@ -149,7 +154,7 @@
         const semestresContainer = document.getElementById("semestres-container");
 
 
-        // Fetch cursos from the backend
+        // Fetch cursos dos cursos da base de dados
         fetch("/get_cursos/")
             .then((response) => response.json())
             .then((data) => {
@@ -166,21 +171,21 @@
                 cursoSelect.innerHTML = '<option value="" selected>Erro ao carregar cursos</option>';
             });
 
-        // Show the year dropdown only after a course is selected
+        // Mostra o ano do curso após este ser escolhido
         cursoSelect.addEventListener("change", function () {
             if (cursoSelect.value) {
-                anoContainer.style.display = "block"; // Show year dropdown
+                anoContainer.style.display = "block"; 
             } else {
-                anoContainer.style.display = "none"; // Hide year dropdown
-                ucContainer.style.display = "none"; // Reset UC container
+                anoContainer.style.display = "none"; 
+                ucContainer.style.display = "none"; 
             }
         });
 
-        // Fetch UCs when a year is selected
+        // Fetch das UCs após o ano ser escolhido
         anoSelect.addEventListener("change", function () {
             const anoId = this.value;
             const cursoId = cursoSelect.value;
-            semestresContainer.innerHTML = ""; // Reset semestres
+            semestresContainer.innerHTML = "";
 
             if (cursoId && anoId) {
                 fetch(`/get_ucs/${cursoId}/${anoId}/`)
@@ -233,14 +238,13 @@
                                     `;
                                     tbody.appendChild(row);
 
-                                    // Habilitar ou desabilitar o turno baseado no checkbox
+                                    // Função de habilitar e desabilitar o checkbox de cada UC
                                     const checkbox = row.querySelector(".uc-checkbox");
                                     const turnoSelect = row.querySelector(".turno-select");
 
                                     checkbox.addEventListener("change", function () {
                                         turnoSelect.disabled = !checkbox.checked;
                                         if (checkbox.checked) {
-                                            // Fetch turnos when UC is selected
                                             fetch(`/get_turnos/${uc.id_uc}/`)
                                                 .then((response) => response.json())
                                                 .then((turnos) => {
@@ -277,12 +281,10 @@
                 ucContainer.style.display = "none";
             }
         });
-
-
     });
 
     function limparFormulario() {
-        document.getElementById("formMatricula").reset(); // Reseta todos os campos do formulário
+        document.getElementById("formMatricula").reset(); // Limpa todos os campos do formulário
         document.getElementById("ano-container").style.display = "none";
         document.getElementById("uc-container").style.display = "none";
     }

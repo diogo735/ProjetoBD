@@ -3,14 +3,17 @@
     <!-- Tabs para Aprovar Avaliações -->
     <ul class="nav nav-tabs" id="avaliacoesTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="aprovar-avaliacoes-tab" data-bs-toggle="tab" data-bs-target="#aprovar-avaliacoes" type="button" role="tab" aria-controls="aprovar-avaliacoes" aria-selected="true">
+            <button class="nav-link active" id="aprovar-avaliacoes-tab" data-bs-toggle="tab"
+                data-bs-target="#aprovar-avaliacoes" type="button" role="tab" aria-controls="aprovar-avaliacoes"
+                aria-selected="true">
                 Aprovar Avaliações
             </button>
         </li>
     </ul>
 
     <div class="tab-content mt-4" id="avaliacoesTabContent">
-        <div class="tab-pane fade show active" id="aprovar-avaliacoes" role="tabpanel" aria-labelledby="aprovar-avaliacoes-tab">
+        <div class="tab-pane fade show active" id="aprovar-avaliacoes" role="tabpanel"
+            aria-labelledby="aprovar-avaliacoes-tab">
             <div class="card shadow">
                 <div class="card-header bg-light">
                     <h2 class="h5 mb-0">Aprovar Avaliações</h2>
@@ -25,7 +28,8 @@
                             <select id="filtro-curso" name="curso" class="form-select">
                                 <option value="">Escolha o curso...</option>
                                 {% for curso in cursos %}
-                                    <option value="{{ curso }}" {% if filtros.curso == curso %}selected{% endif %}>{{ curso }}</option>
+                                <option value="{{ curso }}" {% if filtros.curso==curso %}selected{% endif %}>{{ curso }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -34,7 +38,8 @@
                             <select id="filtro-ano" name="ano" class="form-select">
                                 <option value="">Escolha o ano...</option>
                                 {% for ano in anos %}
-                                    <option value="{{ ano }}" {% if filtros.ano == ano %}selected{% endif %}>{{ ano }}</option>
+                                <option value="{{ ano }}" {% if filtros.ano==ano %}selected{% endif %}>{{ ano }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -43,7 +48,8 @@
                             <select id="filtro-semestre" name="semestre" class="form-select">
                                 <option value="">Escolha o semestre...</option>
                                 {% for semestre in semestres %}
-                                    <option value="{{ semestre }}" {% if filtros.semestre == semestre %}selected{% endif %}>{{ semestre }}</option>
+                                <option value="{{ semestre }}" {% if filtros.semestre==semestre %}selected{% endif %}>{{
+                                    semestre }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -52,7 +58,8 @@
                             <select id="filtro-epoca" name="epoca" class="form-select">
                                 <option value="">Escolha a época...</option>
                                 {% for epoca in epocas %}
-                                    <option value="{{ epoca }}" {% if filtros.epoca == epoca %}selected{% endif %}>{{ epoca }}</option>
+                                <option value="{{ epoca }}" {% if filtros.epoca==epoca %}selected{% endif %}>{{ epoca }}
+                                </option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -91,20 +98,23 @@
                                     <td>{{ avaliacao.nota }}</td>
                                     <td>{{ avaliacao.epoca }}</td>
                                     <td>{{ avaliacao.data_avaliacao }}</td>
-                                   
+
                                     <td>
-                                        <span class="badge {% if avaliacao.estado == 'Aprovado' %}bg-success{% elif avaliacao.estado == 'Reprovado' %}bg-danger{% else %}bg-warning{% endif %}">
+                                        <span
+                                            class="badge {% if avaliacao.estado == 'Aprovado' %}bg-success{% elif avaliacao.estado == 'Reprovado' %}bg-danger{% else %}bg-warning{% endif %}">
                                             {{ avaliacao.estado }}
                                         </span>
                                     </td>
                                     <td>
                                         {% if avaliacao.estado == 'Pendente' %}
-                                            <form method="post" action="{% url 'aprovar_avaliacao' avaliacao.id_avaliacao %}">
-                                                {% csrf_token %}
-                                                <button type="submit" class="btn btn-sm btn-success">Confirmar</button>
-                                            </form>
+                                        <form method="post"
+                                            action="{% url 'aprovar_avaliacao' avaliacao.id_avaliacao %}">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-success">Confirmar</button>
+                                        </form>
                                         {% else %}
-                                            <button class="btn btn-sm btn-secondary" disabled>{{ avaliacao.estado }}</button>
+                                        <button class="btn btn-sm btn-secondary" disabled>{{ avaliacao.estado
+                                            }}</button>
                                         {% endif %}
                                     </td>
                                 </tr>
