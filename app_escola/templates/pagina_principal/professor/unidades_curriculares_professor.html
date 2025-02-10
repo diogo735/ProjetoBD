@@ -12,9 +12,9 @@
                     <label for="filtroTurno" class="form-label">Turno</label>
                     <select id="filtroTurno" class="form-select">
                         <option value="" selected>Todos os Turnos</option>
-                        <option value="Manha">Manhã</option>
-                        <option value="Tarde">Tarde</option>
-                        <option value="Noite">Noite</option>
+                        {% for turno in turnos %}
+                        <option value="{{ turno }}">{{ turno }}</option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -23,9 +23,9 @@
                     <label for="filtroAno" class="form-label">Ano</label>
                     <select id="filtroAno" class="form-select">
                         <option value="" selected>Todos os Anos</option>
-                        <option value="1">1º Ano</option>
-                        <option value="2">2º Ano</option>
-                        <option value="3">3º Ano</option>
+                        {% for ano in anos %}
+                        <option value="{{ ano }}">{{ ano }}º Ano</option>
+                        {% endfor %}
                     </select>
                 </div>
 
@@ -34,8 +34,9 @@
                     <label for="filtroSemestre" class="form-label">Semestre</label>
                     <select id="filtroSemestre" class="form-select">
                         <option value="" selected>Todos os Semestres</option>
-                        <option value="1">1º Semestre</option>
-                        <option value="2">2º Semestre</option>
+                        {% for semestre in semestres %}
+                        <option value="{{ semestre }}">{{ semestre }}º Semestre</option>
+                        {% endfor %}
                     </select>
                 </div>
 

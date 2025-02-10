@@ -82,8 +82,7 @@
                                                     {% csrf_token %}
                                                     <div class="mb-3">
                                                         <b>
-                                                            <label id="aluno_nome" class="form-label">Nº
-                                                                Mecanográfico</label>
+                                                            <label id="aluno_nome" class="form-label">Nº Mecanográfico</label>
                                                             <input type="id_aluno" class="form-control"
                                                                 value="{{aluno.n_meca}}" id="id_aluno" name="id_aluno"
                                                                 readonly>
@@ -91,8 +90,7 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <b>
-                                                            <label id="uc_nome" class="form-label">Unidade
-                                                                Curricular</label>
+                                                            <label id="uc_nome" class="form-label">Unidade Curricular</label>
                                                             <input type="id_uc_modal" class="form-control"
                                                                 value="{{aluno.uc_nome}}" id="id_uc_modal"
                                                                 name="id_uc_modal" readonly>
@@ -124,8 +122,7 @@
                                                     <div class="d-flex justify-content-end gap-2">
                                                         <button type="button" class="btn btn-danger"
                                                             data-bs-dismiss="modal">Cancelar</button>
-                                                        <button type="submit" class="btn btn-success">Guardar
-                                                            Alterações</button>
+                                                        <button type="submit" class="btn btn-success">Guardar Alterações</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -180,10 +177,12 @@
                                 <td>{{ avaliacao.nota }}</td>
                                 <td>{{ avaliacao.estado }}</td>
                                 <td>
+                                    {% if avaliacao.estado != "Aprovado" and avaliacao.estado != "Reprovado" %}
                                     <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#editarAvaliacaoModal-{{ avaliacao.id_avaliacao }}">
                                         Editar Avaliação
                                     </button>
+                                    {% endif %}
                                 </td>
                             </tr>
 

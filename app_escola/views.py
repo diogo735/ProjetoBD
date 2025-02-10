@@ -1995,17 +1995,16 @@ def avaliacoes_funcionario(request):
         columns = [col[0] for col in cursor.description]
         avaliacoes = [dict(zip(columns, row)) for row in cursor.fetchall()]
 
-        # Obter opções para filtros
-        cursor.execute("SELECT DISTINCT Nome FROM Cursos")
+        cursor.execute("SELECT * FROM v_cursos")
         cursos = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT DISTINCT Nome_Ano FROM Ano")
+        cursor.execute("SELECT * FROM v_nome_ano")
         anos = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT DISTINCT Nome_Semestre FROM Semestre")
+        cursor.execute("SELECT * FROM v_nome_semestre")
         semestres = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT DISTINCT Epoca FROM Avaliacoes")
+        cursor.execute("SELECT * FROM v_epocas")
         epocas = [row[0] for row in cursor.fetchall()]
 
     return render(request, 'pagina_principal/main.html', {
@@ -2152,13 +2151,13 @@ def avaliacoes_aluno(request):
         avaliacoes = [dict(zip(columns, row)) for row in cursor.fetchall()]
         
         # Filtros
-        cursor.execute("SELECT DISTINCT Nome_Ano FROM Ano")
+        cursor.execute("SELECT * FROM v_nome_ano")
         anos = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT DISTINCT Nome_Semestre FROM Semestre")
+        cursor.execute("SELECT * FROM v_nome_semestre")
         semestres = [row[0] for row in cursor.fetchall()]
 
-        cursor.execute("SELECT DISTINCT Epoca FROM Avaliacoes")
+        cursor.execute("SELECT * FROM v_epocas")
         epocas = [row[0] for row in cursor.fetchall()]
     
     return render(request, 'pagina_principal/main.html', {
@@ -2206,42 +2205,49 @@ def unidades_curriculares_professor(request):
 
     try:
         with connection.cursor() as cursor:
-            query = """
-                SELECT uc.id_uc, uc.nome AS unidade_curricular, uc.id_ano, uc.id_semestre, t.turno_nome
-                FROM unidades_curriculares uc
-                JOIN turnos t ON uc.id_uc = t.id_uc
-                JOIN turnos_professor tp ON t.id_turno = tp.id_turno
-                WHERE tp.id_professor = %s
-            """
+            query = "SELECT * FROM f_unidades_curriculares_professor(%s)"
+            conditions = []
             params = [id_professor]
 
             if turno:
-                query += " AND t.turno_nome = %s"
+                conditions.append("turno_nome = %s")
                 params.append(turno)
 
             if ano:
-                query += " AND uc.id_ano = %s"
+                conditions.append("id_ano = %s")
                 params.append(ano)
 
             if semestre:
-                query += " AND uc.id_semestre = %s"
+                conditions.append("id_semestre = %s")
                 params.append(semestre)
 
+            if conditions:
+                query += " WHERE " + " AND ".join(conditions)
+
             cursor.execute(query, params)
-            unidades_curriculares = cursor.fetchall()
-            
-            colunas = [col[0] for col in cursor.description]
-            unidades_formatadas = [dict(zip(colunas, uc)) for uc in unidades_curriculares]
+            columns = [col[0] for col in cursor.description]
+            unidades_curriculares = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+            cursor.execute("SELECT * FROM v_turnos")
+            turnos = [row[0] for row in cursor.fetchall()]
+
+            cursor.execute("SELECT * FROM v_anos")
+            anos = [row[0] for row in cursor.fetchall()]
+
+            cursor.execute("SELECT * FROM v_semestres")
+            semestres = [row[0] for row in cursor.fetchall()]
 
         return render(request, 'pagina_principal/main.html', {
             'default_content': 'unidades_curriculares_professor',
-            'unidades_curriculares': unidades_formatadas,
+            'unidades_curriculares': unidades_curriculares,
+            'turnos': turnos,  
+            'anos': anos,
+            'semestres': semestres,
         })
 
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)})
-
-
+    
 
 def carregar_horario_aluno(request):
     # Verifica se o usuário está logado e é aluno
