@@ -1512,36 +1512,69 @@ def pagamentos_em_falta_alunos(request):
 
 # Alterar o estado do pagamento quando o aluno vai realizar um pagamento
 def aluno_alterar_status_pagamento(request, id_pagamento):
-    if request.method == 'POST':
+     if request.method == 'POST':
         try:
-            # Atualiza o estado para "Pendente" ou o estado inicial que deve acionar o trigger
             with connection.cursor() as cursor:
+                # Primeiro, verifica o estado atual do pagamento
                 cursor.execute(
-                    "UPDATE pagamentos SET estado = 'Pendente' WHERE id_pagamento = %s",
+                    "SELECT estado FROM pagamentos WHERE id_pagamento = %s",
                     [id_pagamento]
                 )
-            messages.success(request, "Status do pagamento atualizado com sucesso!")
+                estado_atual = cursor.fetchone()
+
+                # Se não encontrar o pagamento, retorna erro
+                if not estado_atual:
+                    messages.error(request, "Erro: Pagamento não encontrado.")
+                    return redirect('pagamentos_aluno')
+
+                estado_atual = estado_atual[0]  # Pega o valor do estado
+
+                # Se o estado for 'Pendente', permite a atualização
+                if estado_atual == 'Pendente':
+                    cursor.execute(
+                        "UPDATE pagamentos SET estado = estado WHERE id_pagamento = %s",
+                        [id_pagamento]
+                    )
+  
+                else:
+                    messages.error(request, "O pagamento não está pendente e não pode ser alterado.")
+
         except Exception as e:
             messages.error(request, f"Erro ao atualizar o status: {str(e)}")
 
-    # Redireciona para a lista de pagamentos ou onde for necessário
-    return redirect('pagamentos_aluno')
+        return redirect('pagamentos_aluno')
 
 
 def funcionario_alterar_status_pagamento(request, id_pagamento):
     if request.method == 'POST':
         try:
-            # Atualiza o estado para "Pendente" ou o estado inicial que deve acionar o trigger
             with connection.cursor() as cursor:
                 cursor.execute(
-                    "UPDATE pagamentos SET estado = 'Pago' WHERE id_pagamento = %s",
+                    "SELECT estado FROM pagamentos WHERE id_pagamento = %s",
                     [id_pagamento]
                 )
-            messages.success(request, "Status do pagamento atualizado com sucesso!")
+                estado_atual = cursor.fetchone()
+
+                # Se não encontrar o pagamento, retorna erro
+                if not estado_atual:
+                    messages.error(request, "Erro: Pagamento não encontrado.")
+                    return redirect('pagamentos_funcionario')
+
+                estado_atual = estado_atual[0]  # Obtém o estado atual
+
+                if estado_atual == 'Aguardar confirmação':
+
+                    cursor.execute(
+                        "UPDATE pagamentos SET estado = estado  WHERE id_pagamento = %s",
+                        [id_pagamento]
+                    )
+
+                else:
+                    messages.error(request, "O pagamento não está pendente e não pode ser alterado.")
+
         except Exception as e:
             messages.error(request, f"Erro ao atualizar o status: {str(e)}")
 
-    # Redireciona para a lista de pagamentos ou onde for necessário
     return redirect('pagamentos_funcionario')
 
 
@@ -1603,7 +1636,6 @@ def funcionario_update_pagamentos(request, id_pagamento):
                     CALL p_funcionario_update_pagamentos(%s, %s, %s, %s, %s, %s);
                 """, [id_pagamento, descricao, valor, data_vencimento, estado, multa])
 
-            messages.success (request, "Pagamento atualizado com sucesso!")
         except Exception as e:
             messages.error(request, f"Erro ao atualizar pagamento: {str(e)}")
 
@@ -1624,8 +1656,6 @@ def funcionario_delete_pagamentos(request, id_pagamento):
         with connection.cursor() as cursor:
             cursor.execute("CALL p_funcionario_delete_pagamentos(%s);", [id_pagamento])
 
-        # Adicionar uma mensagem de sucesso
-        messages.success(request, "Pagamento removido com sucesso!")
     except Exception as e:
         # Adicionar uma mensagem de erro
         messages.error(request, f"Erro ao remover pagamento: {str(e)}")
@@ -1638,11 +1668,10 @@ def funcionario_delete_pagamentos(request, id_pagamento):
 def matricula_aluno(request):
     user_id = request.session.get('user_id')
     aluno_data = {}
-    detalhes_matricula = None
-    ucs_matricula = []
+    matriculas = {}  # Dicionário para armazenar todas as matrículas do aluno por curso
 
     try:
-        # Obtem os dados do aluno que está logado
+        # Obtém os dados do aluno que está logado
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT p_nome, u_nome, email, telefone, localidade
@@ -1668,7 +1697,17 @@ def matricula_aluno(request):
             id_curso = request.POST.get('id_curso')
             ano_letivo = request.POST.get('ano_letivo')
             data_inscricao = request.POST.get('ano_inscricao')
-            ucs_selecionadas = request.POST.getlist('ucs[]')  # Lista dos IDs das UCs selecionados
+            ucs_selecionadas = request.POST.getlist('ucs[]')  # Lista dos IDs das UCs selecionadas
+
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT COUNT(*) FROM matriculas
+                    WHERE id_aluno = %s AND id_curso = %s;
+                """, [user_id, id_curso])
+                matricula_existente = cursor.fetchone()[0]
+
+            if matricula_existente > 0:
+                return redirect('matricula_aluno')
 
             # Captura os dados dos turnos
             turnos_selecionados = []
@@ -1677,9 +1716,8 @@ def matricula_aluno(request):
                 if turno_id:
                     turnos_selecionados.append((int(uc_id), int(turno_id)))
 
-            # Inserção da matricula
+            # Inserção da matrícula
             with connection.cursor() as cursor:
-                print("Executando CALL p_matricula_insert com:", user_id, id_curso, data_inscricao, ano_letivo)
                 cursor.execute("""
                     CALL p_matricula_insert(%s, %s, %s, %s);
                 """, [user_id, id_curso, data_inscricao, ano_letivo])
@@ -1701,31 +1739,30 @@ def matricula_aluno(request):
                             CALL p_matriculas_turno_insert(%s, %s);
                         """, [id_matricula, turno_id])
                     connection.commit() 
-
-            messages.success(request, "Matrícula realizada com sucesso!")
             return redirect('matricula_aluno')
 
-        # Dados da matricula atual do aluno logado na aplicação
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM vw_alunos_detalhes_matricula WHERE id_aluno = %s", [user_id])
             columns = [col[0] for col in cursor.description]
             rows = cursor.fetchall()
 
         if rows:
-            matricula = [dict(zip(columns, row)) for row in rows]
+            for row in rows:
+                matricula = dict(zip(columns, row))
+                curso = matricula['curso']  # Agrupar pelo curso
 
-            # Dados gerais da matricula
-            detalhes_matricula = {
-                'curso': matricula[0]['curso'],
-                'ano_letivo': matricula[0]['ano_letivo'],
-                'data_matricula': matricula[0]['data_matricula']
-            }
+                if curso not in matriculas:
+                    matriculas[curso] = {
+                        'curso': curso,
+                        'ano_letivo': matricula['ano_letivo'],
+                        'data_matricula': matricula['data_matricula'],
+                        'ucs': []
+                    }
 
-            # Criação das lista dos turnos e UCs que o aluno inscreveu-se
-            for item in matricula:
-                ucs_matricula.append({
-                    'unidade_curricular': item['unidade_curricular'],
-                    'turno': item['turno']
+                # Adiciona a UC correspondente ao curso
+                matriculas[curso]['ucs'].append({
+                    'unidade_curricular': matricula['unidade_curricular'],
+                    'turno': matricula['turno']
                 })
 
     except Exception as e:
@@ -1734,10 +1771,9 @@ def matricula_aluno(request):
     return render(request, 'pagina_principal/main.html', {
         'default_content': 'matricula_aluno',
         'aluno_data': aluno_data,
-        'detalhes_matricula': detalhes_matricula,
-        'ucs_matricula': ucs_matricula,
-        'mensagem_matricula': "Matrícula carregada com sucesso." if detalhes_matricula else "Nenhuma matrícula encontrada.",
-        'status_matriculas': "sucesso" if detalhes_matricula else "erro",
+        'matriculas': matriculas,  # Agora todas as matrículas serão passadas para o template
+        'mensagem_matricula': "Matrículas carregadas com sucesso." if matriculas else "Nenhuma matrícula encontrada.",
+        'status_matriculas': "sucesso" if matriculas else "erro",
     })
 
 
@@ -1939,8 +1975,6 @@ def funcionario_delete_matricula(request, id_matricula):
         with connection.cursor() as cursor:
             cursor.execute("CALL p_funcionario_delete_matricula(%s);", [id_matricula])
 
-        # Mensagem de sucesso
-        messages.success(request, "Matrícula removida com sucesso!")
     except Exception as e:
         # Adicionar uma mensagem de erro
         messages.error(request, f"Erro ao remover matrícula: {str(e)}")
@@ -2459,7 +2493,6 @@ def gestao_escola_aluno(request):
 @professor_required
 def gestao_escola_professor(request):
     return render(request, 'pagina_principal/main.html', {'default_content': 'gestao_escola_professor'})
-
 
 @funcionario_required
 def gestao_escola_funcionario(request):
