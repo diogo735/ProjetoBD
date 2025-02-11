@@ -48,8 +48,7 @@
                             <select id="filtro-semestre" name="semestre" class="form-select">
                                 <option value="">Escolha o semestre...</option>
                                 {% for semestre in semestres %}
-                                <option value="{{ semestre }}" {% if filtros.semestre == semestre %}selected{% endif %}>{{
-                                    semestre }}</option>
+                                <option value="{{ semestre }}" {% if filtros.semestre == semestre %}selected{% endif %}>{{ semestre }}</option>
                                 {% endfor %}
                             </select>
                         </div>

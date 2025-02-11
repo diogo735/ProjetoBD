@@ -2050,7 +2050,7 @@ def aprovar_avaliacao(request, id_avaliacao):
     try:
         with connection.cursor() as cursor:
             cursor.execute("CALL p_aprovar_avaliacao(%s)", [id_avaliacao])
-        messages.success(request, f"Avaliação {id_avaliacao} processada com sucesso.")
+    #    messages.success(request, f"Avaliação {id_avaliacao} processada com sucesso.")
     except Exception as e:
         messages.error(request, f"Erro ao aprovar avaliação: {str(e)}")
     
@@ -2128,7 +2128,7 @@ def avaliacoes_professor(request):
                         nota
                     ])
 
-                messages.success(request, "Avaliação registrada com sucesso!")
+               # messages.success(request, "Avaliação registrada com sucesso!")
                 return redirect(f"{reverse('avaliacoes_professor')}?tab=historico-avaliacoes") 
 
            
