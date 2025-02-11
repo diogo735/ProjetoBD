@@ -106,7 +106,7 @@
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="atualizarModalLabel">Atualizar
-                                                            Matrícula</h5>
+                                                            Matrícula -  <span id="detalhesNomeAlunoAtualizar"></span></h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
@@ -177,8 +177,7 @@
                                             <div class="modal-dialog modal-lg">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="detalhesModalLabel">Detalhes da
-                                                            Matrícula - {{ matricula.nome_aluno }}</h5>
+                                                        <h5 class="modal-title" id="detalhesModalLabel">Detalhes da Matrícula - <span id="detalhesNomeAluno"></span></h5>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                     </div>
@@ -292,6 +291,7 @@
             fetch(`/funcionario/matricula/update_detalhes/${idMatricula}/`)
                 .then(response => response.json())
                 .then(data => {
+                    document.getElementById("detalhesNomeAlunoAtualizar").textContent = data.nome_aluno;
                     document.getElementById("idMatricula").value = data.id_matricula;
                     document.getElementById("data_matricula").value = data.data_matricula;
                     document.getElementById("ano_letivo").value = data.ano_letivo;
@@ -409,6 +409,7 @@
             fetch(`/funcionario/matricula/detalhes/${idMatricula}/`)
                 .then(response => response.json())
                 .then(data => {
+                    document.getElementById("detalhesNomeAluno").textContent = data.nome_aluno;
                     document.getElementById("detalhesCurso").textContent = data.curso;
                     document.getElementById("detalhesCurso").textContent = data.nome_curso;
                     document.getElementById("detalhesAno").textContent = data.ano_letivo;
