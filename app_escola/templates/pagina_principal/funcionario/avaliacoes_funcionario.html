@@ -28,7 +28,7 @@
                             <select id="filtro-curso" name="curso" class="form-select">
                                 <option value="">Escolha o curso...</option>
                                 {% for curso in cursos %}
-                                <option value="{{ curso }}" {% if filtros.curso==curso %}selected{% endif %}>{{ curso }}
+                                <option value="{{ curso }}" {% if filtros.curso == curso %}selected{% endif %}>{{ curso }}
                                 </option>
                                 {% endfor %}
                             </select>
@@ -38,7 +38,7 @@
                             <select id="filtro-ano" name="ano" class="form-select">
                                 <option value="">Escolha o ano...</option>
                                 {% for ano in anos %}
-                                <option value="{{ ano }}" {% if filtros.ano==ano %}selected{% endif %}>{{ ano }}
+                                <option value="{{ ano }}" {% if filtros.ano == ano %}selected{% endif %}>{{ ano }}
                                 </option>
                                 {% endfor %}
                             </select>
@@ -48,7 +48,7 @@
                             <select id="filtro-semestre" name="semestre" class="form-select">
                                 <option value="">Escolha o semestre...</option>
                                 {% for semestre in semestres %}
-                                <option value="{{ semestre }}" {% if filtros.semestre==semestre %}selected{% endif %}>{{
+                                <option value="{{ semestre }}" {% if filtros.semestre == semestre %}selected{% endif %}>{{
                                     semestre }}</option>
                                 {% endfor %}
                             </select>
@@ -58,7 +58,7 @@
                             <select id="filtro-epoca" name="epoca" class="form-select">
                                 <option value="">Escolha a época...</option>
                                 {% for epoca in epocas %}
-                                <option value="{{ epoca }}" {% if filtros.epoca==epoca %}selected{% endif %}>{{ epoca }}
+                                <option value="{{ epoca }}" {% if filtros.epoca == epoca %}selected{% endif %}>{{ epoca }}
                                 </option>
                                 {% endfor %}
                             </select>
@@ -113,8 +113,7 @@
                                             <button type="submit" class="btn btn-sm btn-success">Confirmar</button>
                                         </form>
                                         {% else %}
-                                        <button class="btn btn-sm btn-secondary" disabled>{{ avaliacao.estado
-                                            }}</button>
+                                        <button class="btn btn-sm btn-secondary" disabled>{{ avaliacao.estado }}</button>
                                         {% endif %}
                                     </td>
                                 </tr>
