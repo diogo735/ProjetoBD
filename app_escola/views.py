@@ -1701,9 +1701,9 @@ def matricula_aluno(request):
 
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT COUNT(*) FROM matriculas
-                    WHERE id_aluno = %s AND id_curso = %s;
-                """, [user_id, id_curso])
+                  SELECT COUNT(*) FROM matriculas
+                    WHERE id_aluno = %s;
+                """, [user_id])
                 matricula_existente = cursor.fetchone()[0]
 
             if matricula_existente > 0:

@@ -20,7 +20,6 @@
 
         <!-- Tab Detalhes -->
         <div class="tab-pane fade show active" id="detalhes" role="tabpanel" aria-labelledby="detalhes-tab">
-            <p>Confira abaixo os detalhes das suas matrículas ativas.</p>
         
             {% if matriculas %}
                 {% for curso, matricula in matriculas.items %}
@@ -111,8 +110,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="ano_inscricao" class="form-label">Data da Inscrição</label>
-                            <input type="date" class="form-control" id="ano_inscricao" name="ano_inscricao">
-                        </div>
+                            <input type="date" class="form-control" id="ano_inscricao" name="ano_inscricao" readonly>
+                        </div>                        
                         <div class="mb-3">
                             <label for="id_curso" class="form-label">Selecione o Curso</label>
                             <select id="id_curso" name="id_curso" class="form-select" required>
@@ -284,4 +283,11 @@
         document.getElementById("ano-container").style.display = "none";
         document.getElementById("uc-container").style.display = "none";
     }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const dataInscricao = document.getElementById("ano_inscricao");
+        const hoje = new Date().toISOString().split("T")[0]; // Obtém a data atual no formato YYYY-MM-DD
+        dataInscricao.value = hoje; 
+    });
+
 </script>

@@ -138,11 +138,9 @@
                                                             </div>
 
                                                             <div class="mb-3">
-                                                                <label for="data_matricula" class="form-label">Data da
-                                                                    Matrícula</label>
-                                                                <input type="date" class="form-control"
-                                                                    id="data_matricula" name="data_matricula">
-                                                            </div>
+                                                                <label for="ano_inscricao" class="form-label">Data da Inscrição</label>
+                                                                <input type="date" class="form-control" id="data_matricula" name="data_matricula" readonly>
+                                                            </div>    
 
                                                             <h5 class="mt-3">Unidades Curriculares</h5>
                                                             <div class="table-responsive">
@@ -454,4 +452,12 @@
                 })
                 .catch(error => console.error("Erro ao carregar os detalhes da matrícula:", error));
         }
+
+        
+    document.addEventListener("DOMContentLoaded", function () {
+        const dataInscricao = document.getElementById("data_matricula");
+        const hoje = new Date().toISOString().split("T")[0]; // Obtém a data atual no formato YYYY-MM-DD
+        dataInscricao.value = hoje; 
+    });
+
     </script>
